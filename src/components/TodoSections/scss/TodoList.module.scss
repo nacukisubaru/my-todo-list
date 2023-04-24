@@ -1,0 +1,12 @@
+
+    .parent {    
+    
+    .test {
+       @apply 'text-3xl font-bold underline'
+    }
+
+    .sectionItem {
+        @apply 'display flex'
+    }
+}
+
