@@ -5,6 +5,7 @@ import CheckBox from "../../ui/CheckBox/CheckBox";
 export interface ITodoItem {
     todoId: number;
     name: string;
+    showTasks: boolean;
     items: ITodoItem[];
 }
 
@@ -21,13 +22,15 @@ const TodoList: FC<ITodoList> = ({ todoitems }) => {
                         <div className="display flex">
                             <div className="-mt-[3px] mr-3">
                                 {item.items.length > 0 && (
-                                    <ArrowButton isArrowOpen={false} />
+                                    <ArrowButton isArrowOpen={item.showTasks} />
                                 )}
                             </div>
                             <CheckBox label={item.name}/>
                         </div>
                         <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />
-                        <TodoList todoitems={item.items} />
+                        {item.showTasks && (
+                             <TodoList todoitems={item.items} />
+                        )}
                     </li>
                 );
             })}

@@ -32,7 +32,7 @@ const TodoSections: FC = () => {
                         return (
                             <li className="mb-10">
                                 <div className="display flex">
-                                    <ArrowButton isArrowOpen={false} />
+                                    <ArrowButton isArrowOpen={true} />
                                     <span className="font-bold ml-3">
                                         {section.name}
                                     </span>
