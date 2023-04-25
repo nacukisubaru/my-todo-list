@@ -1,13 +1,15 @@
 export interface ITodoList {
-    sectionId: number,
+    id: number,
     name: string,
+    type: string,
     showTasks:boolean,
     items: ITodoItem[]
 }
 
 export interface ITodoItem {
-    todoId: number,
+    id: number,
     name: string,
+    type: string,
     showTasks:boolean,
     items: ITodoItem[]
 }

@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { thunkAxiosGet } from "../../../helpers/queryHelper";
-import {ITodoList} from "../types/todo.types";
+import {ITodoList} from "../../../types/todo.types";
 
 interface IState {
     todos: ITodoList[],
@@ -25,6 +25,9 @@ export const todosSlice = createSlice({
     name: 'todos',
     initialState,
     reducers: {
+        setTodos: (state, action: PayloadAction<{data:ITodoList[]}>) => {
+            state.todos = action.payload.data; 
+        }
     },
     extraReducers: {
         [getTodosBySection.pending]: (state) => {

@@ -1,15 +1,14 @@
-import "./App.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import React from "react";
-
 import { Provider } from 'react-redux';
 import { store } from "./store/store";
-import TodoSections from "./components/TodoSections/TodoSections";
+import React from "react";
+import WorkSpace from "./components/WorkSpace/WorkSpace";
+import "./App.css";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <TodoSections />,
+        element: <WorkSpace />,
     },
 ]);
 
