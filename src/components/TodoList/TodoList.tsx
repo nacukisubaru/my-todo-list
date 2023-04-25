@@ -1,5 +1,5 @@
 import { FC } from "react";
-import ArrowButton from "../../ui/ArrowButton/ArrowButton";
+import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 
 export interface ITodoItem {

@@ -3,8 +3,9 @@ import { getTodosBySection } from "../../store/services/todo/todo.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useDispatch } from "react-redux";
 import TodoList from "../TodoList/TodoList";
-import ArrowButton from "../../ui/ArrowButton/ArrowButton";
+import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
 import BurgerMenu from "../../ui/BurgerMenu/BurgerMenu";
+import TodoChange from "../TodoChange/TodoChange";
 
 const TodoSections: FC = () => {
     const todos = useAppSelector((state) => state.todosReducer.todos);
@@ -19,11 +20,11 @@ const TodoSections: FC = () => {
 
     return (
         <>
-            <BurgerMenu 
+            <BurgerMenu
                 items={[
-                    {id: 1, name: 'Добро пожаловать'},
-                    {id: 2, name: 'Проект 1'},
-                    {id: 3, name: 'Проект 2'},
+                    { id: 1, name: "Добро пожаловать" },
+                    { id: 2, name: "Проект 1" },
+                    { id: 3, name: "Проект 2" },
                 ]}
             />
             <div className="display flex justify-center">
@@ -32,13 +33,22 @@ const TodoSections: FC = () => {
                         return (
                             <li className="mb-10">
                                 <div className="display flex">
-                                    <ArrowButton isArrowOpen={true} />
+                                    <ArrowButton
+                                        isArrowOpen={section.showTasks}
+                                    />
                                     <span className="font-bold ml-3">
                                         {section.name}
                                     </span>
                                 </div>
                                 <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
                                 <TodoList todoitems={section.items}></TodoList>
+                                <TodoChange
+                                    createTodoProps={{id: section.sectionId, parentType: "section"}} 
+                                    buttonsSettings={{
+                                        primaryButtonName: "Добавить задачу", 
+                                        secondaryButtonName: "Отмена"
+                                    }}
+                                />
                             </li>
                         );
                     })}
