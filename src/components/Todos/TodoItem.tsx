@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import { ITodoItem } from "../../types/todo.types";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -6,6 +6,7 @@ import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import TodoChange from "../TodoChange/TodoChange";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
+import { useActions } from "../../hooks/useActions";
 
 interface ITodoItemProps {
     todo: ITodoItem;
@@ -16,11 +17,16 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
     const { mutateTask, findTaskInTree } = useTaskTree();
     const [toolPanelIsVisible, setVisibleToolPanel] = useState(false);
     const [todoChangeIsOpen, setOpenTodoChange] = useState(false);
-    const [todoEditInputs, setTodoEditInputs] = useState({name: '', text: ''});
+    const [todoEditInputs, setTodoEditInputs] = useState({
+        name: "",
+        text: "",
+    });
+    const { editableTaskId, prevEditableTaskId } = useAppSelector((state) => state.uiReducer);
+    const { setEditableTaskId } = useActions();
 
     const toggleTaskList = (id: number, type: string) => {
         const mutate = (value: any) => {
-            mutateTask(id, "showTasks", value, type);
+            mutateTask(id, [{field: "showTasks", value}], type);
         };
         return mutate;
     };
@@ -34,39 +40,58 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
     };
 
     const openTodoChangePanel = () => {
-        const foundTask: ITodoItem | false = findTaskInTree(todos, todo.id, 'task');
+        const foundTask: ITodoItem | false = findTaskInTree(
+            todos,
+            todo.id,
+            "task"
+        );
         if (foundTask !== false) {
-            setTodoEditInputs({name: foundTask.name, text: foundTask.description})
+            setTodoEditInputs({
+                name: foundTask.name,
+                text: foundTask.description,
+            });
         }
         setOpenTodoChange(true);
+        setEditableTaskId({ id: todo.id });
     };
 
     const closeTodoChangePanel = () => {
         setOpenTodoChange(false);
+        setEditableTaskId({ id: 0 });
     };
+
+    useEffect(() => {
+        if (prevEditableTaskId === todo.id) {
+            setOpenTodoChange(false);
+        }
+    }, [editableTaskId]);
 
     return (
         <>
-            <TodoChange
-                createTodoProps={{
-                    id: todo.id,
-                    parentType: "task",
-                }}
-                buttonsSettings={{
-                    primaryButtonName: "Изменить задачу",
-                    secondaryButtonName: "Отмена",
-                    showAddTaskBtn: false,
-                }}
-                inputsSettings={{
-                    inputPlaceHolder: "Название задачи",
-                    textPlaceHolder: "Описание",
-                    inputValue:todoEditInputs.name,
-                    textValue: todoEditInputs.text
-                }}
-                showPanel={todoChangeIsOpen}
-                callback={closeTodoChangePanel}
-                action="change"
-            />
+            {!editableTaskId ||
+                (editableTaskId === todo.id && (
+                    <TodoChange
+                        createTodoProps={{
+                            id: todo.id,
+                            parentType: "task",
+                        }}
+                        buttonsSettings={{
+                            primaryButtonName: "Изменить задачу",
+                            secondaryButtonName: "Отмена",
+                            showAddTaskBtn: false,
+                        }}
+                        inputsSettings={{
+                            inputPlaceHolder: "Название задачи",
+                            textPlaceHolder: "Описание",
+                            inputValue: todoEditInputs.name,
+                            textValue: todoEditInputs.text,
+                        }}
+                        showPanel={todoChangeIsOpen}
+                        callback={closeTodoChangePanel}
+                        action="change"
+                    />
+                ))}
+
             {!todoChangeIsOpen && (
                 <div
                     className="display flex justify-between"

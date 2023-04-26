@@ -72,8 +72,14 @@ const TodoChange: FC<ITodoChange> = ({
     const changeTodo = () => {
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
-        mutateTask(id, 'name', TaskName, 'task');
-        mutateTask(id, 'description', TaskDesc, 'task');
+         mutateTask(
+            id, 
+            [
+                {field: 'name', value: TaskName},
+                {field: 'description', value:TaskDesc}
+            ], 
+            'task'
+        );
         callback && callback();
     };
 
@@ -86,10 +92,12 @@ const TodoChange: FC<ITodoChange> = ({
     }
 
     const todoFormOpen = () => {
+        setActiveAddTaskBtn({isActive: false});
         openTodoForm(true);
     };
 
     const todoFormClose = () => {
+        setActiveAddTaskBtn({isActive: true});
         setPrimaryBtnDisabled(true);
         openTodoForm(false);
         callback && callback();
@@ -110,17 +118,10 @@ const TodoChange: FC<ITodoChange> = ({
         }
     }, [showPanel]);
 
-    useEffect(() => {
-        if (isOpenTodoForm) {
-            setActiveAddTaskBtn({isActive: false});
-        } else {
-            setActiveAddTaskBtn({isActive: true});
-        }
-    }, [isOpenTodoForm]);
 
     return (
         <>
-            { isOpenTodoForm || showPanel ? (
+            {isOpenTodoForm || showPanel ? (
                 <div className="border-solid border-2 border-indigo-600 rounded-xl h-auto">
                     <div className="display grid px-[7px] py-[7px] mb-[18px]">
                         <input
@@ -154,7 +155,7 @@ const TodoChange: FC<ITodoChange> = ({
                         />
                     </div>
                 </div>
-            ) : showAddTaskBtn && isActiveAddTaskBtn &&(
+            ) : showAddTaskBtn && isActiveAddTaskBtn && (
                 <AddTaskButton onClick={todoFormOpen} />
             )}
         </>

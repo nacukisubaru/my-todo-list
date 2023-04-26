@@ -8,6 +8,11 @@ interface ITaskParams {
     type: string
 }
 
+interface IMutateList {
+    field: string, 
+    value: any
+}
+
 export const useTaskTree = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
     const { setTodos } = useActions();
@@ -76,12 +81,13 @@ export const useTaskTree = () => {
         return false;
     }
 
-
-    const mutateTask = async (taskId: number, field: string, value: any, type: string): Promise<ITodoList[]> => {
+    const mutateTask = async (taskId: number, mutateList: IMutateList[], type: string): Promise<ITodoList[]> => {
         const tasksclones: ITodoList[] = recursiveCloneTree(todos);
         const foundTask: any = findTaskInTree(tasksclones, taskId, type);
         if (foundTask) {
-            foundTask[field] = value;
+            mutateList.map((item) => {
+                foundTask[item.field] = item.value;
+            })   
         }
         await setTodos({ data: tasksclones });
         return tasksclones;

@@ -12,7 +12,7 @@ const TodoSection:FC<ITodoSectionProps> = ({section}) => {
 
     const toggleTaskList = (id: number, type: string) => {
         const mutate = (value: any) => {
-            mutateTask(id, 'showTasks', value, type);
+            mutateTask(id, [{field: "showTasks", value}], type);
         }
         return mutate;
     }

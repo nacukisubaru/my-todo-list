@@ -1,11 +1,15 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface IState {
-    isActiveAddTaskBtn: boolean   
+    isActiveAddTaskBtn: boolean,
+    editableTaskId: number,
+    prevEditableTaskId: number
 }
 
 const initialState:IState = {
-    isActiveAddTaskBtn: true
+    isActiveAddTaskBtn: true,
+    editableTaskId: 0,
+    prevEditableTaskId: 0
 };
 
 export const uiSlice = createSlice({
@@ -14,7 +18,11 @@ export const uiSlice = createSlice({
     reducers: {
         setActiveAddTaskBtn: (state, action: PayloadAction<{isActive: boolean}>) => {
             state.isActiveAddTaskBtn = action.payload.isActive;
-        }
+        },
+        setEditableTaskId: (state, action: PayloadAction<{id: number}>) => {
+            state.prevEditableTaskId = state.editableTaskId
+            state.editableTaskId = action.payload.id;
+        },
     },
 }); 
 
