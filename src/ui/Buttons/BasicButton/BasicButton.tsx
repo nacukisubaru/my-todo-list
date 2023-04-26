@@ -5,14 +5,15 @@ type color = "primary" | "secondary";
 interface IBasicButton {
     name: string;
     color: color;
+    isDisabled?: boolean;
     onClick: () => void;
 }
 
-const BasicButton: FC<IBasicButton> = ({ name, color, onClick }) => {
+const BasicButton: FC<IBasicButton> = ({ name, color, isDisabled, onClick }) => {
     return (
-        <button 
-            type="button" 
-            className={`px-[3px] py-[3px] rounded-[4px] ${color === "primary" ? "bg-red-600" : "bg-gray-200"}`}
+        <button
+            type="button"
+            className={`px-[3px] py-[3px] rounded-[4px] ${color === "primary" ? "bg-red-600" : "bg-gray-200"} ${isDisabled && "pointer-events-none bg-red-200"}`}
             onClick={onClick}
         >
             <span className={ `text-sm ${color === "secondary" ? "text-black" : "text-white"}`}>{name}</span>

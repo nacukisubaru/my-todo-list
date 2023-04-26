@@ -37,6 +37,7 @@ const TodoChange: FC<ITodoChange> = ({
 
     const { createTask } = useTaskTree();
     const [isOpenTodoForm, openTodoForm] = useState(false);
+    const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
 
     const name: any = useRef();
     const description: any = useRef();
@@ -48,6 +49,9 @@ const TodoChange: FC<ITodoChange> = ({
             { taskId: id, type: parentType },
             { name: TaskName, description: TaskDesc }
         );
+        name.current.value = "";
+        description.current.value = "";
+        setPrimaryBtnDisabled(true);
     };
 
     const todoFormOpen = () => {
@@ -55,8 +59,17 @@ const TodoChange: FC<ITodoChange> = ({
     };
 
     const todoFormClose = () => {
+        setPrimaryBtnDisabled(true);
         openTodoForm(false);
     };
+
+    const changeField = () => {
+        if (name.current.value.length) {
+            setPrimaryBtnDisabled(false);
+        } else {
+            setPrimaryBtnDisabled(true);
+        }
+    }
 
     return (
         <>
@@ -68,11 +81,14 @@ const TodoChange: FC<ITodoChange> = ({
                             ref={name}
                             className="hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0"
                             placeholder={inputPlaceHolder}
+                            onChange={changeField}
+                            onInput={changeField}
                         />
                         <textarea
                             ref={description}
                             className="resize-none h-[70px] hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0"
                             placeholder={textPlaceHolder}
+                            onChange={changeField}
                         ></textarea>
                     </div>
                     <div className="display flex justify-end mx-[7px] my-[7px]">
@@ -87,6 +103,7 @@ const TodoChange: FC<ITodoChange> = ({
                             name={primaryButtonName}
                             color="primary"
                             onClick={createTodo}
+                            isDisabled={primaryBtnIsDisabled}
                         />
                     </div>
                 </div>
