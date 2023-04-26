@@ -39,7 +39,7 @@ export const useTaskTree = () => {
     }
 
 
-    const findTaskInTree = (tree: ITodoList[], taskId: number, type: string): ITodoItem | boolean => {
+    const findTaskInTree = (tree: ITodoList[], taskId: number, type: string): ITodoItem | false => {
         const recursiveFind = (tree: ITodoList[], taskId: number): ITodoItem | undefined => {
             for (let inc in tree) {
                 if (tree[inc].id && tree[inc].id === taskId && tree[inc].type === "task") {

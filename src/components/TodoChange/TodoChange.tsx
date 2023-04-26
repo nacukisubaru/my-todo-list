@@ -1,9 +1,10 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 
 type parentType = "section" | "task";
+type action = "create" | "change";
 
 interface ICreateTodoProps {
     id: number;
@@ -11,6 +12,8 @@ interface ICreateTodoProps {
 }
 
 interface IInputsSettings {
+    inputValue?: string,
+    textValue?: string, 
     inputPlaceHolder: string;
     textPlaceHolder: string;
 }
@@ -18,25 +21,32 @@ interface IInputsSettings {
 interface IButtonsSettings {
     primaryButtonName: string;
     secondaryButtonName: string;
+    showAddTaskBtn: boolean;
 }
 
 interface ITodoChange {
     createTodoProps: ICreateTodoProps;
     buttonsSettings: IButtonsSettings;
     inputsSettings: IInputsSettings;
+    showPanel?: boolean;
+    callback?: () => void;
+    action?: action;
 }
 
 const TodoChange: FC<ITodoChange> = ({
     createTodoProps,
     buttonsSettings,
     inputsSettings,
+    showPanel = false,
+    callback,
+    action = "create"
 }) => {
     const { id, parentType } = createTodoProps;
-    const { inputPlaceHolder, textPlaceHolder } = inputsSettings;
-    const { primaryButtonName, secondaryButtonName } = buttonsSettings;
+    const { inputPlaceHolder, textPlaceHolder, inputValue, textValue } = inputsSettings;
+    const { primaryButtonName, secondaryButtonName, showAddTaskBtn } = buttonsSettings;
 
-    const { createTask } = useTaskTree();
-    const [isOpenTodoForm, openTodoForm] = useState(false);
+    const { createTask, mutateTask } = useTaskTree();
+    const [isOpenTodoForm, openTodoForm] = useState(showPanel);
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
 
     const name: any = useRef();
@@ -54,6 +64,21 @@ const TodoChange: FC<ITodoChange> = ({
         setPrimaryBtnDisabled(true);
     };
 
+    const changeTodo = () => {
+        const TaskName = name.current.value;
+        const TaskDesc = description.current.value;
+        mutateTask(id, 'name', TaskName, 'task');
+        callback && callback();
+    };
+
+    const applyActionTodo = () => {
+        if (action === "change") {
+            changeTodo();
+        } else if (action === "create") {
+            createTodo();
+        }
+    }
+
     const todoFormOpen = () => {
         openTodoForm(true);
     };
@@ -61,6 +86,7 @@ const TodoChange: FC<ITodoChange> = ({
     const todoFormClose = () => {
         setPrimaryBtnDisabled(true);
         openTodoForm(false);
+        callback && callback();
     };
 
     const changeField = () => {
@@ -71,9 +97,16 @@ const TodoChange: FC<ITodoChange> = ({
         }
     }
 
+    useEffect(() => {
+        if (showPanel) {
+            name.current.value = inputValue;
+            description.current.value = textValue;
+        }
+    }, [showPanel]);
+
     return (
         <>
-            {isOpenTodoForm ? (
+            {isOpenTodoForm || showPanel ? (
                 <div className="border-solid border-2 border-indigo-600 rounded-xl h-auto">
                     <div className="display grid px-[7px] py-[7px] mb-[18px]">
                         <input
@@ -102,12 +135,12 @@ const TodoChange: FC<ITodoChange> = ({
                         <BasicButton
                             name={primaryButtonName}
                             color="primary"
-                            onClick={createTodo}
+                            onClick={applyActionTodo}
                             isDisabled={primaryBtnIsDisabled}
                         />
                     </div>
                 </div>
-            ) : (
+            ) : showAddTaskBtn &&(
                 <AddTaskButton onClick={todoFormOpen} />
             )}
         </>

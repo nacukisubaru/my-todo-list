@@ -15,10 +15,6 @@ const TodoSectionsList: FC = () => {
             await dispatch(getTodosBySection(1));
         };
         getTodos();
-
-
-
-
     }, []);
 
     return (
@@ -40,6 +36,7 @@ const TodoSectionsList: FC = () => {
                                 buttonsSettings={{
                                     primaryButtonName: "Добавить задачу",
                                     secondaryButtonName: "Отмена",
+                                    showAddTaskBtn: true
                                 }}
                                 inputsSettings={{
                                     inputPlaceHolder: "Название задачи",
