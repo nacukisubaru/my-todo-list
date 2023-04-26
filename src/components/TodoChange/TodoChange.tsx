@@ -68,6 +68,7 @@ const TodoChange: FC<ITodoChange> = ({
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
         mutateTask(id, 'name', TaskName, 'task');
+        mutateTask(id, 'description', TaskDesc, 'task');
         callback && callback();
     };
 

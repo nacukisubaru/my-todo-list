@@ -36,7 +36,7 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
     const openTodoChangePanel = () => {
         const foundTask: ITodoItem | false = findTaskInTree(todos, todo.id, 'task');
         if (foundTask !== false) {
-            setTodoEditInputs({name: foundTask.name, text: ''})
+            setTodoEditInputs({name: foundTask.name, text: foundTask.description})
         }
         setOpenTodoChange(true);
     };

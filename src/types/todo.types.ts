@@ -1,6 +1,7 @@
 export interface ITodoList {
     id: number,
     name: string,
+    description: string,
     type: string,
     showTasks:boolean,
     items: ITodoItem[]
@@ -9,6 +10,7 @@ export interface ITodoList {
 export interface ITodoItem {
     id: number,
     name: string,
+    description: string,
     type: string,
     showTasks:boolean,
     items: ITodoItem[]
