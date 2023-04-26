@@ -2,6 +2,8 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
+import { useActions } from "../../hooks/useActions";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 type parentType = "section" | "task";
 type action = "create" | "change";
@@ -48,6 +50,9 @@ const TodoChange: FC<ITodoChange> = ({
     const { createTask, mutateTask } = useTaskTree();
     const [isOpenTodoForm, openTodoForm] = useState(showPanel);
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
+    const { setActiveAddTaskBtn } = useActions();
+
+    const { isActiveAddTaskBtn } = useAppSelector((state) => state.uiReducer);
 
     const name: any = useRef();
     const description: any = useRef();
@@ -105,9 +110,17 @@ const TodoChange: FC<ITodoChange> = ({
         }
     }, [showPanel]);
 
+    useEffect(() => {
+        if (isOpenTodoForm) {
+            setActiveAddTaskBtn({isActive: false});
+        } else {
+            setActiveAddTaskBtn({isActive: true});
+        }
+    }, [isOpenTodoForm]);
+
     return (
         <>
-            {isOpenTodoForm || showPanel ? (
+            { isOpenTodoForm || showPanel ? (
                 <div className="border-solid border-2 border-indigo-600 rounded-xl h-auto">
                     <div className="display grid px-[7px] py-[7px] mb-[18px]">
                         <input
@@ -141,7 +154,7 @@ const TodoChange: FC<ITodoChange> = ({
                         />
                     </div>
                 </div>
-            ) : showAddTaskBtn &&(
+            ) : showAddTaskBtn && isActiveAddTaskBtn &&(
                 <AddTaskButton onClick={todoFormOpen} />
             )}
         </>
