@@ -15,7 +15,7 @@ const BurgerMenu: FC<IBurgerMenu> = ({items}) => {
             <div className="display flex justify-center mt-[20px]">
                 <ul className="w-[89%]">
                     {items.map((item) => {
-                        return <li className="hover:bg-gray-200">{item.name}</li>
+                        return <li className="hover:bg-gray-200" key={item.id}>{item.name}</li>
                     })}
                 </ul>
             </div>
