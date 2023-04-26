@@ -44,10 +44,15 @@ export const useTaskTree = () => {
             for (let inc in tree) {
                 if (tree[inc].id && tree[inc].id === taskId && tree[inc].type === "task") {
                     return tree[inc];
-                }
+                } 
                 else {
                     if (tree[inc].items && tree[inc].items.length) {
-                        return recursiveFind(tree[inc].items, taskId);
+                        const foundTask = recursiveFind(tree[inc].items, taskId);
+                        if (foundTask !== undefined && foundTask.id && foundTask.id === taskId && tree[inc].type === "task") {
+                            return foundTask;
+                        } else {
+                            recursiveFind(tree[inc].items, taskId);
+                        }
                     }
                 }
             }
@@ -89,7 +94,7 @@ export const useTaskTree = () => {
         const {taskId, type} = tasksParams;
         const tasksclones: ITodoList[] = recursiveCloneTree(todos);
         const foundTask: any = findTaskInTree(tasksclones, taskId, type);
-        foundTask.items.push({...editFields, type,  showTasks: true, items: [], id: newTaskId});
+        foundTask.items.push({...editFields, type: 'task',  showTasks: true, items: [], id: newTaskId});
         await setTodos({ data: tasksclones });
     }
 
