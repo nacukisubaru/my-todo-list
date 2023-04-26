@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import { ITodoList } from "../../types/todo.types";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
@@ -9,12 +8,11 @@ interface ITodoSectionProps {
 }
 
 const TodoSection:FC<ITodoSectionProps> = ({section}) => {
-    let todos = useAppSelector((state) => state.todosReducer.todos);
     const {mutateTask} = useTaskTree();
 
     const toggleTaskList = (id: number, type: string) => {
         const mutate = (value: any) => {
-            mutateTask(todos, id, 'showTasks', value, type);
+            mutateTask(id, 'showTasks', value, type);
         }
         return mutate;
     }

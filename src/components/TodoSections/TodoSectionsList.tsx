@@ -2,7 +2,6 @@ import { FC, useEffect } from "react";
 import { getTodosBySection } from "../../store/services/todo/todo.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useDispatch } from "react-redux";
-import BurgerMenu from "../../ui/BurgerMenu/BurgerMenu";
 import TodoChange from "../TodoChange/TodoChange";
 import TodoSection from "./TodoSection";
 import TodosList from "../Todos/TodosList";
@@ -16,6 +15,10 @@ const TodoSectionsList: FC = () => {
             await dispatch(getTodosBySection(1));
         };
         getTodos();
+
+
+
+
     }, []);
 
     return (
@@ -30,10 +33,17 @@ const TodoSectionsList: FC = () => {
                                 <TodosList todoitems={section.items} />
                             )}
                             <TodoChange
-                                createTodoProps={{id: section.id, parentType: "section"}} 
+                                createTodoProps={{
+                                    id: section.id,
+                                    parentType: "section",
+                                }}
                                 buttonsSettings={{
-                                    primaryButtonName: "Добавить задачу", 
-                                    secondaryButtonName: "Отмена"
+                                    primaryButtonName: "Добавить задачу",
+                                    secondaryButtonName: "Отмена",
+                                }}
+                                inputsSettings={{
+                                    inputPlaceHolder: "Название задачи",
+                                    textPlaceHolder: "Описание",
                                 }}
                             />
                         </li>

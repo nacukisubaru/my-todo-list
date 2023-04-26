@@ -13,3 +13,8 @@ export interface ITodoItem {
     showTasks:boolean,
     items: ITodoItem[]
 }
+
+export interface ITodoEditFields {
+    name: string,
+    description: string
+}
