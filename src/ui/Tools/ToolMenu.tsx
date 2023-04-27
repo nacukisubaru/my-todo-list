@@ -7,7 +7,7 @@ interface IToolMenu {
 
 const ToolMenu: FC<IToolMenu> = ({ menuItems }) => {
     return (
-        <div className="absolute -translate-x-[67px] -translate-y-[80px] px-[20px] py-[20px]bg-white h-auto w-[200px] rounded-[6px] shadow-xl">
+        <div className="absolute -translate-x-[67px] -translate-y-[80px] px-[20px] py-[20px] bg-white h-auto w-[200px] rounded-[6px] shadow-xl">
             <ul>
                 {menuItems.map((item) => {
                     return <li className="cursor-pointer hover:bg-gray-50">{item.name}</li>;
