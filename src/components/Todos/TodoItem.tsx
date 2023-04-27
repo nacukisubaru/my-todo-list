@@ -7,6 +7,7 @@ import TodoChange from "../TodoChange/TodoChange";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
 import { useActions } from "../../hooks/useActions";
+import ToolMenu from "../../ui/Tools/ToolMenu";
 
 interface ITodoItemProps {
     todo: ITodoItem;
@@ -15,18 +16,20 @@ interface ITodoItemProps {
 const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
     const { mutateTask, findTaskInTree } = useTaskTree();
-    const [toolPanelIsVisible, setVisibleToolPanel] = useState(false);
+    const [toolPanelIsVisible, setVisibleToolPanel] = useState(true);
     const [todoChangeIsOpen, setOpenTodoChange] = useState(false);
     const [todoEditInputs, setTodoEditInputs] = useState({
         name: "",
         text: "",
     });
-    const { editableTaskId, prevEditableTaskId } = useAppSelector((state) => state.uiReducer);
+    const { editableTaskId, prevEditableTaskId } = useAppSelector(
+        (state) => state.uiReducer
+    );
     const { setEditableTaskId } = useActions();
 
     const toggleTaskList = (id: number, type: string) => {
         const mutate = (value: any) => {
-            mutateTask(id, [{field: "showTasks", value}], type);
+            mutateTask(id, [{ field: "showTasks", value }], type);
         };
         return mutate;
     };
@@ -111,7 +114,24 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                     </div>
                     {toolPanelIsVisible && (
                         <ToolTaskPanel
-                            callbacks={{ clickEditBtn: openTodoChangePanel }}
+                            callbacks={{
+                                clickEditBtn: openTodoChangePanel,
+                            }}
+                            settings={{
+                                menuItems: [
+                                    {
+                                        id: 1,
+                                        name: "Добавить задачу выше",
+                                    },
+                                    {
+                                        id: 2,
+                                        name: "Добавить задачу ниже",
+                                    },
+                                    { id: 3, name: "Изменить задачу" },
+                                    { id: 4, name: "Удалить задачу" },
+                                ],
+                                showEditBtn: true,
+                            }}
                         />
                     )}
                 </div>

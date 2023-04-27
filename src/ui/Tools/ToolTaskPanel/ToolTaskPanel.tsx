@@ -1,16 +1,32 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import ToolButton from "./ToolButton";
+import ToolMenu from "../ToolMenu";
+import { IMenuItem } from "../../../types/ui.types";
 
 interface ICallbacks {
-    clickEditBtn: () => void
+    clickEditBtn: () => void;
+}
+
+interface ISettings {
+    showEditBtn: boolean;
+    menuItems: IMenuItem[];
 }
 
 interface IToolTaskPanelProps {
-    callbacks: ICallbacks
+    settings: ISettings;
+    callbacks: ICallbacks;
 }
 
-const ToolTaskPanel: FC<IToolTaskPanelProps> = ({callbacks}) => {
-    const {clickEditBtn} = callbacks;
+const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
+    const { showEditBtn, menuItems } = settings;
+    const { clickEditBtn } = callbacks;
+
+    const [isVisibleMenu, setVisibleMenu] = useState(false);
+
+    const showMenu = () => {
+        setVisibleMenu(true);
+    };
+
     return (
         <div className="display flex">
             <ToolButton onClick={clickEditBtn}>
@@ -27,7 +43,7 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({callbacks}) => {
                     </g>
                 </svg>
             </ToolButton>
-            <ToolButton onClick={() => {}}>
+            <ToolButton onClick={showMenu}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -43,6 +59,7 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({callbacks}) => {
                     />
                 </svg>
             </ToolButton>
+            {isVisibleMenu && <ToolMenu menuItems={menuItems} />}
         </div>
     );
 };
