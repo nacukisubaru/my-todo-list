@@ -1,10 +1,12 @@
-export interface ITodoList {
+export interface ITodoSection {
     id: number,
     name: string,
     description: string,
     type: string,
     showTasks:boolean,
-    items: ITodoItem[]
+    creatable: boolean,
+    editable:boolean,
+    items: ITodoItem[] | []
 }
 
 export interface ITodoItem {
@@ -13,7 +15,10 @@ export interface ITodoItem {
     description: string,
     type: string,
     showTasks:boolean,
-    items: ITodoItem[]
+    editable:boolean,
+    creatableLower: boolean,
+    creatableUpper: boolean,
+    items: ITodoItem[] | []
 }
 
 export interface ITodoEditFields {

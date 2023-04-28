@@ -30,7 +30,7 @@ interface ITodoChange {
     createTodoProps: ICreateTodoProps;
     buttonsSettings: IButtonsSettings;
     inputsSettings: IInputsSettings;
-    showPanel?: boolean;
+    isVisible?: boolean;
     callback?: () => void;
     action?: action;
 }
@@ -39,20 +39,17 @@ const TodoChange: FC<ITodoChange> = ({
     createTodoProps,
     buttonsSettings,
     inputsSettings,
-    showPanel = false,
+    isVisible = false,
     callback,
     action = "create"
 }) => {
     const { id, parentType } = createTodoProps;
     const { inputPlaceHolder, textPlaceHolder, inputValue, textValue } = inputsSettings;
-    const { primaryButtonName, secondaryButtonName, showAddTaskBtn } = buttonsSettings;
+    const { primaryButtonName, secondaryButtonName } = buttonsSettings;
 
     const { createTask, mutateTask } = useTaskTree();
-    const [isOpenTodoForm, openTodoForm] = useState(showPanel);
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
     const { setActiveAddTaskBtn } = useActions();
-
-    const { isActiveAddTaskBtn } = useAppSelector((state) => state.uiReducer);
 
     const name: any = useRef();
     const description: any = useRef();
@@ -91,15 +88,10 @@ const TodoChange: FC<ITodoChange> = ({
         }
     }
 
-    const todoFormOpen = () => {
-        setActiveAddTaskBtn({isActive: false});
-        openTodoForm(true);
-    };
 
     const todoFormClose = () => {
         setActiveAddTaskBtn({isActive: true});
         setPrimaryBtnDisabled(true);
-        openTodoForm(false);
         callback && callback();
     };
 
@@ -112,16 +104,15 @@ const TodoChange: FC<ITodoChange> = ({
     }
 
     useEffect(() => {
-        if (showPanel) {
+        if (isVisible && action === "change") {
             name.current.value = inputValue;
             description.current.value = textValue;
         }
-    }, [showPanel]);
-
+    }, [isVisible]);
 
     return (
         <>
-            {isOpenTodoForm || showPanel ? (
+            {isVisible && (
                 <div className="border-solid border-2 border-indigo-600 rounded-xl h-auto">
                     <div className="display grid px-[7px] py-[7px] mb-[18px]">
                         <input
@@ -155,8 +146,6 @@ const TodoChange: FC<ITodoChange> = ({
                         />
                     </div>
                 </div>
-            ) : showAddTaskBtn && isActiveAddTaskBtn && (
-                <AddTaskButton onClick={todoFormOpen} />
             )}
         </>
     );

@@ -1,13 +1,12 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useTaskTree } from "../../hooks/useTaskTree";
-import { ITodoItem } from "../../types/todo.types";
+import { ITodoItem, ITodoSection } from "../../types/todo.types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import TodoChange from "../TodoChange/TodoChange";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
 import { useActions } from "../../hooks/useActions";
-import ToolMenu from "../../ui/Tools/ToolMenu";
 
 interface ITodoItemProps {
     todo: ITodoItem;
@@ -15,17 +14,13 @@ interface ITodoItemProps {
 
 const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
-    const { mutateTask, findTaskInTree } = useTaskTree();
+    const { mutateTask, findTaskInTree, mutateAllTasks } = useTaskTree();
     const [toolPanelIsVisible, setVisibleToolPanel] = useState(true);
-    const [todoChangeIsOpen, setOpenTodoChange] = useState(false);
     const [todoEditInputs, setTodoEditInputs] = useState({
         name: "",
         text: "",
     });
-    const { editableTaskId, prevEditableTaskId } = useAppSelector(
-        (state) => state.uiReducer
-    );
-    const { setEditableTaskId } = useActions();
+    const {setActiveAddTaskBtn} = useActions();
 
     const toggleTaskList = (id: number, type: string) => {
         const mutate = (value: any) => {
@@ -42,8 +37,47 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
         setVisibleToolPanel(false);
     };
 
-    const openTodoChangePanel = () => {
-        const foundTask: ITodoItem | false = findTaskInTree(
+    const showUpperOrLowerForm = async (
+        field: string,
+        fieldDisable: string
+    ) => {
+        const callback = (obj: any) => {
+            obj.creatable = false;
+            obj[fieldDisable] = false;
+            obj.editable = false;
+            if (obj.id !== todo.id) {
+                obj[field] = false;
+            } else {
+                obj[field] = true;
+            }
+        };
+        setActiveAddTaskBtn({ isActive: false });
+        await mutateTask(todo.id, [{ field, value: true }], "task");
+        await mutateAllTasks(callback);
+    };
+
+    const closeUpperOrLowerForm = (field: string) => {
+        mutateTask(todo.id, [{ field, value: false }], "task");
+    };
+
+    const showLowerAddForm = async () => {
+        showUpperOrLowerForm("creatableLower", "creatableUpper");
+    };
+
+    const closeLowerAddForm = async () => {
+        closeUpperOrLowerForm("creatableLower");
+    };
+
+    const showUpperAddForm = () => {
+        showUpperOrLowerForm("creatableUpper", "creatableLower");
+    };
+
+    const closeUpperAddForm = () => {
+        closeUpperOrLowerForm("creatableUpper");
+    };
+
+    const openTodoChangePanel = async () => {
+        const foundTask = findTaskInTree(
             todos,
             todo.id,
             "task"
@@ -54,48 +88,70 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                 text: foundTask.description,
             });
         }
-        setOpenTodoChange(true);
-        setEditableTaskId({ id: todo.id });
+
+        const callback = (obj: any) => {
+            obj.creatable = false;
+            obj.creatableLower = false;
+            obj.creatableUpper = false;
+            if (obj.id !== todo.id) {
+                obj.editable = false;
+            } else {
+                obj.editable = true;
+            }
+        };
+        setActiveAddTaskBtn({ isActive: true });
+
+        await mutateTask(todo.id, [{ field: "editable", value: true }], "task");
+        await mutateAllTasks(callback);
     };
 
     const closeTodoChangePanel = () => {
-        setOpenTodoChange(false);
-        setEditableTaskId({ id: 0 });
+        mutateTask(todo.id, [{ field: "editable", value: false }], "task");
     };
-
-    useEffect(() => {
-        if (prevEditableTaskId === todo.id) {
-            setOpenTodoChange(false);
-        }
-    }, [editableTaskId]);
 
     return (
         <>
-            {!editableTaskId ||
-                (editableTaskId === todo.id && (
-                    <TodoChange
-                        createTodoProps={{
-                            id: todo.id,
-                            parentType: "task",
-                        }}
-                        buttonsSettings={{
-                            primaryButtonName: "Изменить задачу",
-                            secondaryButtonName: "Отмена",
-                            showAddTaskBtn: false,
-                        }}
-                        inputsSettings={{
-                            inputPlaceHolder: "Название задачи",
-                            textPlaceHolder: "Описание",
-                            inputValue: todoEditInputs.name,
-                            textValue: todoEditInputs.text,
-                        }}
-                        showPanel={todoChangeIsOpen}
-                        callback={closeTodoChangePanel}
-                        action="change"
-                    />
-                ))}
+            <TodoChange
+                createTodoProps={{
+                    id: todo.id,
+                    parentType: "task",
+                }}
+                buttonsSettings={{
+                    primaryButtonName: "Добавить задачу",
+                    secondaryButtonName: "Отмена",
+                    showAddTaskBtn: false,
+                }}
+                inputsSettings={{
+                    inputPlaceHolder: "Название задачи",
+                    textPlaceHolder: "Описание",
+                }}
+                isVisible={todo.creatableUpper}
+                callback={closeUpperAddForm}
+                action="create"
+            />
 
-            {!todoChangeIsOpen && (
+            <TodoChange
+                createTodoProps={{
+                    id: todo.id,
+                    parentType: "task",
+                }}
+                buttonsSettings={{
+                    primaryButtonName: "Изменить задачу",
+                    secondaryButtonName: "Отмена",
+                    showAddTaskBtn: false,
+                }}
+                inputsSettings={{
+                    inputPlaceHolder: "Название задачи",
+                    textPlaceHolder: "Описание",
+                    inputValue: todoEditInputs.name,
+                    textValue: todoEditInputs.text,
+                }}
+                isVisible={todo.editable}
+                callback={closeTodoChangePanel}
+                action="change"
+            />
+
+            {!todo.editable && (
                 <div
                     className="display flex justify-between"
                     onMouseOver={showToolPanel}
@@ -120,15 +176,21 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                             settings={{
                                 menuItems: [
                                     {
-                                        id: 1,
                                         name: "Добавить задачу выше",
+                                        onClick: showUpperAddForm,
                                     },
                                     {
-                                        id: 2,
                                         name: "Добавить задачу ниже",
+                                        onClick: showLowerAddForm,
                                     },
-                                    { id: 3, name: "Изменить задачу" },
-                                    { id: 4, name: "Удалить задачу" },
+                                    {
+                                        name: "Изменить задачу",
+                                        onClick: () => {},
+                                    },
+                                    {
+                                        name: "Удалить задачу",
+                                        onClick: () => {},
+                                    },
                                 ],
                                 showEditBtn: true,
                             }}
@@ -136,6 +198,25 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                     )}
                 </div>
             )}
+
+            <TodoChange
+                createTodoProps={{
+                    id: todo.id,
+                    parentType: "task",
+                }}
+                buttonsSettings={{
+                    primaryButtonName: "Изменить задачу",
+                    secondaryButtonName: "Отмена",
+                    showAddTaskBtn: false,
+                }}
+                inputsSettings={{
+                    inputPlaceHolder: "Добавить задачи",
+                    textPlaceHolder: "Описание",
+                }}
+                isVisible={todo.creatableLower}
+                callback={closeLowerAddForm}
+                action="create"
+            />
         </>
     );
 };

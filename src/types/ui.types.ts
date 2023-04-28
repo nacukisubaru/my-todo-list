@@ -1,4 +1,4 @@
 export interface IMenuItem {
-    id: number,
-    name: string
+    name: string,
+    onClick: () => void
 }

@@ -1,10 +1,10 @@
 import { FC } from "react";
 import { useTaskTree } from "../../hooks/useTaskTree";
-import { ITodoList } from "../../types/todo.types";
+import { ITodoSection } from "../../types/todo.types";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
 
 interface ITodoSectionProps {
-    section: ITodoList
+    section: ITodoSection
 }
 
 const TodoSection:FC<ITodoSectionProps> = ({section}) => {

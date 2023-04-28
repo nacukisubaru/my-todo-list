@@ -1,4 +1,4 @@
-import { ITodoEditFields, ITodoItem, ITodoList } from "../types/todo.types";
+import { ITodoEditFields, ITodoItem, ITodoSection } from "../types/todo.types";
 import { useActions } from "./useActions";
 import { useAppSelector } from "./useAppSelector";
 import bcrypt from 'bcryptjs';
@@ -17,10 +17,10 @@ export const useTaskTree = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
     const { setTodos } = useActions();
     
-    const recursiveCloneTree = (tree: ITodoList[]): ITodoList[] => {
+    const recursiveCloneTree = (tree: ITodoSection[]): ITodoSection[] => {
         let clonesList = [];
 
-        const cloneRecursive = (tree: ITodoList[]) => {
+        const cloneRecursive = (tree: ITodoItem[]): ITodoItem[] => {
             let arrClones = [];
             for (let inc in tree) {
                 if (Array.isArray(tree[inc])) {
@@ -44,13 +44,12 @@ export const useTaskTree = () => {
     }
 
 
-    const findTaskInTree = (tree: ITodoList[], taskId: number, type: string): ITodoItem | false => {
-        const recursiveFind = (tree: ITodoList[], taskId: number): ITodoItem | undefined => {
+    const findTaskInTree = (tree: ITodoSection[], taskId: number | string, type: string): ITodoItem | ITodoSection | false => {
+        const recursiveFind = (tree: ITodoItem[], taskId: number | string): ITodoItem | undefined => {
             for (let inc in tree) {
                 if (tree[inc].id && tree[inc].id === taskId && tree[inc].type === "task") {
                     return tree[inc];
-                } 
-                else {
+                } else {
                     if (tree[inc].items && tree[inc].items.length) {
                         const foundTask = recursiveFind(tree[inc].items, taskId);
                         if (foundTask !== undefined && foundTask.id && foundTask.id === taskId && tree[inc].type === "task") {
@@ -81,9 +80,9 @@ export const useTaskTree = () => {
         return false;
     }
 
-    const mutateTask = async (taskId: number, mutateList: IMutateList[], type: string): Promise<ITodoList[]> => {
-        const tasksclones: ITodoList[] = recursiveCloneTree(todos);
-        const foundTask: any = findTaskInTree(tasksclones, taskId, type);
+    const mutateTask = async (taskId: number | string, mutateList: IMutateList[], type: string): Promise<ITodoSection[]> => {
+        const tasksclones: ITodoSection[] = recursiveCloneTree(todos);
+        const foundTask: ITodoSection | ITodoItem | false | any = findTaskInTree(tasksclones, taskId, type);
         if (foundTask) {
             mutateList.map((item) => {
                 foundTask[item.field] = item.value;
@@ -98,11 +97,28 @@ export const useTaskTree = () => {
         const newTaskId = bcrypt.hashSync(editFields.name + editFields.description, salt);
 
         const {taskId, type} = tasksParams;
-        const tasksclones: ITodoList[] = recursiveCloneTree(todos);
+        const tasksclones: ITodoSection[] = recursiveCloneTree(todos);
         const foundTask: any = findTaskInTree(tasksclones, taskId, type);
-        foundTask.items.push({...editFields, type: 'task',  showTasks: true, items: [], id: newTaskId});
-        await setTodos({ data: tasksclones });
+        if (foundTask && foundTask.items) {
+            foundTask.items.push({...editFields, type: 'task', showTasks: true, items: [], id: newTaskId});
+            await setTodos({ data: tasksclones });
+        }
     }
 
-    return { findTaskInTree, recursiveCloneTree, mutateTask, createTask };
+    const mutateAllTasks = (mutateCallback: (obj: ITodoSection | ITodoItem) => void) => {
+        const tasksclones: ITodoSection[] = recursiveCloneTree(todos);
+        const recursiveMutate = (tree: ITodoSection[] | ITodoItem[]) => {
+            for (let inc in tree) {
+                mutateCallback(tree[inc]);
+                if (tree[inc].items && tree[inc].items.length) {
+                    recursiveMutate(tree[inc].items);   
+                }
+            }
+        }
+        recursiveMutate(tasksclones);
+        setTodos({ data: tasksclones });
+        return tasksclones;
+    }
+
+    return { findTaskInTree, recursiveCloneTree, mutateTask, createTask, mutateAllTasks };
 }
