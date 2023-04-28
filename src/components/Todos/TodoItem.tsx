@@ -14,7 +14,7 @@ interface ITodoItemProps {
 
 const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
-    const { mutateTask, findTaskInTree, mutateAllTasks } = useTaskTree();
+    const { mutateTask, findTaskInTree, mutateAllTasks, removeTask } = useTaskTree();
     const [toolPanelIsVisible, setVisibleToolPanel] = useState(true);
     const [todoEditInputs, setTodoEditInputs] = useState({
         name: "",
@@ -108,6 +108,10 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
         mutateTask(todo.id, [{ field: "editable", value: false }]);
     };
 
+    const removeTodo = () => {
+        removeTask(todo.id);
+    }
+
     return (
         <>
             <TodoChange
@@ -179,11 +183,11 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                                     },
                                     {
                                         name: "Изменить задачу",
-                                        onClick: () => {},
+                                        onClick: openTodoChangePanel
                                     },
                                     {
                                         name: "Удалить задачу",
-                                        onClick: () => {},
+                                        onClick: removeTodo,
                                     },
                                 ],
                                 showEditBtn: true,

@@ -65,7 +65,6 @@ export const useTaskTree = () => {
 
         for (let inc in tree) {
             const task = recursiveFind(tree[inc].items, taskId);
-            console.log({ task })
             if (task !== undefined && task.id === taskId) {
                 return task;
             }
@@ -73,7 +72,7 @@ export const useTaskTree = () => {
         return false;
     }
 
-    const mutateTask = async (taskId: number | string, mutateList: IMutateList[]): Promise<ITodoSection[]> => {
+    const mutateTask = async (taskId: string, mutateList: IMutateList[]): Promise<ITodoSection[]> => {
         const tasksclones: ITodoSection[] = recursiveCloneTree(todos);
         const foundTask: ITodoSection | ITodoItem | false | any = findTaskInTree(tasksclones, taskId);
         if (foundTask) {
@@ -115,6 +114,23 @@ export const useTaskTree = () => {
         }
     }
 
+    const removeTask = async (taskId: string) => {
+        const tasksclones: ITodoSection[] = recursiveCloneTree(todos);
+        const foundTask: any = findTaskInTree(tasksclones, taskId);
+        if (foundTask.parentId) {
+            const foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
+            if (foundParentTask) {
+                const filteredItems = foundParentTask.items.filter((item) => {
+                    if (item.id !== taskId) {
+                        return item;
+                    }
+                });
+                foundParentTask.items = filteredItems;
+            }
+        }
+        setTodos({ data: tasksclones });
+    }
+
     const mutateAllTasks = (mutateCallback: (obj: ITodoSection | ITodoItem) => void) => {
         const tasksclones: ITodoSection[] = recursiveCloneTree(todos);
         const recursiveMutate = (tree: ITodoSection[] | ITodoItem[]) => {
@@ -130,5 +146,5 @@ export const useTaskTree = () => {
         return tasksclones;
     }
 
-    return { findTaskInTree, recursiveCloneTree, mutateTask, createTask, mutateAllTasks };
+    return { findTaskInTree, recursiveCloneTree, mutateTask, createTask, removeTask, mutateAllTasks };
 }
