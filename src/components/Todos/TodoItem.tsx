@@ -205,12 +205,12 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                     parentType: "task",
                 }}
                 buttonsSettings={{
-                    primaryButtonName: "Изменить задачу",
+                    primaryButtonName: "Добавить задачу",
                     secondaryButtonName: "Отмена",
                     showAddTaskBtn: false,
                 }}
                 inputsSettings={{
-                    inputPlaceHolder: "Добавить задачи",
+                    inputPlaceHolder: "Название задачи",
                     textPlaceHolder: "Описание",
                 }}
                 isVisible={todo.creatableLower}
