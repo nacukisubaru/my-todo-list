@@ -1,17 +1,9 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { useTaskTree } from "../../hooks/useTaskTree";
-import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
-import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 import { useActions } from "../../hooks/useActions";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useTaskTree } from "../../hooks/useTaskTree";
+import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 
-type parentType = "section" | "task";
 type action = "create" | "change";
-
-interface ICreateTodoProps {
-    id: number;
-    parentType: parentType;
-}
 
 interface IInputsSettings {
     inputValue?: string,
@@ -27,23 +19,24 @@ interface IButtonsSettings {
 }
 
 interface ITodoChange {
-    createTodoProps: ICreateTodoProps;
+    id: string;
     buttonsSettings: IButtonsSettings;
     inputsSettings: IInputsSettings;
     isVisible?: boolean;
     callback?: () => void;
     action?: action;
+    createByLevel?: boolean
 }
 
 const TodoChange: FC<ITodoChange> = ({
-    createTodoProps,
+    id,
     buttonsSettings,
     inputsSettings,
     isVisible = false,
     callback,
-    action = "create"
+    action = "create",
+    createByLevel = false
 }) => {
-    const { id, parentType } = createTodoProps;
     const { inputPlaceHolder, textPlaceHolder, inputValue, textValue } = inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
 
@@ -58,8 +51,9 @@ const TodoChange: FC<ITodoChange> = ({
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
         createTask(
-            { taskId: id, type: parentType },
-            { name: TaskName, description: TaskDesc }
+            id,
+            { name: TaskName, description: TaskDesc },
+            createByLevel
         );
         name.current.value = "";
         description.current.value = "";
@@ -72,12 +66,11 @@ const TodoChange: FC<ITodoChange> = ({
          mutateTask(
             id, 
             [
-                {field: 'name', value: TaskName},
-                {field: 'description', value:TaskDesc}
-            ], 
-            'task'
+                { field: 'name', value: TaskName },
+                { field: 'description', value:TaskDesc },
+                { field: "editable", value: false }
+            ]
         );
-        callback && callback();
     };
 
     const applyActionTodo = () => {
@@ -87,7 +80,6 @@ const TodoChange: FC<ITodoChange> = ({
             createTodo();
         }
     }
-
 
     const todoFormClose = () => {
         setActiveAddTaskBtn({isActive: true});

@@ -10,9 +10,9 @@ interface ITodoSectionProps {
 const TodoSection:FC<ITodoSectionProps> = ({section}) => {
     const {mutateTask} = useTaskTree();
 
-    const toggleTaskList = (id: number, type: string) => {
+    const toggleTaskList = (id: string) => {
         const mutate = (value: any) => {
-            mutateTask(id, [{field: "showTasks", value}], type);
+            mutateTask(id, [{field: "showTasks", value}]);
         }
         return mutate;
     }
@@ -21,7 +21,7 @@ const TodoSection:FC<ITodoSectionProps> = ({section}) => {
         <div className="display flex">
             <ArrowButton
                 isArrowOpen={section.showTasks}
-                onClick={toggleTaskList(section.id, section.type)}
+                onClick={toggleTaskList(section.id)}
             />
             <span className="font-bold ml-3">{section.name}</span>
         </div>

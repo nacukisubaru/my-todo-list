@@ -1,8 +1,7 @@
 export interface ITodoSection {
-    id: number,
+    id: string,
     name: string,
     description: string,
-    type: string,
     showTasks:boolean,
     creatable: boolean,
     editable:boolean,
@@ -10,10 +9,10 @@ export interface ITodoSection {
 }
 
 export interface ITodoItem {
-    id: number,
+    id: string,
     name: string,
+    parentId: string,
     description: string,
-    type: string,
     showTasks:boolean,
     editable:boolean,
     creatableLower: boolean,

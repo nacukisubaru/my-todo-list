@@ -18,7 +18,7 @@ const TodoSectionsList: FC = () => {
 
     useEffect(() => {
         const getTodos = async () => {
-            await dispatch(getTodosBySection(1));
+            await dispatch(getTodosBySection('79d5bf69e1ae15ea916a9365af3401d5'));
         };
         getTodos();
     }, []);
@@ -39,7 +39,7 @@ const TodoSectionsList: FC = () => {
 
     const closeAddTodoForm = (id: number | string) => {
         setActiveAddTaskBtn({ isActive: true });
-        mutateTask(id, [{ field: "creatable", value: false }], "section");
+        mutateTask(id, [{ field: "creatable", value: false }]);
     };
 
     return (
@@ -55,10 +55,7 @@ const TodoSectionsList: FC = () => {
                             )}
 
                             <TodoChange
-                                createTodoProps={{
-                                    id: section.id,
-                                    parentType: "section",
-                                }}
+                                id={section.id}
                                 buttonsSettings={{
                                     primaryButtonName: "Добавить задачу",
                                     secondaryButtonName: "Отмена",
