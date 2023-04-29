@@ -8,6 +8,11 @@ interface IMutateList {
     value: any
 }
 
+interface ISortByPosition {
+    sortPosition: number,
+    position: string
+}
+
 export const useTaskTree = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
     const { setTodos } = useActions();
@@ -84,7 +89,7 @@ export const useTaskTree = () => {
         return tasksclones;
     }
 
-    const createTask = async (taskId: string, editFields: ITodoEditFields, createByLevel: boolean = false) => {
+    const createTask = async (taskId: string, editFields: ITodoEditFields, position?: string) => {
 
         const salt = bcrypt.genSaltSync(10) + Date.now();
         const newTaskId = bcrypt.hashSync(editFields.name + editFields.description, salt);
@@ -92,23 +97,45 @@ export const useTaskTree = () => {
         const tasksclones: ITodoSection[] = recursiveCloneTree(todos);
         const foundTask: any = findTaskInTree(tasksclones, taskId);
 
-        const create = async (foundTask: any) => {
+        const create = async (foundTask: any, sortByPosition?: ISortByPosition) => {
             if (foundTask && foundTask.items) {
+                const lastTask = foundTask.items[foundTask.items.length - 1];
+                let sort = lastTask.sort + 1;
+    
+                if (sortByPosition) {
+                    const {sortPosition, position} = sortByPosition;
+                    foundTask.items.map((item) => {
+                        if (position === "upper") {
+                            if (item.sort >= sortPosition) {
+                                item.sort = item.sort + 1;
+                            }
+                        } else {
+                            if (item.sort <= sortPosition) {
+                                item.sort = item.sort - 1;
+                            }
+                        }
+                    })
+                    sort = sortPosition;
+                }
+
                 foundTask.items.push({
                     ...editFields,
                     type: 'task',
                     showTasks: true,
                     id: newTaskId,
+                    sort,
                     parentId: foundTask.id,
                     items: [],
                 });
+                
+                foundTask.items.sort((a, b) => a.sort - b.sort);
                 await setTodos({ data: tasksclones });
             }
         }
 
-        if (createByLevel && foundTask.parentId) {
+        if (position && foundTask.parentId) {
             const foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
-            create(foundParentTask);
+            create(foundParentTask, {sortPosition: foundTask.sort, position});
         } else {
             create(foundTask);
         }

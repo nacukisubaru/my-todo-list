@@ -25,7 +25,7 @@ interface ITodoChange {
     isVisible?: boolean;
     callback?: () => void;
     action?: action;
-    createByLevel?: boolean
+    position?: string
 }
 
 const TodoChange: FC<ITodoChange> = ({
@@ -35,7 +35,7 @@ const TodoChange: FC<ITodoChange> = ({
     isVisible = false,
     callback,
     action = "create",
-    createByLevel = false
+    position
 }) => {
     const { inputPlaceHolder, textPlaceHolder, inputValue, textValue } = inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
@@ -53,7 +53,7 @@ const TodoChange: FC<ITodoChange> = ({
         createTask(
             id,
             { name: TaskName, description: TaskDesc },
-            createByLevel
+            position
         );
         name.current.value = "";
         description.current.value = "";

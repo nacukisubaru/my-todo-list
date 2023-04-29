@@ -126,7 +126,7 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                     textPlaceHolder: "Описание",
                 }}
                 isVisible={todo.creatableUpper}
-                createByLevel={true}
+                position="upper"
                 callback={closeUpperAddForm}
                 action="create"
             />
@@ -209,7 +209,7 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                     textPlaceHolder: "Описание",
                 }}
                 isVisible={todo.creatableLower}
-                createByLevel={true}
+                position="lower"
                 callback={closeLowerAddForm}
                 action="create"
             />

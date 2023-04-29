@@ -14,6 +14,7 @@ export interface ITodoItem {
     parentId: string,
     description: string,
     showTasks:boolean,
+    sort: number,
     editable:boolean,
     creatableLower: boolean,
     creatableUpper: boolean,
