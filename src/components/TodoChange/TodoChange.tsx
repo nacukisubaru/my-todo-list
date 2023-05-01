@@ -2,12 +2,13 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useActions } from "../../hooks/useActions";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
+import { ISortByPosition } from "../../types/todo.types";
 
-type action = "create" | "change";
+type action = "create" | "change" | "createSection";
 
 interface IInputsSettings {
-    inputValue?: string,
-    textValue?: string, 
+    inputValue?: string;
+    textValue?: string;
     inputPlaceHolder: string;
     textPlaceHolder: string;
 }
@@ -25,7 +26,8 @@ interface ITodoChange {
     isVisible?: boolean;
     callback?: () => void;
     action?: action;
-    position?: string
+    position?: string;
+    sortByPosition?: ISortByPosition
 }
 
 const TodoChange: FC<ITodoChange> = ({
@@ -35,12 +37,13 @@ const TodoChange: FC<ITodoChange> = ({
     isVisible = false,
     callback,
     action = "create",
-    position
+    sortByPosition
 }) => {
-    const { inputPlaceHolder, textPlaceHolder, inputValue, textValue } = inputsSettings;
+    const { inputPlaceHolder, textPlaceHolder, inputValue, textValue } =
+        inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
 
-    const { createTask, mutateTask } = useTaskTree();
+    const { createTask, mutateTask, createSection } = useTaskTree();
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
     const { setActiveAddTaskBtn } = useActions();
 
@@ -50,11 +53,7 @@ const TodoChange: FC<ITodoChange> = ({
     const createTodo = () => {
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
-        createTask(
-            id,
-            { name: TaskName, description: TaskDesc },
-            position
-        );
+        createTask(id, { name: TaskName, description: TaskDesc }, sortByPosition?.position);
         name.current.value = "";
         description.current.value = "";
         setPrimaryBtnDisabled(true);
@@ -63,26 +62,35 @@ const TodoChange: FC<ITodoChange> = ({
     const changeTodo = () => {
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
-         mutateTask(
-            id, 
-            [
-                { field: 'name', value: TaskName },
-                { field: 'description', value:TaskDesc },
-                { field: "editable", value: false }
-            ]
-        );
+        mutateTask(id, [
+            { field: "name", value: TaskName },
+            { field: "description", value: TaskDesc },
+            { field: "editable", value: false },
+        ]);
     };
 
-    const applyActionTodo = () => {
-        if (action === "change") {
-            changeTodo();
-        } else if (action === "create") {
-            createTodo();
+    const createSectionTodo = () => {
+        if (sortByPosition?.sortPosition) {
+            createSection(name.current.value, sortByPosition?.sortPosition);
         }
     }
 
+    const applyActionTodo = () => {
+        switch(action) {
+            case 'change':
+                changeTodo();
+            break;
+            case 'create':
+                createTodo();
+            break;
+            case 'createSection':
+                createSectionTodo();
+            break;
+        }
+    };
+
     const todoFormClose = () => {
-        setActiveAddTaskBtn({isActive: true});
+        setActiveAddTaskBtn({ isActive: true });
         setPrimaryBtnDisabled(true);
         callback && callback();
     };
@@ -93,7 +101,7 @@ const TodoChange: FC<ITodoChange> = ({
         } else {
             setPrimaryBtnDisabled(true);
         }
-    }
+    };
 
     useEffect(() => {
         if (isVisible && action === "change") {
@@ -115,12 +123,14 @@ const TodoChange: FC<ITodoChange> = ({
                             onChange={changeField}
                             onInput={changeField}
                         />
-                        <textarea
-                            ref={description}
-                            className="resize-none h-[70px] hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0"
-                            placeholder={textPlaceHolder}
-                            onChange={changeField}
-                        ></textarea>
+                        {action !== "createSection" && (
+                            <textarea
+                                ref={description}
+                                className="resize-none h-[70px] hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0"
+                                placeholder={textPlaceHolder}
+                                onChange={changeField}
+                            ></textarea>
+                        )}
                     </div>
                     <div className="display flex justify-end mx-[7px] my-[7px]">
                         <span className="mr-[8px]">

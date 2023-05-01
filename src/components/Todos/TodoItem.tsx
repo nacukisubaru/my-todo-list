@@ -112,6 +112,14 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
         removeTask(todo.id);
     }
 
+    const createSubtask = () => {
+        mutateTask(todo.id, [{ field: "creatable", value: true }]);
+    }
+
+    const closeSubtask = () => {
+        mutateTask(todo.id, [{ field: "creatable", value: false }]);
+    }
+
     return (
         <>
             <TodoChange
@@ -126,7 +134,7 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                     textPlaceHolder: "Описание",
                 }}
                 isVisible={todo.creatableUpper}
-                position="upper"
+                sortByPosition={{position: "upper"}}
                 callback={closeUpperAddForm}
                 action="create"
             />
@@ -182,6 +190,10 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                                         onClick: showLowerAddForm,
                                     },
                                     {
+                                        name: "Добавить подзадачу",
+                                        onClick: createSubtask
+                                    },
+                                    {
                                         name: "Изменить задачу",
                                         onClick: openTodoChangePanel
                                     },
@@ -208,8 +220,24 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                     inputPlaceHolder: "Название задачи",
                     textPlaceHolder: "Описание",
                 }}
+                isVisible={todo.creatable}
+                callback={closeSubtask}
+                action="create"
+            />
+
+            <TodoChange
+                id={todo.id}
+                buttonsSettings={{
+                    primaryButtonName: "Добавить задачу",
+                    secondaryButtonName: "Отмена",
+                    showAddTaskBtn: false,
+                }}
+                inputsSettings={{
+                    inputPlaceHolder: "Название задачи",
+                    textPlaceHolder: "Описание",
+                }}
                 isVisible={todo.creatableLower}
-                position="lower"
+                sortByPosition={{position: "lower"}}
                 callback={closeLowerAddForm}
                 action="create"
             />

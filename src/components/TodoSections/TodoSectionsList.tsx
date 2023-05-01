@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { getTodosBySection } from "../../store/services/todo/todo.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useDispatch } from "react-redux";
@@ -8,6 +8,7 @@ import TodosList from "../Todos/TodosList";
 import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import { useActions } from "../../hooks/useActions";
+import TodoAddSection from "./TodoAddSection";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
@@ -23,7 +24,7 @@ const TodoSectionsList: FC = () => {
         getTodos();
     }, []);
 
-    const openAddTodoForm = async (id: number | string) => {
+    const openAddTodoForm = async (id: string) => {
         setActiveAddTaskBtn({ isActive: false });
     
         const callback = (obj: any) => {
@@ -37,7 +38,7 @@ const TodoSectionsList: FC = () => {
         await mutateAllTasks(callback);
     };
 
-    const closeAddTodoForm = (id: number | string) => {
+    const closeAddTodoForm = (id: string) => {
         setActiveAddTaskBtn({ isActive: true });
         mutateTask(id, [{ field: "creatable", value: false }]);
     };
@@ -53,7 +54,7 @@ const TodoSectionsList: FC = () => {
                             {section.showTasks && (
                                 <TodosList todoitems={section.items} />
                             )}
-
+                         
                             <TodoChange
                                 id={section.id}
                                 buttonsSettings={{
@@ -68,6 +69,7 @@ const TodoSectionsList: FC = () => {
                                 isVisible={section.creatable}
                                 callback={() => {closeAddTodoForm(section.id)}}
                             />
+
                             {isActiveAddTaskBtn && (
                                 <AddTaskButton
                                     onClick={() => {
@@ -75,6 +77,7 @@ const TodoSectionsList: FC = () => {
                                     }}
                                 />
                             )}
+                            <TodoAddSection id={section.id} sort={section.sort} />
                         </li>
                     );
                 })}
