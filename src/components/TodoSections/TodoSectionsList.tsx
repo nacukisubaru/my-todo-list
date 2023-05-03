@@ -8,25 +8,29 @@ import TodosList from "../Todos/TodosList";
 import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import { useActions } from "../../hooks/useActions";
-import TodoAddSection from "./TodoAddSection";
+import TodoChangeSection from "./TodoChangeSection";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
-    let isActiveAddTaskBtn = useAppSelector((state) => state.uiReducer.isActiveAddTaskBtn);
+    let isActiveAddTaskBtn = useAppSelector(
+        (state) => state.uiReducer.isActiveAddTaskBtn
+    );
     const dispatch = useDispatch();
     const { mutateTask, mutateAllTasks } = useTaskTree();
     const { setActiveAddTaskBtn } = useActions();
 
     useEffect(() => {
         const getTodos = async () => {
-            await dispatch(getTodosBySection('79d5bf69e1ae15ea916a9365af3401d5'));
+            await dispatch(
+                getTodosBySection("79d5bf69e1ae15ea916a9365af3401d5")
+            );
         };
         getTodos();
     }, []);
 
     const openAddTodoForm = async (id: string) => {
         setActiveAddTaskBtn({ isActive: false });
-    
+
         const callback = (obj: any) => {
             obj.creatableUpper = false;
             obj.creatableLower = false;
@@ -54,20 +58,21 @@ const TodoSectionsList: FC = () => {
                             {section.showTasks && (
                                 <TodosList todoitems={section.items} />
                             )}
-                         
+
                             <TodoChange
                                 id={section.id}
                                 buttonsSettings={{
                                     primaryButtonName: "Добавить задачу",
                                     secondaryButtonName: "Отмена",
-                                    showAddTaskBtn: true,
                                 }}
                                 inputsSettings={{
                                     inputPlaceHolder: "Название задачи",
                                     textPlaceHolder: "Описание",
                                 }}
                                 isVisible={section.creatable}
-                                callback={() => {closeAddTodoForm(section.id)}}
+                                callback={() => {
+                                    closeAddTodoForm(section.id);
+                                }}
                             />
 
                             {isActiveAddTaskBtn && (
@@ -77,7 +82,13 @@ const TodoSectionsList: FC = () => {
                                     }}
                                 />
                             )}
-                            <TodoAddSection id={section.id} sort={section.sort} />
+                            <TodoChangeSection
+                                id={section.id}
+                                sort={section.sort}
+                                action={"createSection"}
+                                primaryButtonName="Добавить раздел"
+                                nameValue=""
+                            />
                         </li>
                     );
                 })}

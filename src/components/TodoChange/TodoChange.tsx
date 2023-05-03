@@ -1,10 +1,11 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { useActions } from "../../hooks/useActions";
 import { useTaskTree } from "../../hooks/useTaskTree";
-import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 import { ISortByPosition } from "../../types/todo.types";
-
-type action = "create" | "change" | "createSection";
+import { changeAction } from "../../types/ui.types";
+import { todoSectionsApi } from "../../store/services/todo/todo-sections.api";
+import { todoApi } from "../../store/services/todo/todo.api";
+import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 
 interface IInputsSettings {
     inputValue?: string;
@@ -16,7 +17,6 @@ interface IInputsSettings {
 interface IButtonsSettings {
     primaryButtonName: string;
     secondaryButtonName: string;
-    showAddTaskBtn: boolean;
 }
 
 interface ITodoChange {
@@ -25,7 +25,7 @@ interface ITodoChange {
     inputsSettings: IInputsSettings;
     isVisible?: boolean;
     callback?: () => void;
-    action?: action;
+    action?: changeAction;
     position?: string;
     sortByPosition?: ISortByPosition
 }
@@ -46,6 +46,9 @@ const TodoChange: FC<ITodoChange> = ({
     const { createTask, mutateTask, createSection } = useTaskTree();
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
     const { setActiveAddTaskBtn } = useActions();
+    
+    const [updSection] = todoSectionsApi.useUpdateMutation();
+    const [updTodo] = todoApi.useUpdateMutation();
 
     const name: any = useRef();
     const description: any = useRef();
@@ -59,20 +62,29 @@ const TodoChange: FC<ITodoChange> = ({
         setPrimaryBtnDisabled(true);
     };
 
-    const changeTodo = () => {
+    const changeTodo = async () => {
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
-        mutateTask(id, [
+        const task = await mutateTask(id, [
             { field: "name", value: TaskName },
             { field: "description", value: TaskDesc },
             { field: "editable", value: false },
         ]);
+        updTodo(task);
     };
 
     const createSectionTodo = () => {
         if (sortByPosition?.sortPosition) {
             createSection(name.current.value, sortByPosition?.sortPosition);
         }
+    }
+
+    const changeSectionTodo = async () => {
+        const task = await mutateTask(id, [
+            { field: "name", value: name.current.value },
+            { field: "editable", value: false },
+        ]);
+        updSection(task);
     }
 
     const applyActionTodo = () => {
@@ -85,6 +97,9 @@ const TodoChange: FC<ITodoChange> = ({
             break;
             case 'createSection':
                 createSectionTodo();
+            break;
+            case 'changeSection':
+                changeSectionTodo();
             break;
         }
     };
@@ -104,9 +119,11 @@ const TodoChange: FC<ITodoChange> = ({
     };
 
     useEffect(() => {
-        if (isVisible && action === "change") {
+        if (isVisible && (action === "change" || action === "changeSection")) {
             name.current.value = inputValue;
-            description.current.value = textValue;
+            if (textValue) {
+                description.current.value = textValue;
+            }
         }
     }, [isVisible]);
 
@@ -123,7 +140,7 @@ const TodoChange: FC<ITodoChange> = ({
                             onChange={changeField}
                             onInput={changeField}
                         />
-                        {action !== "createSection" && (
+                        {action !== "createSection" && action !== "changeSection" &&  (
                             <textarea
                                 ref={description}
                                 className="resize-none h-[70px] hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0"

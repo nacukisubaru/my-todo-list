@@ -46,7 +46,6 @@ export const useTaskTree = () => {
         return clonesList;
     }
 
-
     const findTaskInTree = (tree: ITodoItem[], taskId: string): ITodoItem | false => {
         const recursiveFind = (tree: ITodoItem[], taskId: string): ITodoItem | undefined => {
             for (let inc in tree) {
@@ -80,7 +79,7 @@ export const useTaskTree = () => {
         return false;
     }
 
-    const mutateTask = async (taskId: string, mutateList: IMutateList[]): Promise<ITodoItem[]> => {
+    const mutateTask = async (taskId: string, mutateList: IMutateList[]): Promise<ITodoItem> => {
         const tasksclones = recursiveCloneTree(todos);
         const foundTask: any = findTaskInTree(tasksclones, taskId);
         if (foundTask) {
@@ -89,7 +88,7 @@ export const useTaskTree = () => {
             })
         }
         await setTodos({ data: tasksclones });
-        return tasksclones;
+        return foundTask;
     }
 
     const createTask = async (taskId: string, editFields: ITodoEditFields, position?: string) => {
