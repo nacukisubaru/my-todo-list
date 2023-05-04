@@ -4,6 +4,7 @@ import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
 import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import TodoChangeSection from "./TodoChangeSection";
 import { useToolTodo } from "../../hooks/useToolTodo";
+import { useTaskTree } from "../../hooks/useTaskTree";
 
 interface ITodoSectionProps {
     section: ITodoItem;
@@ -19,6 +20,12 @@ const TodoSection: FC<ITodoSectionProps> = ({ section }) => {
         toolPanelIsVisible,
         todoEditInputs,
     } = useToolTodo(section.id, "section");
+
+    const {removeTask} = useTaskTree();
+
+    const removeSection = () => {
+        removeTask(section.id, true);
+    }
 
     return (
         <>
@@ -58,7 +65,7 @@ const TodoSection: FC<ITodoSectionProps> = ({ section }) => {
                                     },
                                     {
                                         name: "Удалить раздел",
-                                        onClick: () => {},
+                                        onClick: removeSection,
                                     },
                                 ],
                                 showEditBtn: false,

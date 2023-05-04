@@ -102,6 +102,10 @@ const TodoChange: FC<ITodoChange> = ({
                 changeSectionTodo();
             break;
         }
+
+        if (action === "createSection" || action === "changeSection") {
+            callback && callback();
+        }
     };
 
     const todoFormClose = () => {

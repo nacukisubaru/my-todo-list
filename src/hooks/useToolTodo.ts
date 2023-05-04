@@ -102,7 +102,7 @@ export const useToolTodo = (id: string, type: type = "todo") => {
 
     return { 
         openTodoChangePanel, 
-        closeTodoChangePanel, 
+        closeTodoChangePanel,
         toggleTaskList, 
         showToolPanel, 
         hideToolPanel,
