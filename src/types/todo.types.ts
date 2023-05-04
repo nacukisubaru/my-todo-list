@@ -1,7 +1,7 @@
 export interface ITodoItem {
     id: string,
     name: string,
-    parentId: string | null,
+    parentId?: string | null,
     sectionId?: string,
     description: string,
     showTasks:boolean,

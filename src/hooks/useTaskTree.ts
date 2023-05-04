@@ -145,7 +145,7 @@ export const useTaskTree = () => {
                 if (foundTask.type === "section") {
                     todoItem.parentId = null;
                     todoItem.sectionId = foundTask.id;
-                } else {             
+                } else {           
                     todoItem.sectionId = foundTask.sectionId;
                 }
 
@@ -184,7 +184,12 @@ export const useTaskTree = () => {
                 const foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
                 create(foundParentTask, { sortPosition: foundTask.sort, position });
             } else {
-                create(foundTask);
+                if (position && foundTask.sectionId) {
+                    const foundParentTask = findTaskInTree(tasksclones, foundTask.sectionId);
+                    create(foundParentTask, { sortPosition: foundTask.sort, position });
+                } else {
+                    create(foundTask);
+                }
             }
         }
     }
