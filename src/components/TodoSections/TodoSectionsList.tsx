@@ -12,6 +12,7 @@ import TodoChangeSection from "./TodoChangeSection";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
+    const {sectionId} = useAppSelector((state) => state.sectionsReducer);
     let isActiveAddTaskBtn = useAppSelector(
         (state) => state.uiReducer.isActiveAddTaskBtn
     );
@@ -22,11 +23,14 @@ const TodoSectionsList: FC = () => {
     useEffect(() => {
         const getTodos = async () => {
             await dispatch(
-                getTodosBySection("79d5bf69e1ae15ea916a9365af3401d5")
+                getTodosBySection(sectionId)
             );
         };
-        getTodos();
-    }, []);
+        
+        if (sectionId) {
+            getTodos();
+        }
+    }, [sectionId]);
 
     const openAddTodoForm = async (id: string) => {
         setActiveAddTaskBtn({ isActive: false });

@@ -15,6 +15,11 @@ export interface ITodoItem {
     items: ITodoItem[] | []
 }
 
+export interface ISection {
+    id: string,
+    name: string
+}
+
 export interface ITodoEditFields {
     name: string,
     description: string
