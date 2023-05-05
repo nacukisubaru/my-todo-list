@@ -43,7 +43,7 @@ const TodoChange: FC<ITodoChange> = ({
         inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
 
-    const { createTask, mutateTask, createSection } = useTaskTree();
+    const { createTask, mutateTask, createTaskSection } = useTaskTree();
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
     const { setActiveAddTaskBtn } = useActions();
     
@@ -75,7 +75,7 @@ const TodoChange: FC<ITodoChange> = ({
 
     const createSectionTodo = () => {
         if (sortByPosition?.sortPosition) {
-            createSection(name.current.value, sortByPosition?.sortPosition);
+            createTaskSection(name.current.value, sortByPosition?.sortPosition);
         }
     }
 

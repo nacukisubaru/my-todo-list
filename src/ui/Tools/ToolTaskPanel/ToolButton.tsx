@@ -2,12 +2,13 @@ import { FC } from "react";
 
 interface IToolButtonProps {
     children: any,
-    onClick: () => void
+    onClick: () => void,
+    color?: string
 }
 
-const ToolButton: FC<IToolButtonProps> = ({children, onClick}) => {
+const ToolButton: FC<IToolButtonProps> = ({children, color, onClick}) => {
     return (
-        <button className="px-[1px] py-[1px] rounded-[2px] mr-[4px]" onClick={onClick}>{children}</button>
+        <button className={`px-[1px] py-[1px] rounded-[2px] mr-[4px] ${color && color}`} onClick={onClick}>{children}</button>
     );
 }
 

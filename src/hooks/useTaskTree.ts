@@ -16,7 +16,8 @@ export const useTaskTree = () => {
     const [createTodo] = todoApi.useAddMutation();
     const [removeTodo] = todoApi.useRemoveMutation();
     const [addTodoItemsJson] = todoJsonApi.useAddItemsMutation();
-    const [addTodoSectionsJson] = todoJsonApi.useAddSectionsMutation();
+    const [addTodoSectionsJson] = todoJsonApi.useAddTodoSectionsMutation();
+    const [addSectionsJson] = todoJsonApi.useAddSectionsMutation();
     const { setTodos, setTodoItems } = useActions();
     const [addSection] = todoSectionsApi.useAddMutation();
     const [removeSection] = todoSectionsApi.useRemoveMutation();
@@ -194,7 +195,7 @@ export const useTaskTree = () => {
         }
     }
 
-    const createSection = async (name: string, sort: number) => {
+    const createTaskSection = async (name: string, sort: number) => {
         const salt = bcrypt.genSaltSync(10) + Date.now();
         const id = bcrypt.hashSync(name, salt);
 
@@ -314,6 +315,6 @@ export const useTaskTree = () => {
         createTask,
         removeTask,
         mutateAllTasks,
-        createSection
+        createTaskSection
     };
 }
