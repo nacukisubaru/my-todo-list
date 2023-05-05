@@ -1,25 +1,51 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { getTodosBySection } from "../../store/services/todo/todo.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useDispatch } from "react-redux";
 import TodoChange from "../TodoChange/TodoChange";
 import TodoSection from "./TodoSection";
 import TodosList from "../Todos/TodosList";
+import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
+import { useTaskTree } from "../../hooks/useTaskTree";
+import { useActions } from "../../hooks/useActions";
+import TodoChangeSection from "./TodoChangeSection";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
+    let isActiveAddTaskBtn = useAppSelector(
+        (state) => state.uiReducer.isActiveAddTaskBtn
+    );
     const dispatch = useDispatch();
+    const { mutateTask, mutateAllTasks } = useTaskTree();
+    const { setActiveAddTaskBtn } = useActions();
 
     useEffect(() => {
         const getTodos = async () => {
-            await dispatch(getTodosBySection(1));
+            await dispatch(
+                getTodosBySection("79d5bf69e1ae15ea916a9365af3401d5")
+            );
         };
         getTodos();
-
-
-
-
     }, []);
+
+    const openAddTodoForm = async (id: string) => {
+        setActiveAddTaskBtn({ isActive: false });
+
+        const callback = (obj: any) => {
+            obj.creatableUpper = false;
+            obj.creatableLower = false;
+            obj.editable = false;
+            if (obj.type === "section" && obj.id === id) {
+                obj.creatable = true;
+            }
+        };
+        await mutateAllTasks(callback);
+    };
+
+    const closeAddTodoForm = (id: string) => {
+        setActiveAddTaskBtn({ isActive: true });
+        mutateTask(id, [{ field: "creatable", value: false }]);
+    };
 
     return (
         <div className="display flex justify-center">
@@ -32,11 +58,9 @@ const TodoSectionsList: FC = () => {
                             {section.showTasks && (
                                 <TodosList todoitems={section.items} />
                             )}
+
                             <TodoChange
-                                createTodoProps={{
-                                    id: section.id,
-                                    parentType: "section",
-                                }}
+                                id={section.id}
                                 buttonsSettings={{
                                     primaryButtonName: "Добавить задачу",
                                     secondaryButtonName: "Отмена",
@@ -45,6 +69,25 @@ const TodoSectionsList: FC = () => {
                                     inputPlaceHolder: "Название задачи",
                                     textPlaceHolder: "Описание",
                                 }}
+                                isVisible={section.creatable}
+                                callback={() => {
+                                    closeAddTodoForm(section.id);
+                                }}
+                            />
+
+                            {isActiveAddTaskBtn && (
+                                <AddTaskButton
+                                    onClick={() => {
+                                        openAddTodoForm(section.id);
+                                    }}
+                                />
+                            )}
+                            <TodoChangeSection
+                                id={section.id}
+                                sort={section.sort}
+                                action={"createSection"}
+                                primaryButtonName="Добавить раздел"
+                                nameValue=""
                             />
                         </li>
                     );

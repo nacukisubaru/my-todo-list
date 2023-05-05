@@ -1,30 +1,80 @@
 import { FC } from "react";
-import { useTaskTree } from "../../hooks/useTaskTree";
-import { ITodoList } from "../../types/todo.types";
+import { ITodoItem } from "../../types/todo.types";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
+import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
+import TodoChangeSection from "./TodoChangeSection";
+import { useToolTodo } from "../../hooks/useToolTodo";
+import { useTaskTree } from "../../hooks/useTaskTree";
 
 interface ITodoSectionProps {
-    section: ITodoList
+    section: ITodoItem;
 }
 
-const TodoSection:FC<ITodoSectionProps> = ({section}) => {
-    const {mutateTask} = useTaskTree();
+const TodoSection: FC<ITodoSectionProps> = ({ section }) => {
+    const {
+        toggleTaskList,
+        showToolPanel,
+        hideToolPanel,
+        closeTodoChangePanel,
+        openTodoChangePanel,
+        toolPanelIsVisible,
+        todoEditInputs,
+    } = useToolTodo(section.id, "section");
 
-    const toggleTaskList = (id: number, type: string) => {
-        const mutate = (value: any) => {
-            mutateTask(id, 'showTasks', value, type);
-        }
-        return mutate;
+    const {removeTask} = useTaskTree();
+
+    const removeSection = () => {
+        removeTask(section.id, true);
     }
 
     return (
-        <div className="display flex">
-            <ArrowButton
-                isArrowOpen={section.showTasks}
-                onClick={toggleTaskList(section.id, section.type)}
+        <>
+            <TodoChangeSection
+                id={section.id}
+                sort={section.sort}
+                action={"changeSection"}
+                isVisible={section.editable}
+                primaryButtonName="Изменить раздел"
+                callback={closeTodoChangePanel}
+                showBtn={false}
+                nameValue={todoEditInputs.name}
             />
-            <span className="font-bold ml-3">{section.name}</span>
-        </div>
+            {!section.editable && (
+                <div
+                    className="display flex justify-between"
+                    onMouseOver={showToolPanel}
+                    onMouseOut={hideToolPanel}
+                >
+                    <div className="display flex">
+                        <ArrowButton
+                            isArrowOpen={section.showTasks}
+                            onClick={toggleTaskList}
+                        />
+                        <span className="font-bold ml-3">{section.name}</span>
+                    </div>
+                    {toolPanelIsVisible && (
+                        <ToolTaskPanel
+                            callbacks={{
+                                clickEditBtn: () => {},
+                            }}
+                            settings={{
+                                menuItems: [
+                                    {
+                                        name: "Изменить раздел",
+                                        onClick: openTodoChangePanel,
+                                    },
+                                    {
+                                        name: "Удалить раздел",
+                                        onClick: removeSection,
+                                    },
+                                ],
+                                showEditBtn: false,
+                            }}
+                        />
+                    )}
+                </div>
+            )}
+        </>
     );
 };
 
