@@ -33,5 +33,10 @@ export const todoApi = createApi({
                 body
             }),
         }),
+        updTodosPositions: build.query({
+            query: () => ({
+                url: 'updTodosPositions'
+            }),
+        }),
     })
 });

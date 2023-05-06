@@ -1,9 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { thunkAxiosGet } from "../../../helpers/queryHelper";
-import {ISection, ITodoItem} from "../../../types/todo.types";
+import {ITodoItem} from "../../../types/todo.types";
 
 interface IState {
-    sections: ISection[],
+    sections: ITodoItem[],
+    sectionItems: ITodoItem[],
     sectionId: string,
     status: string,
     error: string
@@ -11,6 +12,7 @@ interface IState {
 
 const initialState:IState = {
     sections: [],
+    sectionItems: [],
     sectionId: '',
     status: "",
     error: ""
@@ -28,15 +30,15 @@ export const sectionsSlice = createSlice({
     name: 'sections',
     initialState,
     reducers: {
-        setSections: (state, action: PayloadAction<{data:ISection[]}>) => {
+        setSections: (state, action: PayloadAction<{data:ITodoItem[]}>) => {
             state.sections = action.payload.data; 
         },
         setSectionId: (state, action: PayloadAction<{sectionId: string}>) => {
             state.sectionId = action.payload.sectionId;
+        },
+        setSectionItems: (state, action: PayloadAction<{data: ITodoItem[]}>) => {
+            state.sectionItems = action.payload.data;
         }
-        // setTodoItems: (state, action: PayloadAction<{data: ITodoItem[]}>) => {
-        //     state.todosItems = action.payload.data;
-        // }
     },
     extraReducers: {
         [getSections.pending]: (state) => {

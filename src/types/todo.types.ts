@@ -5,7 +5,7 @@ export interface ITodoItem {
     sectionId?: string,
     description: string,
     showTasks:boolean,
-    type?: string,
+    type?: taskType,
     sort: number,
     creatable:boolean,
     editable:boolean,
@@ -30,3 +30,5 @@ export interface ISortByPosition {
     sortPosition?: number,
     position: string
 }
+
+export type taskType = "task" | "section";

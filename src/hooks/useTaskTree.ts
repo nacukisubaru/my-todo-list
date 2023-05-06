@@ -1,10 +1,11 @@
 import { todoJsonApi } from "../store/services/todo/todo-json.api";
 import { todoApi } from "../store/services/todo/todo.api";
-import { ISortByPosition, ITodoEditFields, ITodoItem } from "../types/todo.types";
+import { ISortByPosition, ITodoEditFields, ITodoItem, taskType } from "../types/todo.types";
 import { todoSectionsApi } from "../store/services/todo/todo-sections.api";
 import { useActions } from "./useActions";
 import { useAppSelector } from "./useAppSelector";
 import bcrypt from 'bcryptjs';
+import { sectionsApi } from "../store/services/sections/sections.api";
 
 interface IMutateList {
     field: string,
@@ -13,19 +14,21 @@ interface IMutateList {
 
 export const useTaskTree = () => {
     let { todos, todosItems } = useAppSelector((state) => state.todosReducer);
+    let { sections, sectionItems } = useAppSelector((state) => state.sectionsReducer);
     const [createTodo] = todoApi.useAddMutation();
     const [removeTodo] = todoApi.useRemoveMutation();
     const [addTodoItemsJson] = todoJsonApi.useAddItemsMutation();
     const [addTodoSectionsJson] = todoJsonApi.useAddTodoSectionsMutation();
     const [addSectionsJson] = todoJsonApi.useAddSectionsMutation();
-    const { setTodos, setTodoItems } = useActions();
-    const [addSection] = todoSectionsApi.useAddMutation();
+    const { setTodos, setTodoItems, setSectionItems, setSections } = useActions();
+    const [addTodoSection] = todoSectionsApi.useAddMutation();
     const [removeSection] = todoSectionsApi.useRemoveMutation();
+    const [addSection] = sectionsApi.useAddMutation();
 
-    const recursiveCloneTree = (tree: ITodoItem[]): ITodoItem[] => {
+    const recursiveCloneTree = (tree: ITodoItem[] | any[]): ITodoItem[] | any[] => {
         let clonesList = [];
 
-        const cloneRecursive = (tree: ITodoItem[]): ITodoItem[] => {
+        const cloneRecursive = (tree: ITodoItem[] | any[]): ITodoItem[] | any[] => {
             let arrClones = [];
             for (let inc in tree) {
                 if (Array.isArray(tree[inc])) {
@@ -49,7 +52,7 @@ export const useTaskTree = () => {
     }
 
     const findTaskInTree = (tree: ITodoItem[], taskId: string): ITodoItem | false => {
-        const recursiveFind = (tree: ITodoItem[], taskId: string): ITodoItem | undefined => {
+        const recursiveFind = (tree: ITodoItem[], taskId: string): ITodoItem  | undefined => {
             for (let inc in tree) {
                 if (tree[inc].id && tree[inc].id === taskId) {
                     return tree[inc];
@@ -93,6 +96,57 @@ export const useTaskTree = () => {
         return foundTask;
     }
 
+    const setJsonItems = (items: ITodoItem[], jsonItems: ITodoItem[], taskType?: taskType, createSection: boolean = false) => {
+        const itemsClone = items.map((item) => {
+            return { ...item };
+        })
+
+        if (taskType === "section") {
+            itemsClone.map((item) => {
+                item.parentId = null;
+            })
+        }
+
+        const itemsIds = itemsClone.map((item) => item.id);
+        const newTodoItems = jsonItems.filter((item) => {
+            if (!itemsIds.includes(item.id)) {
+                return item;
+            }
+        });
+
+        const data = itemsClone.concat(newTodoItems);
+
+        const set = (setItems: ({ data }: any) => void, addItemsJson: ({ jsonData }: any) => void) => {
+            setItems({ data });
+            addItemsJson({ jsonData: data });
+        }
+
+        if (createSection) {
+            set(setSectionItems, addSectionsJson);
+        } else {
+            set(setTodoItems, addTodoItemsJson);
+        }
+    }
+
+    const sortPositions = (tasks: ITodoItem[], sortByPosition: ISortByPosition) => {
+        const { sortPosition, position } = sortByPosition;
+        if (sortPosition !== undefined) {
+            tasks.map((item) => {
+                if (position === "upper") {
+                    if (item.sort >= sortPosition) {
+                        item.sort = item.sort + 1;
+                    }
+                } else {
+                    if (item.sort <= sortPosition) {
+                        item.sort = item.sort - 1;
+                    }
+                }
+            });
+            return sortPosition;
+        }
+        return false;
+    }
+
     const createTask = async (taskId: string, editFields: ITodoEditFields, position?: string) => {
 
         const salt = bcrypt.genSaltSync(10) + Date.now();
@@ -106,24 +160,13 @@ export const useTaskTree = () => {
                 let sort = 0;
                 const lastTask = foundTask.items[foundTask.items.length - 1];
                 if (lastTask) {
-                  sort = lastTask.sort + 1;
+                    sort = lastTask.sort + 1;
                 }
-    
+
                 if (sortByPosition) {
-                    const {sortPosition, position} = sortByPosition;
-                    if (sortPosition !== undefined) {
-                        foundTask.items.map((item) => {
-                            if (position === "upper") {
-                                if (item.sort >= sortPosition) {
-                                    item.sort = item.sort + 1;
-                                }
-                            } else {
-                                if (item.sort <= sortPosition) {
-                                    item.sort = item.sort - 1;
-                                }
-                            }
-                        })
-                        sort = sortPosition;
+                    const sortPos = sortPositions(foundTask.items, sortByPosition);
+                    if (sortPos) {
+                        sort = sortPos;
                     }
                 }
 
@@ -146,7 +189,7 @@ export const useTaskTree = () => {
                 if (foundTask.type === "section") {
                     todoItem.parentId = null;
                     todoItem.sectionId = foundTask.id;
-                } else {           
+                } else {
                     todoItem.sectionId = foundTask.sectionId;
                 }
 
@@ -155,27 +198,8 @@ export const useTaskTree = () => {
                 foundTask.items.sort((a, b) => a.sort - b.sort);
                 await setTodos({ data: tasksclones });
 
-                const itemsClone = items.map((item) => {
-                    return { ...item };
-                })
-
-                if (foundTask.type === "section") {
-                    itemsClone.map((item) => {
-                        item.parentId = null;
-                    })
-                }
-
-                const itemsIds = itemsClone.map((item) => item.id);
-                const newTodoItems = todosItems.filter((todoItem) => {
-                    if (!itemsIds.includes(todoItem.id)) {
-                        return todoItem;
-                    }
-                });
-
-                const data = itemsClone.concat(newTodoItems);
-                setTodoItems({ data });
                 if (sortByPosition) {
-                    addTodoItemsJson({jsonData: data});
+                    setJsonItems(items, todosItems, foundTask.type, false);
                 }
             }
         }
@@ -195,12 +219,57 @@ export const useTaskTree = () => {
         }
     }
 
+    const createSection = async (sectionId: string, name: string, sortByPosition: ISortByPosition) => {
+        const salt = bcrypt.genSaltSync(10) + Date.now();
+        const newTaskId = bcrypt.hashSync(name, salt);
+
+        const tasksclones = recursiveCloneTree(sections);
+        const foundTask = findTaskInTree(tasksclones, sectionId);
+        
+        if (foundTask) {
+            const sort = sortByPosition.sortPosition;
+            let foundParentTask;
+            let items: any;
+
+            if (foundTask.parentId) {
+                foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
+                items = foundTask.items;
+                foundParentTask && sortPositions(foundParentTask.items, sortByPosition);
+            } else {
+                items = tasksclones;
+                sortPositions(tasksclones, sortByPosition);
+            }
+
+            const sectionItem: any = {
+                id: newTaskId,
+                name,
+                showSections: true,
+                sort,
+                parentId: foundParentTask ? foundParentTask.id : null,
+                items: [],
+            };
+
+            items.push(sectionItem);
+
+            items.sort((a: any, b: any) => a.sort - b.sort);
+            console.log({items})
+            addSection(sectionItem);
+            setSections({ data: items });
+
+            if (foundParentTask) {
+                setJsonItems(foundParentTask.items, sectionItems, foundTask.type, true);
+            } else {
+                setJsonItems(tasksclones, sectionItems, foundTask.type, true);
+            }
+        }
+    }
+
     const createTaskSection = async (name: string, sort: number) => {
         const salt = bcrypt.genSaltSync(10) + Date.now();
         const id = bcrypt.hashSync(name, salt);
 
         const tasksclones = recursiveCloneTree(todos);
-       
+
         const sectonObj: ITodoItem = {
             id,
             name,
@@ -217,7 +286,7 @@ export const useTaskTree = () => {
             isComplete: false,
             items: []
         };
-       
+
         tasksclones.map((item) => {
             if (item.sort <= sort) {
                 item.sort = item.sort - 1;
@@ -226,14 +295,14 @@ export const useTaskTree = () => {
             if (item.sort >= sort) {
                 item.sort = item.sort + 1;
             }
-        });        
+        });
 
         sectonObj.sort = sort;
         tasksclones.push(sectonObj);
         tasksclones.sort((a, b) => a.sort - b.sort);
         await setTodos({ data: tasksclones });
-        await addTodoSectionsJson({jsonData: tasksclones});
-        await addSection(sectonObj);
+        await addTodoSectionsJson({ jsonData: tasksclones });
+        await addTodoSection(sectonObj);
     }
 
     const getFieldRecursive = (tree: ITodoItem[], field: string) => {
@@ -265,18 +334,18 @@ export const useTaskTree = () => {
         const remove = async (foundTask: ITodoItem) => {
             const todoRemoveList = getFieldRecursive(foundTask.items, "id");
             todoRemoveList.push(foundTask.id);
-            
+
             if (isSection) {
                 tasksclones = filter(tasksclones);
                 await removeTodo(todoRemoveList);
-                await removeSection({id: foundTask.id});
+                await removeSection({ id: foundTask.id });
             } else {
                 const filteredItems = filter(foundTask.items);
                 foundTask.items = filteredItems;
                 removeTodo(todoRemoveList);
-            } 
+            }
         }
-        
+
         if (foundTask) {
             if (isSection) {
                 remove(foundTask);
@@ -315,6 +384,7 @@ export const useTaskTree = () => {
         createTask,
         removeTask,
         mutateAllTasks,
-        createTaskSection
+        createTaskSection,
+        createSection
     };
 }
