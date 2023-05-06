@@ -233,8 +233,10 @@ export const useTaskTree = () => {
 
             if (foundTask.parentId) {
                 foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
-                items = foundTask.items;
-                foundParentTask && sortPositions(foundParentTask.items, sortByPosition);
+                if (foundParentTask) {
+                    items = foundParentTask.items;
+                    sortPositions(foundParentTask.items, sortByPosition);
+                }
             } else {
                 items = tasksclones;
                 sortPositions(tasksclones, sortByPosition);
@@ -253,13 +255,8 @@ export const useTaskTree = () => {
 
             items.sort((a: any, b: any) => a.sort - b.sort);
             addSection(sectionItem);
-            setSections({ data: items });
-
-            if (foundParentTask) {
-                setJsonItems(foundParentTask.items, sectionItems, foundTask.type, true);
-            } else {
-                setJsonItems(tasksclones, sectionItems, foundTask.type, true);
-            }
+            setSections({ data: tasksclones });
+            setJsonItems(items, sectionItems, foundTask.type, true);
         }
     }
 

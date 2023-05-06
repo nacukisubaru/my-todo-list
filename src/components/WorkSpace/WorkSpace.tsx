@@ -18,7 +18,7 @@ const WorkSpace = () => {
     useEffect(() => {
         const get = async () => {
             await dispatch(getSections());
-            createSection("79d5bf69e1ae15ea916a9365af3401d5", "testnew4", {position: "lower", sortPosition: 1});
+            createSection("$2a$10$J3NxrQUFV.Ib0P8Txcc6tenZF9rsHLb79k2s9d6u2Orn0Vt9eiOja", "2222", {position: "upper", sortPosition: 0});
         }
         get();
     }, []);
