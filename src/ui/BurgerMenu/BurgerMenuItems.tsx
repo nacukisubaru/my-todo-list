@@ -1,17 +1,23 @@
 import { FC } from "react";
-import { ISection } from "../../types/todo.types";
+import { ISection, ITodoItem } from "../../types/todo.types";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
+import { IMenuItem } from "../../types/ui.types";
 
 interface IBurgerMenuItemsProps {
     items: ISection[];
     setId: (id: string) => void;
     count: number;
+    menu: IMenuItem[];
+    toolCallback?: (item: ISection) => void;
 }
+
 const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
     items,
     count,
     setId,
+    menu,
+    toolCallback
 }) => {
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
         "",
@@ -41,18 +47,10 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
                                 <ToolTaskPanel
                                     callbacks={{
                                         clickEditBtn: () => {},
+                                        callbackToolMenu: () => { toolCallback && toolCallback(item); }
                                     }}
                                     settings={{
-                                        menuItems: [
-                                            {
-                                                name: "Добавить раздел выше",
-                                                onClick: () => {},
-                                            },
-                                            {
-                                                name: "Добавить раздел ниже",
-                                                onClick: () => {},
-                                            },
-                                        ],
+                                        menuItems: menu,
                                         translateY: "24px",
                                         showEditBtn: false,
                                         colorBtn: "bg-gray-200",
@@ -65,6 +63,8 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
                             items={item.items}
                             setId={setId}
                             count={count + 4}
+                            menu={menu}
+                            toolCallback={toolCallback}
                         />
                     </>
                 );

@@ -5,6 +5,7 @@ import { IMenuItem } from "../../../types/ui.types";
 
 interface ICallbacks {
     clickEditBtn: () => void;
+    callbackToolMenu?: () => void;
 }
 
 interface ISettings {
@@ -21,7 +22,7 @@ interface IToolTaskPanelProps {
 
 const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
     const { showEditBtn, menuItems, translateY, colorBtn } = settings;
-    const { clickEditBtn } = callbacks;
+    const { clickEditBtn, callbackToolMenu } = callbacks;
 
     const [isVisibleMenu, setVisibleMenu] = useState(false);
 
@@ -63,7 +64,13 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
                     />
                 </svg>
             </ToolButton>
-            {isVisibleMenu && <ToolMenu translateY={translateY} menuItems={menuItems} />}
+            {isVisibleMenu && (
+                <ToolMenu
+                    translateY={translateY}
+                    menuItems={menuItems}
+                    callback={callbackToolMenu}
+                />
+            )}
         </div>
     );
 };
