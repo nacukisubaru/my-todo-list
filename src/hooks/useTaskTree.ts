@@ -165,7 +165,7 @@ export const useTaskTree = () => {
 
                 if (sortByPosition) {
                     const sortPos = sortPositions(foundTask.items, sortByPosition);
-                    if (sortPos) {
+                    if (sortPos !== false) {
                         sort = sortPos;
                     }
                 }
@@ -252,7 +252,6 @@ export const useTaskTree = () => {
             items.push(sectionItem);
 
             items.sort((a: any, b: any) => a.sort - b.sort);
-            console.log({items})
             addSection(sectionItem);
             setSections({ data: items });
 
