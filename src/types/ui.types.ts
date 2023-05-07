@@ -1,6 +1,8 @@
+import { ITodoItem } from "./todo.types";
+
 export interface IMenuItem {
     name: string,
-    onClick: () => void
+    onClick: (item: ITodoItem) => void
 }
 
 export interface IModalSettings {
@@ -8,6 +10,11 @@ export interface IModalSettings {
     primaryBtnName: string;
     secondaryBtnName: string;
     isVisible: boolean;
+}
+
+export interface IMutateList {
+    field: string,
+    value: any
 }
 
 export type changeAction = "create" | "change" | "createSection" | "changeSection";

@@ -18,9 +18,10 @@ interface ISettings {
 interface IToolTaskPanelProps {
     settings: ISettings;
     callbacks: ICallbacks;
+    parent?: any;
 }
 
-const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
+const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings, parent }) => {
     const { showEditBtn, menuItems, translateY, colorBtn } = settings;
     const { clickEditBtn, callbackToolMenu } = callbacks;
 
@@ -68,7 +69,7 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
                 <ToolMenu
                     translateY={translateY}
                     menuItems={menuItems}
-                    callback={callbackToolMenu}
+                    parent={parent}
                 />
             )}
         </div>

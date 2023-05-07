@@ -6,11 +6,7 @@ import { useActions } from "./useActions";
 import { useAppSelector } from "./useAppSelector";
 import bcrypt from 'bcryptjs';
 import { sectionsApi } from "../store/services/sections/sections.api";
-
-interface IMutateList {
-    field: string,
-    value: any
-}
+import { IMutateList } from "../types/ui.types";
 
 export const useTaskTree = () => {
     let { todos, todosItems } = useAppSelector((state) => state.todosReducer);
@@ -84,15 +80,26 @@ export const useTaskTree = () => {
         return false;
     }
 
-    const mutateTask = async (taskId: string, mutateList: IMutateList[]): Promise<ITodoItem> => {
-        const tasksclones = recursiveCloneTree(todos);
+    const mutateTask = async (taskId: string, mutateList: IMutateList[], changeSection: boolean = false): Promise<ITodoItem> => {
+        let tasks;
+        if (changeSection) {
+            tasks = sections;
+        } else {
+            tasks = todos;
+        }
+        const tasksclones = recursiveCloneTree(tasks);
         const foundTask: any = findTaskInTree(tasksclones, taskId);
         if (foundTask) {
             mutateList.map((item) => {
                 foundTask[item.field] = item.value;
             })
         }
-        await setTodos({ data: tasksclones });
+
+        if (changeSection) {
+            await setSections({data: tasksclones});
+        } else {
+            await setTodos({ data: tasksclones });
+        }
         return foundTask;
     }
 

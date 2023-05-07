@@ -4,10 +4,10 @@ import { IMenuItem } from "../../types/ui.types";
 interface IToolMenu {
     menuItems: IMenuItem[];
     translateY?: string;
-    callback?: () => void;
+    parent?: any;
 }
 
-const ToolMenu: FC<IToolMenu> = ({ menuItems, translateY, callback }) => {
+const ToolMenu: FC<IToolMenu> = ({ menuItems, translateY, parent }) => {
     return (
         <div
             className={`absolute -translate-x-[67px] -translate-y-[${
@@ -22,8 +22,7 @@ const ToolMenu: FC<IToolMenu> = ({ menuItems, translateY, callback }) => {
                             key={item.name}
                             className="cursor-pointer hover:bg-gray-50"
                             onClick={() => {
-                                item.onClick();
-                                callback && callback();
+                                item.onClick(parent);
                             }}
                         >
                             {item.name}

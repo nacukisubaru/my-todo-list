@@ -6,6 +6,7 @@ export interface ITodoItem {
     description: string,
     showTasks:boolean,
     type?: taskType,
+    showSections?: boolean,
     sort: number,
     creatable:boolean,
     editable:boolean,

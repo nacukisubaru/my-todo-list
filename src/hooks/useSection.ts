@@ -1,16 +1,21 @@
 import { useState } from "react";
 import { useTaskTree } from "./useTaskTree";
+import { sectionsApi } from "../store/services/sections/sections.api";
+import { IMutateList } from "../types/ui.types";
 
 export const useSection = () => {
+    const [updSection] = sectionsApi.useUpdateMutation();
     const [currentSection, setCurrentSection] = useState(
         {
             id: "",
+            name: "",
             sort: 0
         }
     );
+
     const [sortPosition, setSortPosition] = useState("");
 
-    const { createSection } = useTaskTree();
+    const { createSection, mutateTask } = useTaskTree();
 
     const setSectionEdit = (section: any) => {
         setCurrentSection(section);
@@ -20,11 +25,20 @@ export const useSection = () => {
         createSection(currentSection.id, name, { sortPosition: currentSection.sort, position: sortPosition });
     }
 
+    const changeSection = async (mutateList: IMutateList[]) => {
+        const section = await mutateTask(currentSection.id, mutateList, true);
+        if (section) {
+            const {id, name, showSections} = section;
+            updSection({id, name, showSections});
+        }
+    }
+
     return {
         setCurrentSection,
         setSectionEdit,
         addSection,
         setSortPosition,
+        changeSection,
         currentSection,
     }
 }

@@ -7,10 +7,9 @@ interface IBurgerMenu {
     items: ISection[];
     menu: IMenuItem[];
     setId: (id: string) => void;
-    toolCallback?: (item: ISection) => void;
 }
 
-const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId, toolCallback }) => {
+const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId }) => {
     return (
         <div className="w-[340px] h-[100%] fixed bg-gray-100">
             <div className="display flex justify-center mt-[20px]">
@@ -20,7 +19,6 @@ const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId, toolCallback }) => {
                         setId={setId}
                         menu={menu}
                         count={15}
-                        toolCallback={toolCallback}
                     />
                 </ul>
             </div>

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { ISection, ITodoItem } from "../../types/todo.types";
+import { ISection } from "../../types/todo.types";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
 import { IMenuItem } from "../../types/ui.types";
@@ -9,7 +9,6 @@ interface IBurgerMenuItemsProps {
     setId: (id: string) => void;
     count: number;
     menu: IMenuItem[];
-    toolCallback?: (item: ISection) => void;
 }
 
 const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
@@ -17,7 +16,6 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
     count,
     setId,
     menu,
-    toolCallback
 }) => {
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
         "",
@@ -47,7 +45,6 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
                                 <ToolTaskPanel
                                     callbacks={{
                                         clickEditBtn: () => {},
-                                        callbackToolMenu: () => { toolCallback && toolCallback(item); }
                                     }}
                                     settings={{
                                         menuItems: menu,
@@ -55,6 +52,7 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
                                         showEditBtn: false,
                                         colorBtn: "bg-gray-200",
                                     }}
+                                    parent={item}
                                 />
                             )}
                         </div>
@@ -64,7 +62,6 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
                             setId={setId}
                             count={count + 4}
                             menu={menu}
-                            toolCallback={toolCallback}
                         />
                     </>
                 );
