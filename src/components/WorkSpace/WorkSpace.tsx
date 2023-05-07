@@ -15,14 +15,13 @@ import SectionsMenu from "../Sections/SectionsMenu";
 const WorkSpace = () => {
     const dispatch = useDispatch();
     const updPositions = todoApi.useUpdTodosPositionsQuery({});
-
+    
     useEffect(() => {
         const get = async () => {
             await updPositions.refetch();
             await dispatch(getSections());
         };
         get();
-        
     }, []);
 
     return (

@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { ISection } from "../../types/todo.types";
-import { useToolTodo } from "../../hooks/useToolTodo";
-import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
+
 import { IMenuItem } from "../../types/ui.types";
+import BurgerMenuItem from "./BurgerMenuItem";
 
 interface IBurgerMenuItemsProps {
     items: ISection[];
@@ -17,46 +17,19 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
     setId,
     menu,
 }) => {
-    const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
-        "",
-        "section"
-    );
+   
 
     return (
         <>
             {items.map((item) => {
                 return (
                     <>
-                        <div
-                            className={`display flex justify-between hover:bg-gray-200`}
-                            style={{ marginLeft: `${count}px` }}
-                            onMouseOver={showToolPanel}
-                            onMouseOut={hideToolPanel}
-                        >
-                            <li
-                                key={item.id}
-                                onClick={() => {
-                                    setId(item.id);
-                                }}
-                            >
-                                {item.name}
-                            </li>
-                            {toolPanelIsVisible && (
-                                <ToolTaskPanel
-                                    callbacks={{
-                                        clickEditBtn: () => {},
-                                    }}
-                                    settings={{
-                                        menuItems: menu,
-                                        translateY: "24px",
-                                        showEditBtn: false,
-                                        colorBtn: "bg-gray-200",
-                                    }}
-                                    parent={item}
-                                />
-                            )}
-                        </div>
-
+                        <BurgerMenuItem 
+                            count={count}
+                            item={item}
+                            setId={setId}
+                            menu={menu}
+                        />
                         <BurgerMenuItems
                             items={item.items}
                             setId={setId}

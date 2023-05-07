@@ -10,7 +10,7 @@ import { IMutateList } from "../types/ui.types";
 
 export const useTaskTree = () => {
     let { todos, todosItems } = useAppSelector((state) => state.todosReducer);
-    let { sections, sectionItems } = useAppSelector((state) => state.sectionsReducer);
+    let { sections, sectionItems, sectionId } = useAppSelector((state) => state.sectionsReducer);
     const [createTodo] = todoApi.useAddMutation();
     const [removeTodo] = todoApi.useRemoveMutation();
     const [addTodoItemsJson] = todoJsonApi.useAddItemsMutation();
@@ -20,6 +20,11 @@ export const useTaskTree = () => {
     const [addTodoSection] = todoSectionsApi.useAddMutation();
     const [removeSection] = todoSectionsApi.useRemoveMutation();
     const [addSection] = sectionsApi.useAddMutation();
+
+    const generateTaskId = (params?: any) => {
+        const salt = bcrypt.genSaltSync(10) + Date.now();
+        return bcrypt.hashSync(params, salt);
+    }
 
     const recursiveCloneTree = (tree: ITodoItem[] | any[]): ITodoItem[] | any[] => {
         let clonesList = [];
@@ -278,7 +283,7 @@ export const useTaskTree = () => {
             name,
             showTasks: true,
             parentId: null,
-            sectionId: '79d5bf69e1ae15ea916a9365af3401d5',
+            sectionId,
             description: "",
             type: "section",
             sort: 0,
@@ -388,6 +393,7 @@ export const useTaskTree = () => {
         removeTask,
         mutateAllTasks,
         createTaskSection,
-        createSection
+        createSection,
+        generateTaskId
     };
 }

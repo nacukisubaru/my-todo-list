@@ -12,21 +12,19 @@ import TodoChangeSection from "./TodoChangeSection";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
-    const {sectionId} = useAppSelector((state) => state.sectionsReducer);
+    const { sectionId } = useAppSelector((state) => state.sectionsReducer);
     let isActiveAddTaskBtn = useAppSelector(
         (state) => state.uiReducer.isActiveAddTaskBtn
     );
     const dispatch = useDispatch();
-    const { mutateTask, mutateAllTasks } = useTaskTree();
+    const { mutateTask, mutateAllTasks, generateTaskId } = useTaskTree();
     const { setActiveAddTaskBtn } = useActions();
 
     useEffect(() => {
         const getTodos = async () => {
-            await dispatch(
-                getTodosBySection(sectionId)
-            );
+            await dispatch(getTodosBySection(sectionId));
         };
-        
+
         if (sectionId) {
             getTodos();
         }
@@ -52,52 +50,66 @@ const TodoSectionsList: FC = () => {
     };
 
     return (
-        <div className="display flex justify-center">
-            <ul className="w-[55%] mt-[50px]">
-                {todos.map((section) => {
-                    return (
-                        <li className="mb-10" key={section.id}>
-                            <TodoSection section={section} />
-                            <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
-                            {section.showTasks && (
-                                <TodosList todoitems={section.items} />
-                            )}
+        <>
+            <div className="display flex justify-center">
+                <ul className="w-[55%] mt-[50px]">
+                    {!todos.length ? (
+                        <TodoChangeSection
+                            id={generateTaskId(sectionId)}
+                            sort={0}
+                            action={"createSection"}
+                            primaryButtonName="Добавить раздел"
+                            nameValue=""
+                            hideAddSectionButton={false}
+                        />
+                    ) : (
+                        todos.map((section) => {
+                            return (
+                                <li className="mb-10" key={section.id}>
+                                    <TodoSection section={section} />
+                                    <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
+                                    {section.showTasks && (
+                                        <TodosList todoitems={section.items} />
+                                    )}
 
-                            <TodoChange
-                                id={section.id}
-                                buttonsSettings={{
-                                    primaryButtonName: "Добавить задачу",
-                                    secondaryButtonName: "Отмена",
-                                }}
-                                inputsSettings={{
-                                    inputPlaceHolder: "Название задачи",
-                                    textPlaceHolder: "Описание",
-                                }}
-                                isVisible={section.creatable}
-                                callback={() => {
-                                    closeAddTodoForm(section.id);
-                                }}
-                            />
+                                    <TodoChange
+                                        id={section.id}
+                                        buttonsSettings={{
+                                            primaryButtonName:
+                                                "Добавить задачу",
+                                            secondaryButtonName: "Отмена",
+                                        }}
+                                        inputsSettings={{
+                                            inputPlaceHolder: "Название задачи",
+                                            textPlaceHolder: "Описание",
+                                        }}
+                                        isVisible={section.creatable}
+                                        callback={() => {
+                                            closeAddTodoForm(section.id);
+                                        }}
+                                    />
 
-                            {isActiveAddTaskBtn && (
-                                <AddTaskButton
-                                    onClick={() => {
-                                        openAddTodoForm(section.id);
-                                    }}
-                                />
-                            )}
-                            <TodoChangeSection
-                                id={section.id}
-                                sort={section.sort}
-                                action={"createSection"}
-                                primaryButtonName="Добавить раздел"
-                                nameValue=""
-                            />
-                        </li>
-                    );
-                })}
-            </ul>
-        </div>
+                                    {isActiveAddTaskBtn && (
+                                        <AddTaskButton
+                                            onClick={() => {
+                                                openAddTodoForm(section.id);
+                                            }}
+                                        />
+                                    )}
+                                    <TodoChangeSection
+                                        id={section.id}
+                                        sort={section.sort}
+                                        action={"createSection"}
+                                        primaryButtonName="Добавить раздел"
+                                        nameValue=""
+                                    />
+                                </li>
+                            );
+                        })
+                    )}
+                </ul>
+            </div>
+        </>
     );
 };
 

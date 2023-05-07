@@ -13,7 +13,8 @@ interface ITodoChangeSectionProps {
     primaryButtonName: string;
     callback?: () => void;
     showBtn?: boolean,
-    nameValue: string
+    nameValue: string,
+    hideAddSectionButton?: boolean
 }
 
 const TodoChangeSection: FC<ITodoChangeSectionProps> = ({
@@ -24,6 +25,7 @@ const TodoChangeSection: FC<ITodoChangeSectionProps> = ({
     primaryButtonName,
     callback,
     showBtn = true,
+    hideAddSectionButton = true,
     nameValue
 }) => {
     const isActiveBtn = useAppSelector(
@@ -66,7 +68,7 @@ const TodoChangeSection: FC<ITodoChangeSectionProps> = ({
                 callback={closeAddSection}
                 action={action}
             />
-            {isActiveBtn && showBtn && <AddSectionButton onClick={openAddSection} />}
+            {isActiveBtn && showBtn && <AddSectionButton onClick={openAddSection} hideBtnByDefault={hideAddSectionButton}/>}
         </>
     );
 };
