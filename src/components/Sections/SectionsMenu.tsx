@@ -29,7 +29,7 @@ const SectionsMenu = () => {
         setSectionEdit(section);
         setSortPosition(position);
         setModalState({
-            title: "Добавить проект",
+            title: "Добавить раздел",
             primaryBtnName: "Добавить",
             secondaryBtnName: "Отмена",
             isVisible: true,
@@ -41,7 +41,7 @@ const SectionsMenu = () => {
         setNameSection(section.name);
         setSectionEdit(section);
         setModalState({
-            title: "Изменить проект",
+            title: "Изменить раздел",
             primaryBtnName: "Изменить",
             secondaryBtnName: "Отмена",
             isVisible: true,
@@ -49,10 +49,25 @@ const SectionsMenu = () => {
         setAction("change");
     };
 
+    const openAddSubsection = (section: ITodoItem) => {
+        setSectionEdit(section);
+        setSortPosition("lower");
+        setModalState({
+            title: "Добавить подраздел",
+            primaryBtnName: "Добавить",
+            secondaryBtnName: "Отмена",
+            isVisible: true,
+        });
+        setAction("createSubsection");
+    }
+
     const applyActionSection = () => {
         switch (action) {
             case "create":
                 addSection(sectionName);
+            break;
+            case "createSubsection":
+                addSection(sectionName, true);
             break;
             case "change":
                 changeSection([{ field: "name", value: sectionName }]);
@@ -112,6 +127,10 @@ const SectionsMenu = () => {
                     {
                         name: "Изменить раздел",
                         onClick: (item) => { openEditSection(item); },
+                    },
+                    {
+                        name: "Добавить подраздел",
+                        onClick: (item) => { openAddSubsection(item); },
                     },
                 ]}
                 toggleArrow={toggleArrow}

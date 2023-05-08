@@ -21,8 +21,8 @@ export const useSection = () => {
         setCurrentSection(section);
     }
 
-    const addSection = (name: string) => {
-        createSection(currentSection.id, name, { sortPosition: currentSection.sort, position: sortPosition });
+    const addSection = (name: string, subsection: boolean = false) => {
+        createSection(currentSection.id, name, { sortPosition: currentSection.sort, position: sortPosition }, subsection);
     }
 
     const changeSection = async (mutateList: IMutateList[], sectionId?: string) => {

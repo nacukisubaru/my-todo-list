@@ -18,7 +18,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
     item,
     menu,
     setId,
-    toggleArrow
+    toggleArrow,
 }) => {
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
         "",
@@ -26,47 +26,86 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
     );
 
     return (
-        <div
-            className={`display flex justify-between hover:bg-gray-200`}
-            style={{ marginLeft: `${count}px` }}
-            onMouseOver={showToolPanel}
-            onMouseOut={hideToolPanel}
-        >
+        <>
             {item.items.length > 0 ? (
-                    <div className="display flex">
-                        <ArrowButton
-                            isArrowOpen={item.showSections}
-                            color="bg-inherit"
-                            onClick={(value: boolean) => {toggleArrow(item.id, value)}}
+                <div
+                    className={`display flex justify-between hover:bg-gray-200 cursor-pointer -ml-[20px]`}
+                    style={ item.parentId && { marginLeft: `${count}px` }}
+                    onMouseOver={showToolPanel}
+                    onMouseOut={hideToolPanel}
+                >
+                    <li className="w-[100%] ml-3" key={item.id}>
+                        <div className="display flex ">
+                            <span className="mr-[5px]">
+                                <ArrowButton
+                                    isArrowOpen={item.showSections}
+                                    color="bg-inherit"
+                                    onClick={(value: boolean) => {
+                                        toggleArrow(item.id, value);
+                                    }}
+                                />
+                            </span>
+
+                            <span
+                                className="w-[100%]"
+                                onClick={() => {
+                                    setId(item.id);
+                                }}
+                            >
+                                {item.name}
+                            </span>
+                        </div>
+                    </li>
+
+                    {toolPanelIsVisible && (
+                        <ToolTaskPanel
+                            callbacks={{
+                                clickEditBtn: () => {},
+                            }}
+                            settings={{
+                                menuItems: menu,
+                                translateY: "24px",
+                                showEditBtn: false,
+                                colorBtn: "bg-gray-200",
+                            }}
+                            parent={item}
                         />
-                        <span className="ml-3">{item.name}</span>
-                    </div>
-                ): (
-                    item.name
-                )}
-            <li
-                className="w-[100%]"
-                key={item.id}
-                onClick={() => {
-                    setId(item.id);
-                }}
-            >
-            </li>
-            {toolPanelIsVisible && (
-                <ToolTaskPanel
-                    callbacks={{
-                        clickEditBtn: () => {},
-                    }}
-                    settings={{
-                        menuItems: menu,
-                        translateY: "24px",
-                        showEditBtn: false,
-                        colorBtn: "bg-gray-200",
-                    }}
-                    parent={item}
-                />
+                    )}
+                </div>
+            ) : (
+                <div
+                    className={`display flex justify-between hover:bg-gray-200 cursor-pointer`}
+                    style={ item.parentId && { marginLeft: `${count}px` }}
+                    onMouseOver={showToolPanel}
+                    onMouseOut={hideToolPanel}
+                >
+                    <li
+                        className="w-[100%] ml-3"
+                        key={item.id}
+                        onClick={() => {
+                            setId(item.id);
+                        }}
+                    >
+                        {item.name}
+                    </li>
+
+                    {toolPanelIsVisible && (
+                        <ToolTaskPanel
+                            callbacks={{
+                                clickEditBtn: () => {},
+                            }}
+                            settings={{
+                                menuItems: menu,
+                                translateY: "24px",
+                                showEditBtn: false,
+                                colorBtn: "bg-gray-200",
+                            }}
+                            parent={item}
+                        />
+                    )}
+                </div>
             )}
-        </div>
+        </>
     );
 };
 

@@ -35,7 +35,7 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
                             <BurgerMenuItems
                                 items={item.items}
                                 setId={setId}
-                                count={count + 4}
+                                count={count + count}
                                 menu={menu}
                                 toggleArrow={toggleArrow}
                             />

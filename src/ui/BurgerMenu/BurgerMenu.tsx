@@ -19,7 +19,7 @@ const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId, toggleArrow }) => {
                         items={items}
                         setId={setId}
                         menu={menu}
-                        count={15}
+                        count={3}
                         toggleArrow={toggleArrow}
                     />
                 </ul>

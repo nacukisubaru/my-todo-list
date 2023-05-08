@@ -231,28 +231,37 @@ export const useTaskTree = () => {
         }
     }
 
-    const createSection = async (sectionId: string, name: string, sortByPosition: ISortByPosition) => {
+    const createSection = async (sectionId: string, name: string, sortByPosition: ISortByPosition, subsection: boolean = false) => {
+
         const salt = bcrypt.genSaltSync(10) + Date.now();
         const newTaskId = bcrypt.hashSync(name, salt);
 
         const tasksclones = recursiveCloneTree(sections);
         const foundTask = findTaskInTree(tasksclones, sectionId);
-        
+
         if (foundTask) {
-            const sort = sortByPosition.sortPosition;
+            let sort = sortByPosition.sortPosition;
             let foundParentTask;
             let items: any;
 
-            if (foundTask.parentId) {
-                foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
-                if (foundParentTask) {
-                    items = foundParentTask.items;
-                    sortPositions(foundParentTask.items, sortByPosition);
+            if (subsection) {
+                items = foundTask.items;
+                const lastTask = foundTask.items[foundTask.items.length - 1];
+                if (lastTask) {
+                    sort = lastTask.sort + 1;
                 }
             } else {
-                items = tasksclones;
-                sortPositions(tasksclones, sortByPosition);
+                if (foundTask.parentId) {
+                    foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
+                    if (foundParentTask) {
+                        items = foundParentTask.items;
+                    }
+                } else {
+                    items = tasksclones;
+                }
             }
+
+            sortPositions(items, sortByPosition);
 
             const sectionItem: any = {
                 id: newTaskId,
@@ -263,6 +272,10 @@ export const useTaskTree = () => {
                 items: [],
             };
 
+            if(subsection) {
+                sectionItem.parentId = foundTask.id;
+            }
+            
             items.push(sectionItem);
 
             items.sort((a: any, b: any) => a.sort - b.sort);
