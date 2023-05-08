@@ -2,12 +2,14 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface IState {
     isActiveAddTaskBtn: boolean,
-    isActiveAddSectionBtn: boolean
+    isActiveAddSectionBtn: boolean,
+    showMenu: boolean
 }
 
 const initialState:IState = {
     isActiveAddTaskBtn: true,
-    isActiveAddSectionBtn: true
+    isActiveAddSectionBtn: true,
+    showMenu: false
 };
 
 export const uiSlice = createSlice({
@@ -20,6 +22,9 @@ export const uiSlice = createSlice({
         setActiveAddSectionBtn: (state, action: PayloadAction<{isActive: boolean}>) => {
             state.isActiveAddSectionBtn = action.payload.isActive;
         },
+        toggleMenu: (state, action: PayloadAction<{isActive: boolean}>) => {
+            state.showMenu = action.payload.isActive;
+        }
     },
 }); 
 

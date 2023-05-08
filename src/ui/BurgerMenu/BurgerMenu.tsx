@@ -2,6 +2,7 @@ import { FC } from "react";
 import { ISection } from "../../types/todo.types";
 import BurgerMenuItems from "./BurgerMenuItems";
 import { IMenuItem } from "../../types/ui.types";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 interface IBurgerMenu {
     items: ISection[];
@@ -11,8 +12,10 @@ interface IBurgerMenu {
 }
 
 const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId, toggleArrow }) => {
+    const {showMenu} = useAppSelector(state => state.uiReducer);
+    
     return (
-        <div className="w-[340px] h-[100%] fixed bg-gray-100">
+        <div className={`w-[340px] h-[100%] fixed bg-gray-100 ${showMenu && '-translate-x-[353px]'} duration-300`}>
             <div className="display flex justify-center mt-[20px]">
                 <ul className="w-[89%]">
                     <BurgerMenuItems
