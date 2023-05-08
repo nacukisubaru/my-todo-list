@@ -12,6 +12,13 @@ export const todoJsonApi = createApi({
                 body
             }),
         }),
+        addTodoSections: build.mutation({
+            query: (body) => ({
+                url: 'addTodoSections',
+                method: 'POST',
+                body
+            }),
+        }),
         addSections: build.mutation({
             query: (body) => ({
                 url: 'addSections',

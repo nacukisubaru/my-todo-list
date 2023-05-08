@@ -10,15 +10,18 @@ interface ICallbacks {
 interface ISettings {
     showEditBtn: boolean;
     menuItems: IMenuItem[];
+    translateY?: string;
+    colorBtn?: string;
 }
 
 interface IToolTaskPanelProps {
     settings: ISettings;
     callbacks: ICallbacks;
+    parent?: any;
 }
 
-const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
-    const { showEditBtn, menuItems } = settings;
+const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings, parent }) => {
+    const { showEditBtn, menuItems, translateY, colorBtn } = settings;
     const { clickEditBtn } = callbacks;
 
     const [isVisibleMenu, setVisibleMenu] = useState(false);
@@ -45,7 +48,7 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
                     </svg>
                 </ToolButton>
             )}
-            <ToolButton onClick={showMenu}>
+            <ToolButton color={colorBtn} onClick={showMenu}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -61,7 +64,13 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({ callbacks, settings }) => {
                     />
                 </svg>
             </ToolButton>
-            {isVisibleMenu && <ToolMenu menuItems={menuItems} />}
+            {isVisibleMenu && (
+                <ToolMenu
+                    translateY={translateY}
+                    menuItems={menuItems}
+                    parent={parent}
+                />
+            )}
         </div>
     );
 };

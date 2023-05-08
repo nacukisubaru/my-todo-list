@@ -1,9 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { host } from "../../../http/http.request.config";
 
-export const todoApi = createApi({
-    reducerPath: 'todoApi',
-    baseQuery: fetchBaseQuery({baseUrl: host + '/todo-list/'}),
+export const sectionsApi = createApi({
+    reducerPath: 'sectionsApi',
+    baseQuery: fetchBaseQuery({baseUrl: host + '/sections-list/'}),
     endpoints: (build) => ({
         add: build.mutation({
             query: (body) => ({
@@ -31,11 +31,6 @@ export const todoApi = createApi({
                 url: 'updateSort',
                 method: 'POST',
                 body
-            }),
-        }),
-        updTodosPositions: build.query({
-            query: () => ({
-                url: 'updTodosPositions'
             }),
         }),
     })

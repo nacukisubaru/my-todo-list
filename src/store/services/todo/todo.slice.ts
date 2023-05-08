@@ -19,7 +19,7 @@ const initialState:IState = {
 export const getTodosBySection: any = createAsyncThunk(
     'todos/fetch',
     async (id, { rejectWithValue }) => {
-        return thunkAxiosGet('/todo-list/by-section/'+id, {}, rejectWithValue);
+        return thunkAxiosGet('/todo-list/by-section/', {id}, rejectWithValue);
     }
 );
 

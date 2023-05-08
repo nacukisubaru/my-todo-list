@@ -1,19 +1,30 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 interface IAddSectionButtonProps {
     onClick: () => void;
+    hideBtnByDefault?: boolean;
 }
 
-const AddSectionButton: FC<IAddSectionButtonProps> = ({ onClick }) => {
+const AddSectionButton: FC<IAddSectionButtonProps> = ({ onClick, hideBtnByDefault = true }) => {
     const [isVisible, setVisible] = useState(false);
 
     const showBtn = () => {
-        setVisible(true);
+        if (hideBtnByDefault) {
+            setVisible(true);
+        }
     }
 
     const hideBtn = () => {
-        setVisible(false);
+        if (hideBtnByDefault) { 
+            setVisible(false);
+        }
     }
+
+    useEffect(() => {
+        if (hideBtnByDefault === false) {
+            setVisible(true);
+        }
+    }, [hideBtnByDefault])
 
     return (
         <div className="h-[50px]" onMouseOver={showBtn} onMouseLeave={hideBtn}>
