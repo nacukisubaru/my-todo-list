@@ -53,7 +53,7 @@ const TodoSectionsList: FC = () => {
         <>
             <div className="display flex justify-center">
                 <ul className="w-[55%] mt-[50px]">
-                    {!todos.length ? (
+                    {!todos.length && sectionId ? (
                         <TodoChangeSection
                             id={generateTaskId(sectionId)}
                             sort={0}

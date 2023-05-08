@@ -25,8 +25,11 @@ export const useSection = () => {
         createSection(currentSection.id, name, { sortPosition: currentSection.sort, position: sortPosition });
     }
 
-    const changeSection = async (mutateList: IMutateList[]) => {
-        const section = await mutateTask(currentSection.id, mutateList, true);
+    const changeSection = async (mutateList: IMutateList[], sectionId?: string) => {
+        if (!sectionId) {
+            sectionId = currentSection.id;
+        }
+        const section = await mutateTask(sectionId, mutateList, true);
         if (section) {
             const {id, name, showSections} = section;
             updSection({id, name, showSections});

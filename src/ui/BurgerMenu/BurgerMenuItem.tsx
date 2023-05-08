@@ -3,15 +3,23 @@ import { useToolTodo } from "../../hooks/useToolTodo";
 import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
 import { ISection } from "../../types/todo.types";
 import { IMenuItem } from "../../types/ui.types";
+import ArrowButton from "../Buttons/ArrowButton/ArrowButton";
 
 interface IBurgerMenuItemProps {
-    count: number,
-    item: ISection,
-    setId: (id: string) => void,
-    menu: IMenuItem[]
+    count: number;
+    item: ISection;
+    setId: (id: string) => void;
+    toggleArrow: (id: string, value: boolean) => void;
+    menu: IMenuItem[];
 }
 
-const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({count, item, menu, setId}) => {
+const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
+    count,
+    item,
+    menu,
+    setId,
+    toggleArrow
+}) => {
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
         "",
         "section"
@@ -24,6 +32,18 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({count, item, menu, setId}) =>
             onMouseOver={showToolPanel}
             onMouseOut={hideToolPanel}
         >
+            {item.items.length > 0 ? (
+                    <div className="display flex">
+                        <ArrowButton
+                            isArrowOpen={item.showSections}
+                            color="bg-inherit"
+                            onClick={(value: boolean) => {toggleArrow(item.id, value)}}
+                        />
+                        <span className="ml-3">{item.name}</span>
+                    </div>
+                ): (
+                    item.name
+                )}
             <li
                 className="w-[100%]"
                 key={item.id}
@@ -31,7 +51,6 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({count, item, menu, setId}) =>
                     setId(item.id);
                 }}
             >
-                {item.name}
             </li>
             {toolPanelIsVisible && (
                 <ToolTaskPanel

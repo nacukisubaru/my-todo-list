@@ -2,10 +2,11 @@ import { FC, useState } from "react";
 
 interface IArrowButton {
     isArrowOpen: boolean;
+    color?: string;
     onClick: (param: any) => void;
 }
 
-const ArrowButton: FC<IArrowButton> = ({ isArrowOpen, onClick }) => {
+const ArrowButton: FC<IArrowButton> = ({ isArrowOpen, color, onClick }) => {
     const [isOpen, setOpen] = useState(isArrowOpen);
 
     const toggleArrow = () => {
@@ -20,7 +21,7 @@ const ArrowButton: FC<IArrowButton> = ({ isArrowOpen, onClick }) => {
     return (
         <>
             {isOpen ? (
-                <button className="p-0 bg-white hover:bg-gray-200" onClick={toggleArrow}>
+                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200`} onClick={toggleArrow}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -37,7 +38,7 @@ const ArrowButton: FC<IArrowButton> = ({ isArrowOpen, onClick }) => {
                     </svg>
                 </button>
             ) : (
-                <button className="p-0 bg-white hover:bg-gray-200" onClick={toggleArrow}>
+                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200`} onClick={toggleArrow}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

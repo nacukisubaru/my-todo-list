@@ -19,6 +19,7 @@ export interface ITodoItem {
 export interface ISection {
     id: string,
     name: string,
+    showSections: boolean,
     items: ISection[]
 }
 

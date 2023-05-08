@@ -67,6 +67,10 @@ const SectionsMenu = () => {
         setNameSection("");
     }
 
+    const toggleArrow = async (sectionId: string, isVisibleSections: boolean) => {
+        changeSection([{ field: "showSections", value: isVisibleSections }], sectionId);
+    }
+
     return (
         <>
             <Modal
@@ -110,6 +114,7 @@ const SectionsMenu = () => {
                         onClick: (item) => { openEditSection(item); },
                     },
                 ]}
+                toggleArrow={toggleArrow}
             />
         </>
     );
