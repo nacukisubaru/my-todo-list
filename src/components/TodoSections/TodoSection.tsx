@@ -46,10 +46,12 @@ const TodoSection: FC<ITodoSectionProps> = ({ section }) => {
                     onMouseOut={hideToolPanel}
                 >
                     <div className="display flex">
-                        <ArrowButton
-                            isArrowOpen={section.showTasks}
-                            onClick={toggleTaskList}
-                        />
+                        <span className="mt-[0px]">
+                            <ArrowButton
+                                isArrowOpen={section.showTasks}
+                                onClick={toggleTaskList}
+                            />
+                        </span>
                         <span className="font-bold ml-3">{section.name}</span>
                     </div>
                     {toolPanelIsVisible && (

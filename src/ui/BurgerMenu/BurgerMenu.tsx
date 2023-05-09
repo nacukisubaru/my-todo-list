@@ -16,7 +16,7 @@ const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId, toggleArrow }) => {
     
     return (
         <div className={`w-[340px] h-[100%] fixed bg-gray-100 ${showMenu && '-translate-x-[353px]'} duration-300`}>
-            <div className="display flex justify-center mt-[20px]">
+            <div className="display flex justify-center px-[15px] py-[15px]">
                 <ul className="w-[89%]">
                     <BurgerMenuItems
                         items={items}
