@@ -24,7 +24,7 @@ const BurgerButton: FC<IBurgerButtonProps> = () => {
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            className="w-6 h-6 text-white cursor-pointer hover:bg-red-100 hover:opacity-[0.5]"
+            className="w-6 h-6 text-white cursor-pointer"
             onClick={showBurgerMenu}
         >
             <path
