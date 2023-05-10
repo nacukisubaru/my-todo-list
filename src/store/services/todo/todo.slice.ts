@@ -5,6 +5,7 @@ import {ITodoItem} from "../../../types/todo.types";
 interface IState {
     todos: ITodoItem[],
     todosItems: ITodoItem[],
+    currentTodo: ITodoItem,
     status: string,
     error: string
 }
@@ -12,6 +13,7 @@ interface IState {
 const initialState:IState = {
     todos: [],
     todosItems: [],
+    currentTodo: {},
     status: "",
     error: ""
 };
@@ -23,6 +25,12 @@ export const getTodosBySection: any = createAsyncThunk(
     }
 );
 
+export const getTodo: any = createAsyncThunk(
+    'todo/fetch',
+    async (id, { rejectWithValue }) => {
+        return thunkAxiosGet('/todo-list/getById/', {id}, rejectWithValue);
+    }
+);
 
 export const todosSlice = createSlice({
     name: 'todos',
@@ -31,8 +39,11 @@ export const todosSlice = createSlice({
         setTodos: (state, action: PayloadAction<{data:ITodoItem[]}>) => {
             state.todos = action.payload.data; 
         },
-        setTodoItems: (state, action: PayloadAction<{data: ITodoItem[]}>) => {
+        setTodoItems: (state, action: PayloadAction<{data:ITodoItem[]}>) => {
             state.todosItems = action.payload.data;
+        },
+        setCurrentTodo: (state, action: PayloadAction<{todo: ITodoItem}>) => {
+            state.currentTodo = action.payload.todo;
         }
     },
     extraReducers: {

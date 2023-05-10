@@ -4,13 +4,14 @@ import { ISortByPosition, ITodoEditFields, ITodoItem, taskType } from "../types/
 import { todoSectionsApi } from "../store/services/todo/todo-sections.api";
 import { useActions } from "./useActions";
 import { useAppSelector } from "./useAppSelector";
-import bcrypt from 'bcryptjs';
 import { sectionsApi } from "../store/services/sections/sections.api";
 import { IMutateList } from "../types/ui.types";
+import bcrypt from 'bcryptjs';
 
 export const useTaskTree = () => {
-    let { todos, todosItems } = useAppSelector((state) => state.todosReducer);
+    let { todos, todosItems, currentTodo } = useAppSelector((state) => state.todosReducer);
     let { sections, sectionItems, sectionId } = useAppSelector((state) => state.sectionsReducer);
+    const {isVisibleDetailTodo} = useAppSelector((state => state.uiReducer));
     const [createTodo] = todoApi.useAddMutation();
     const [removeTodo] = todoApi.useRemoveMutation();
     const [addTodoItemsJson] = todoJsonApi.useAddItemsMutation();
@@ -20,6 +21,7 @@ export const useTaskTree = () => {
     const [addTodoSection] = todoSectionsApi.useAddMutation();
     const [removeSection] = todoSectionsApi.useRemoveMutation();
     const [addSection] = sectionsApi.useAddMutation();
+    const {setCurrentTodo} = useActions();
 
     const generateTaskId = (params?: any) => {
         const salt = bcrypt.genSaltSync(10) + Date.now();
@@ -85,13 +87,18 @@ export const useTaskTree = () => {
         return false;
     }
 
-    const mutateTask = async (taskId: string, mutateList: IMutateList[], changeSection: boolean = false): Promise<ITodoItem> => {
+    const mutateTask = async (taskId: string, mutateList: IMutateList[], changeSection: boolean = false, isDetailTodo: boolean = false): Promise<ITodoItem> => {
         let tasks;
         if (changeSection) {
             tasks = sections;
         } else {
             tasks = todos;
         }
+
+        if (isDetailTodo) {
+            tasks = [currentTodo];
+        }
+
         const tasksclones = recursiveCloneTree(tasks);
         const foundTask: any = findTaskInTree(tasksclones, taskId);
         if (foundTask) {
@@ -99,12 +106,17 @@ export const useTaskTree = () => {
                 foundTask[item.field] = item.value;
             })
         }
-
-        if (changeSection) {
-            await setSections({data: tasksclones});
+        
+        if (isDetailTodo) {
+            setCurrentTodo({todo: tasksclones[0]});
         } else {
-            await setTodos({ data: tasksclones });
+            if (changeSection) {
+                await setSections({data: tasksclones});
+            } else {
+                await setTodos({ data: tasksclones });
+            }
         }
+
         return foundTask;
     }
 
@@ -213,19 +225,21 @@ export const useTaskTree = () => {
                 if (sortByPosition) {
                     setJsonItems(items, todosItems, foundTask.type, false);
                 }
+
+                return foundTask;
             }
         }
 
         if (foundTask) {
             if (position && foundTask.parentId) {
                 const foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
-                create(foundParentTask, { sortPosition: foundTask.sort, position });
+                return create(foundParentTask, { sortPosition: foundTask.sort, position });
             } else {
                 if (position && foundTask.sectionId) {
                     const foundParentTask = findTaskInTree(tasksclones, foundTask.sectionId);
-                    create(foundParentTask, { sortPosition: foundTask.sort, position });
+                    return create(foundParentTask, { sortPosition: foundTask.sort, position });
                 } else {
-                    create(foundTask);
+                   return create(foundTask);
                 }
             }
         }
@@ -352,18 +366,29 @@ export const useTaskTree = () => {
             return filteredTasks;
         }
 
-        const remove = async (foundTask: ITodoItem) => {
-            const todoRemoveList = getFieldRecursive(foundTask.items, "id");
-            todoRemoveList.push(foundTask.id);
-
+        const remove = async (foundTask: ITodoItem, parentTask?: ITodoItem) => {
+            let todoRemoveList: string[] = [];
+            
             if (isSection) {
+                todoRemoveList = getFieldRecursive(foundTask.items, "id");
+                todoRemoveList.push(foundTask.id);
                 tasksclones = filter(tasksclones);
                 await removeTodo(todoRemoveList);
                 await removeSection({ id: foundTask.id });
             } else {
-                const filteredItems = filter(foundTask.items);
-                foundTask.items = filteredItems;
-                removeTodo(todoRemoveList);
+                if (parentTask) {
+                    const filteredItems = filter(parentTask.items);
+                    parentTask.items = filteredItems;
+
+                    todoRemoveList = foundTask.items.map((item) => item.id);
+                    todoRemoveList.push(foundTask.id);
+
+                    removeTodo(todoRemoveList);
+                }
+            }
+
+            if(isVisibleDetailTodo && parentTask) {
+                setCurrentTodo({todo: parentTask});
             }
         }
 
@@ -374,7 +399,7 @@ export const useTaskTree = () => {
                 if (foundTask.parentId) {
                     const foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
                     if (foundParentTask) {
-                        remove(foundParentTask);
+                        remove(foundTask, foundParentTask);
                     }
                 }
             }
@@ -383,7 +408,7 @@ export const useTaskTree = () => {
         setTodos({ data: tasksclones });
     }
 
-    const mutateAllTasks = (mutateCallback: (obj: ITodoItem) => void) => {
+    const mutateAllTasks = (mutateCallback: (obj: ITodoItem) => void, changeState: boolean = true) => {
         const tasksclones = recursiveCloneTree(todos);
         const recursiveMutate = (tree: ITodoItem[]) => {
             for (let inc in tree) {
@@ -394,7 +419,9 @@ export const useTaskTree = () => {
             }
         }
         recursiveMutate(tasksclones);
-        setTodos({ data: tasksclones });
+        if (changeState) {
+            setTodos({ data: tasksclones });
+        }
         return tasksclones;
     }
 

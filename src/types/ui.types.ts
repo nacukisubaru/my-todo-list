@@ -5,11 +5,19 @@ export interface IMenuItem {
     onClick: (item: ITodoItem) => void
 }
 
+export interface IToolTaskSettings {
+    translateX?: string,
+    translateY?: string
+}
+
 export interface IModalSettings {
     title: string;
     primaryBtnName: string;
     secondaryBtnName: string;
     isVisible: boolean;
+    heightBody?: string;
+    showButtons?: boolean;
+    showUpperButtons?: boolean;
 }
 
 export interface IMutateList {

@@ -9,8 +9,9 @@ type type = "todo" | "section";
 
 export const useToolTodo = (id: string, type: type = "todo") => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
+    const {isVisibleDetailTodo} = useAppSelector((state => state.uiReducer));
     const { findTaskInTree, mutateTask, mutateAllTasks } = useTaskTree();
-    const { setActiveAddTaskBtn } = useActions();
+    const { setActiveAddTaskBtn, setCurrentTodo } = useActions();
     const [toolPanelIsVisible, setVisibleToolPanel] = useState(false);
     const [updSection] = todoSectionsApi.useUpdateMutation();
     const [updTodo] = todoApi.useUpdateMutation();
@@ -20,10 +21,15 @@ export const useToolTodo = (id: string, type: type = "todo") => {
         text: "",
     });
 
-    const mutateTasks = async (field: string, callback: (obj: any) => void) => {
-        await mutateTask(id, [{ field, value: true }]);
-        await mutateAllTasks(callback);
+    const mutateTasks = async (field: string, callback: (obj: any) => void, isDetail: boolean = false) => {
+        let changeState = true;
+        if (isDetail) {
+            changeState = false;
+        }
+
         hideToolPanel();
+        await mutateTask(id, [{ field, value: true }], false, isDetail);
+        return await mutateAllTasks(callback, changeState);
     }
 
     const openTodoChangePanel = async () => {
@@ -31,12 +37,12 @@ export const useToolTodo = (id: string, type: type = "todo") => {
             todos,
             id
         );
-        if (foundTask !== false) {
+
+        if (foundTask !== false) {   
             setTodoEditInputs({
                 name: foundTask.name,
                 text: foundTask.description,
             });
-        
         }
 
         const callback = (obj: any) => {
@@ -57,7 +63,15 @@ export const useToolTodo = (id: string, type: type = "todo") => {
             setActiveAddTaskBtn({ isActive: true });
         }
 
-        await mutateTasks("editable", callback);
+        if (foundTask && foundTask.parentId && isVisibleDetailTodo) {
+            const newTodos = await mutateTasks("editable", callback, isVisibleDetailTodo);
+            const parentTask = findTaskInTree(newTodos, foundTask.parentId);
+            if (parentTask) {
+                setCurrentTodo({todo: parentTask});
+            }
+        } else {
+            await mutateTasks("editable", callback);
+        }
     };
 
     const showUpperOrLowerForm = async (
@@ -75,12 +89,14 @@ export const useToolTodo = (id: string, type: type = "todo") => {
             }
         };
 
-        setActiveAddTaskBtn({ isActive: false });
-        await mutateTasks("editable", callback);
+        if (!isVisibleDetailTodo) {
+            setActiveAddTaskBtn({ isActive: false });
+        }
+        await mutateTasks(field, callback, isVisibleDetailTodo);
     };
 
     const closeTodoChangePanel = () => {
-        mutateTask(id, [{ field: "editable", value: false }]);
+        mutateTask(id, [{ field: "editable", value: false }], false, isVisibleDetailTodo);
     };
 
     const toggleTaskList = async (value: any) => {
@@ -107,6 +123,7 @@ export const useToolTodo = (id: string, type: type = "todo") => {
         showToolPanel, 
         hideToolPanel,
         showUpperOrLowerForm,
+        setTodoEditInputs,
         toolPanelIsVisible,
         todoEditInputs 
     };

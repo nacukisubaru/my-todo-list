@@ -21,14 +21,14 @@ const ArrowButton: FC<IArrowButton> = ({ isArrowOpen, color, onClick }) => {
     return (
         <>
             {isOpen ? (
-                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200`} onClick={toggleArrow}>
+                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200 h-[12px] active:outline-0 focus:outline-0`} onClick={toggleArrow}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="w-3 h-6"
+                        className="w-3 h-[12px]`"
                     >
                         <path
                             strokeLinecap="round"
@@ -38,14 +38,14 @@ const ArrowButton: FC<IArrowButton> = ({ isArrowOpen, color, onClick }) => {
                     </svg>
                 </button>
             ) : (
-                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200`} onClick={toggleArrow}>
+                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200 h-[12px] active:outline-0 focus:outline-0`} onClick={toggleArrow}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="w-3 h-6"
+                        className="w-3 h-[12px]"
                     >
                         <path
                             strokeLinecap="round"
