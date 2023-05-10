@@ -6,6 +6,7 @@ import { changeAction } from "../../types/ui.types";
 import { todoSectionsApi } from "../../store/services/todo/todo-sections.api";
 import { todoApi } from "../../store/services/todo/todo.api";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 interface IInputsSettings {
     inputValue?: string;
@@ -45,7 +46,8 @@ const TodoChange: FC<ITodoChange> = ({
 
     const { createTask, mutateTask, createTaskSection } = useTaskTree();
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
-    const { setActiveAddTaskBtn } = useActions();
+    const {isVisibleDetailTodo} = useAppSelector(state => state.uiReducer);
+    const { setActiveAddTaskBtn, setCurrentTodo } = useActions();
     
     const [updSection] = todoSectionsApi.useUpdateMutation();
     const [updTodo] = todoApi.useUpdateMutation();
@@ -53,10 +55,13 @@ const TodoChange: FC<ITodoChange> = ({
     const name: any = useRef();
     const description: any = useRef();
 
-    const createTodo = () => {
+    const createTodo = async () => {
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
-        createTask(id, { name: TaskName, description: TaskDesc }, sortByPosition?.position);
+        const task = await createTask(id, { name: TaskName, description: TaskDesc }, sortByPosition?.position);
+        if (isVisibleDetailTodo && task) {
+            setCurrentTodo({todo: task});
+        }
         name.current.value = "";
         description.current.value = "";
         setPrimaryBtnDisabled(true);
@@ -65,11 +70,17 @@ const TodoChange: FC<ITodoChange> = ({
     const changeTodo = async () => {
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
-        const task = await mutateTask(id, [
+        const arrayTodo = [
             { field: "name", value: TaskName },
             { field: "description", value: TaskDesc },
             { field: "editable", value: false },
-        ]);
+        ];
+
+        const task = await mutateTask(id, arrayTodo);
+        if (isVisibleDetailTodo) {
+            await mutateTask(id, arrayTodo, false, isVisibleDetailTodo);
+        }
+
         updTodo(task);
     };
 

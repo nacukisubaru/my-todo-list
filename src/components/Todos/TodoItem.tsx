@@ -1,17 +1,22 @@
-import { FC, useEffect} from "react";
+import { FC } from "react";
+import { useToolTodo } from "../../hooks/useToolTodo";
+import { IToolTaskSettings } from "../../types/ui.types";
+import { useAppSelector } from "../../hooks/useAppSelector";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import { ITodoItem } from "../../types/todo.types";
 import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import TodoChange from "../TodoChange/TodoChange";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
-import { useToolTodo } from "../../hooks/useToolTodo";
 
 interface ITodoItemProps {
     todo: ITodoItem;
+    toolTaskSettings?: IToolTaskSettings;
+    showSubtasks?: boolean;
+    onClick: () => void;
 }
 
-const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
+const TodoItem: FC<ITodoItemProps> = ({ todo, toolTaskSettings, showSubtasks = true, onClick }) => {
     const { mutateTask, removeTask } = useTaskTree();
     const {
         toggleTaskList,
@@ -24,8 +29,10 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
         todoEditInputs,
     } = useToolTodo(todo.id, "todo");
 
+    const {isVisibleDetailTodo} = useAppSelector(state => state.uiReducer);
+
     const closeUpperOrLowerForm = (field: string) => {
-        mutateTask(todo.id, [{ field, value: false }]);
+        mutateTask(todo.id, [{ field, value: false }], false, isVisibleDetailTodo);
     };
 
     const showLowerAddForm = async () => {
@@ -46,14 +53,6 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
 
     const removeTodo = () => {
         removeTask(todo.id);
-    };
-
-    const createSubtask = () => {
-        mutateTask(todo.id, [{ field: "creatable", value: true }]);
-    };
-
-    const closeSubtask = () => {
-        mutateTask(todo.id, [{ field: "creatable", value: false }]);
     };
 
     return (
@@ -99,14 +98,15 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                 >
                     <div className="display flex">
                         <div className="-mt-[3px] mr-3">
-                            {todo.items.length > 0 && (
+                            {todo.items.length > 0 && showSubtasks && (
                                 <ArrowButton
                                     isArrowOpen={todo.showTasks}
                                     onClick={toggleTaskList}
                                 />
                             )}
                         </div>
-                        <CheckBox label={todo.name} />
+                      
+                        <CheckBox label={todo.name} onClick={onClick}/>
                     </div>
                     {toolPanelIsVisible && (
                         <ToolTaskPanel
@@ -124,10 +124,6 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                                         onClick: showLowerAddForm,
                                     },
                                     {
-                                        name: "Добавить подзадачу",
-                                        onClick: createSubtask,
-                                    },
-                                    {
                                         name: "Изменить задачу",
                                         onClick: openTodoChangePanel,
                                     },
@@ -137,26 +133,12 @@ const TodoItem: FC<ITodoItemProps> = ({ todo }) => {
                                     },
                                 ],
                                 showEditBtn: true,
+                                ...toolTaskSettings
                             }}
                         />
-                    )}
+                        )}
                 </div>
             )}
-
-            <TodoChange
-                id={todo.id}
-                buttonsSettings={{
-                    primaryButtonName: "Добавить задачу",
-                    secondaryButtonName: "Отмена",
-                }}
-                inputsSettings={{
-                    inputPlaceHolder: "Название задачи",
-                    textPlaceHolder: "Описание",
-                }}
-                isVisible={todo.creatable}
-                callback={closeSubtask}
-                action="create"
-            />
 
             <TodoChange
                 id={todo.id}

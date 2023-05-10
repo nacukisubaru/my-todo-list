@@ -6,6 +6,7 @@ import { todoApi } from "../../store/services/todo/todo.api";
 import TodoSectionsList from "../TodoSections/TodoSectionsList";
 import SectionsMenu from "../Sections/SectionsMenu";
 import Header from "../../ui/Header/Header";
+import TodoDetail from "../TodoDetail/TodoDetail";
 
 const WorkSpace = () => {
     const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const WorkSpace = () => {
             <Header />
             <SectionsMenu />
             <TodoSectionsList />
+            <TodoDetail />
         </>
     );
 };
