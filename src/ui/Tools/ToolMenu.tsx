@@ -19,7 +19,7 @@ const ToolMenu: FC<IToolMenu> = ({ menuItems, translateX, translateY, parent }) 
                         <li
                             id={item.name}
                             key={item.name}
-                            className="cursor-pointer hover:bg-gray-50"
+                            className="cursor-pointer hover:bg-gray-50 text-sm text-start"
                             onClick={() => {
                                 item.onClick(parent);
                             }}

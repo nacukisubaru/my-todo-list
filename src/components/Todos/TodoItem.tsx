@@ -16,7 +16,12 @@ interface ITodoItemProps {
     onClick: () => void;
 }
 
-const TodoItem: FC<ITodoItemProps> = ({ todo, toolTaskSettings, showSubtasks = true, onClick }) => {
+const TodoItem: FC<ITodoItemProps> = ({
+    todo,
+    toolTaskSettings,
+    showSubtasks = true,
+    onClick,
+}) => {
     const { mutateTask, removeTask } = useTaskTree();
     const {
         toggleTaskList,
@@ -29,10 +34,15 @@ const TodoItem: FC<ITodoItemProps> = ({ todo, toolTaskSettings, showSubtasks = t
         todoEditInputs,
     } = useToolTodo(todo.id, "todo");
 
-    const {isVisibleDetailTodo} = useAppSelector(state => state.uiReducer);
+    const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
 
     const closeUpperOrLowerForm = (field: string) => {
-        mutateTask(todo.id, [{ field, value: false }], false, isVisibleDetailTodo);
+        mutateTask(
+            todo.id,
+            [{ field, value: false }],
+            false,
+            isVisibleDetailTodo
+        );
     };
 
     const showLowerAddForm = async () => {
@@ -97,16 +107,16 @@ const TodoItem: FC<ITodoItemProps> = ({ todo, toolTaskSettings, showSubtasks = t
                     onMouseOut={hideToolPanel}
                 >
                     <div className="display flex">
-                        <div className="-mt-[3px] mr-3">
-                            {todo.items.length > 0 && showSubtasks && (
+                        {todo.items.length > 0 && showSubtasks && (
+                            <div className="-mt-[3px] mr-3 -ml-[24px]">
                                 <ArrowButton
                                     isArrowOpen={todo.showTasks}
                                     onClick={toggleTaskList}
                                 />
-                            )}
-                        </div>
-                      
-                        <CheckBox label={todo.name} onClick={onClick}/>
+                            </div>
+                        )}
+
+                        <CheckBox label={todo.name} onClick={onClick} />
                     </div>
                     {toolPanelIsVisible && (
                         <ToolTaskPanel
@@ -133,10 +143,10 @@ const TodoItem: FC<ITodoItemProps> = ({ todo, toolTaskSettings, showSubtasks = t
                                     },
                                 ],
                                 showEditBtn: true,
-                                ...toolTaskSettings
+                                ...toolTaskSettings,
                             }}
                         />
-                        )}
+                    )}
                 </div>
             )}
 

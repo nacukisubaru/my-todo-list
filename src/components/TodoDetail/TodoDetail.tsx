@@ -114,27 +114,28 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                     <TodosList
                         todoitems={currentTodo.items}
                         toolTaskSettings={{
-                            translateY: "-translate-y-[180px]",
+                            translateY: "-translate-y-[120px]",
                             translateX: "-translate-x-[145px]",
                         }}
                         showChildrens={false}
                     />
+                    <div className="ml-[20px] text-start">
+                        <TodoChange
+                            id={currentTodo.id}
+                            buttonsSettings={{
+                                primaryButtonName: "Добавить задачу",
+                                secondaryButtonName: "Отмена",
+                            }}
+                            inputsSettings={{
+                                inputPlaceHolder: "Название задачи",
+                                textPlaceHolder: "Описание",
+                            }}
+                            isVisible={currentTodo.creatable}
+                            callback={closeCreateTodo}
+                        />
 
-                    <TodoChange
-                        id={currentTodo.id}
-                        buttonsSettings={{
-                            primaryButtonName: "Добавить задачу",
-                            secondaryButtonName: "Отмена",
-                        }}
-                        inputsSettings={{
-                            inputPlaceHolder: "Название задачи",
-                            textPlaceHolder: "Описание",
-                        }}
-                        isVisible={currentTodo.creatable}
-                        callback={closeCreateTodo}
-                    />
-
-                    <AddTaskButton onClick={openCreateTodo} />
+                        <AddTaskButton onClick={openCreateTodo} />
+                    </div>
                 </div>
             </div>
         </Modal>

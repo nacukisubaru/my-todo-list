@@ -6,11 +6,15 @@ import TodoItem from "./TodoItem";
 
 interface ITodosListProps {
     todoitems: ITodoItem[];
-    toolTaskSettings?: IToolTaskSettings,
-    showChildrens?: boolean
+    toolTaskSettings?: IToolTaskSettings;
+    showChildrens?: boolean;
 }
 
-const TodosList: FC<ITodosListProps> = ({ todoitems, toolTaskSettings, showChildrens = true }) => {
+const TodosList: FC<ITodosListProps> = ({
+    todoitems,
+    toolTaskSettings,
+    showChildrens = true,
+}) => {
     const { setVisibleDetailTodo, setCurrentTodo } = useActions();
     const showDetail = (todo: ITodoItem) => {
         setVisibleDetailTodo({ isActive: true });
@@ -31,7 +35,15 @@ const TodosList: FC<ITodosListProps> = ({ todoitems, toolTaskSettings, showChild
                             showSubtasks={showChildrens}
                         />
                         <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />
-                        {item.showTasks && showChildrens && <TodosList todoitems={item.items} />}
+                        {item.showTasks && showChildrens && (
+                            <TodosList
+                                todoitems={item.items}
+                                toolTaskSettings={{
+                                    translateX: "-translate-x-[155px]",
+                                    translateY: "-translate-y-[120px]",
+                                }}
+                            />
+                        )}
                     </li>
                 );
             })}
