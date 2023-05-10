@@ -106,7 +106,7 @@ export const useTaskTree = () => {
                 foundTask[item.field] = item.value;
             })
         }
-    
+        
         if (isDetailTodo) {
             setCurrentTodo({todo: tasksclones[0]});
         } else {

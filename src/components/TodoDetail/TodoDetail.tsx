@@ -6,6 +6,7 @@ import TodosList from "../Todos/TodosList";
 import Modal from "../../ui/Modal/Modal";
 import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import TodoChange from "../TodoChange/TodoChange";
+import { useToolTodo } from "../../hooks/useToolTodo";
 
 interface ITodoDetailProps {}
 
@@ -14,6 +15,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
     const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
     const { currentTodo } = useAppSelector((state) => state.todosReducer);
     const { mutateAllTasks, findTaskInTree, mutateTask } = useTaskTree();
+    const {setTodoEditInputs, todoEditInputs} = useToolTodo(currentTodo.id, "todo");
 
     const closeDetail = () => {
         setVisibleDetailTodo({ isActive: false });
@@ -36,7 +38,34 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
     };
 
     const closeCreateTodo = async () => {
-        mutateTask(currentTodo.id, [{ field: "creatable", value: false }], false, true);
+        mutateTask(
+            currentTodo.id,
+            [{ field: "creatable", value: false }],
+            false,
+            true
+        );
+    };
+
+    const openEditTodo = async () => {
+        await setTodoEditInputs({
+            name: currentTodo.name,
+            text: currentTodo.description,
+        });
+        mutateTask(
+            currentTodo.id,
+            [{ field: "editable", value: true }],
+            false,
+            true
+        );
+    };
+
+    const closeEditTodo = () => {
+        mutateTask(
+            currentTodo.id,
+            [{ field: "editable", value: false }],
+            false,
+            true
+        );
     }
 
     return (
@@ -56,8 +85,28 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
             }}
         >
             <div>
-                <b>{currentTodo.name}</b>
-                <p className="mb-[15px]">{currentTodo.description}</p>
+                <TodoChange
+                    id={currentTodo.id}
+                    buttonsSettings={{
+                        primaryButtonName: "Изменить",
+                        secondaryButtonName: "Отмена",
+                    }}
+                    inputsSettings={{
+                        inputPlaceHolder: "Название задачи",
+                        textPlaceHolder: "Описание",
+                        textValue: todoEditInputs.text,
+                        inputValue: todoEditInputs.name
+                    }}
+                    isVisible={currentTodo.editable}
+                    callback={closeEditTodo}
+                    action="change"
+                />
+                {!currentTodo.editable && (
+                    <div onClick={openEditTodo}>
+                        <b>{currentTodo.name}</b>
+                        <p className="mb-[15px]">{currentTodo.description}</p>
+                    </div>
+                )}
                 <div className="mb-[15px]">
                     <b>Подзадачи:</b>
                 </div>
@@ -70,7 +119,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                         }}
                         showChildrens={false}
                     />
-                
+
                     <TodoChange
                         id={currentTodo.id}
                         buttonsSettings={{
@@ -81,10 +130,10 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                             inputPlaceHolder: "Название задачи",
                             textPlaceHolder: "Описание",
                         }}
-                        isVisible={currentTodo.creatable }
+                        isVisible={currentTodo.creatable}
                         callback={closeCreateTodo}
                     />
-                    
+
                     <AddTaskButton onClick={openCreateTodo} />
                 </div>
             </div>

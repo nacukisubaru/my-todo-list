@@ -123,6 +123,7 @@ export const useToolTodo = (id: string, type: type = "todo") => {
         showToolPanel, 
         hideToolPanel,
         showUpperOrLowerForm,
+        setTodoEditInputs,
         toolPanelIsVisible,
         todoEditInputs 
     };
