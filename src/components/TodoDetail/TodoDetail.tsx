@@ -102,7 +102,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                     action="change"
                 />
                 {!currentTodo.editable && (
-                    <div onClick={openEditTodo}>
+                    <div className="text-start" onClick={openEditTodo}>
                         <b>{currentTodo.name}</b>
                         <p className="mb-[15px]">{currentTodo.description}</p>
                     </div>
