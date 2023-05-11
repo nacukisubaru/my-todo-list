@@ -8,11 +8,11 @@ import { useActions } from "../../hooks/useActions";
 interface IBurgerMenu {
     items: ISection[];
     menu: IMenuItem[];
-    setId: (id: string) => void;
+    setItem: (item: ISection) => void;
     toggleArrow: (id: string, value: boolean) => void;
 }
 
-const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId, toggleArrow }) => {
+const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setItem, toggleArrow }) => {
     const {showMenu} = useAppSelector(state => state.uiReducer);
     const {toggleMenu} = useActions();
 
@@ -26,7 +26,7 @@ const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setId, toggleArrow }) => {
                 <ul className="w-[89%]">
                     <BurgerMenuItems
                         items={items}
-                        setId={setId}
+                        setItem={setItem}
                         menu={menu}
                         count={3}
                         toggleArrow={toggleArrow}

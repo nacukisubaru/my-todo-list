@@ -1,14 +1,14 @@
 import { FC } from "react";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
-import { ISection } from "../../types/todo.types";
+import { ISection, ITodoItem } from "../../types/todo.types";
 import { IMenuItem } from "../../types/ui.types";
 import ArrowButton from "../Buttons/ArrowButton/ArrowButton";
 
 interface IBurgerMenuItemProps {
     count: number;
     item: ISection;
-    setId: (id: string) => void;
+    setItem: (item: ISection) => void;
     toggleArrow: (id: string, value: boolean) => void;
     menu: IMenuItem[];
 }
@@ -17,7 +17,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
     count,
     item,
     menu,
-    setId,
+    setItem,
     toggleArrow,
 }) => {
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
@@ -49,7 +49,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                             <span
                                 className="w-[100%]"
                                 onClick={() => {
-                                    setId(item.id);
+                                    setItem(item);
                                 }}
                             >
                                 {item.name}
@@ -83,7 +83,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                         className="w-[100%] ml-3"
                         key={item.id}
                         onClick={() => {
-                            setId(item.id);
+                            setItem(item);
                         }}
                     >
                         {item.name}

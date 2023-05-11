@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { getTodosBySection } from "../../store/services/todo/todo.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useDispatch } from "react-redux";
@@ -9,6 +9,8 @@ import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import { useTaskTree } from "../../hooks/useTaskTree";
 import { useActions } from "../../hooks/useActions";
 import TodoChangeSection from "./TodoChangeSection";
+import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
+import { useToolTodo } from "../../hooks/useToolTodo";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
@@ -16,9 +18,17 @@ const TodoSectionsList: FC = () => {
     let isActiveAddTaskBtn = useAppSelector(
         (state) => state.uiReducer.isActiveAddTaskBtn
     );
+    const { isVisibleCompleteTasks, currentProject } = useAppSelector(
+        (state) => state.uiReducer
+    );
+
     const dispatch = useDispatch();
     const { mutateTask, mutateAllTasks, generateTaskId } = useTaskTree();
-    const { setActiveAddTaskBtn } = useActions();
+    const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
+        "",
+        "todo"
+    );
+    const { setActiveAddTaskBtn, setVisibleCompleteTasks } = useActions();
 
     useEffect(() => {
         const getTodos = async () => {
@@ -49,64 +59,104 @@ const TodoSectionsList: FC = () => {
         mutateTask(id, [{ field: "creatable", value: false }]);
     };
 
+    const showCompleteTasks = () => {
+        if (isVisibleCompleteTasks) {
+            setVisibleCompleteTasks({ isActive: false });
+        } else {
+            setVisibleCompleteTasks({ isActive: true });
+        }
+    };
+
     return (
         <>
             <div className="display flex justify-center">
                 <ul className="w-[165vh] mt-[50px] px-[30px]">
-                    {!todos.length && sectionId ? (
-                        <TodoChangeSection
-                            id={generateTaskId(sectionId)}
-                            sort={0}
-                            action={"createSection"}
-                            primaryButtonName="Добавить раздел"
-                            nameValue=""
-                            hideAddSectionButton={false}
-                        />
-                    ) : (
-                        todos.map((section) => {
-                            return (
-                                <li className="mb-10" key={section.id}>
-                                    <TodoSection section={section} />
-                                    <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
-                                    {section.showTasks && (
-                                        <TodosList todoitems={section.items} />
-                                    )}
+                    {currentProject && (
+                        <div
+                            className="display flex justify-between"
+                            onMouseOver={showToolPanel}
+                            onMouseOut={hideToolPanel}
+                        >
+                            <div className="font-bold text-xl">{currentProject.name}</div>
+                            {toolPanelIsVisible && (
+                                <ToolTaskPanel
+                                    callbacks={{
+                                        clickEditBtn: () => {},
+                                    }}
+                                    settings={{
+                                        menuItems: [
+                                            {
+                                                name: !isVisibleCompleteTasks ? "Показать выполненные" : "Скрыть выполненные",
+                                                onClick: showCompleteTasks,
+                                            },
+                                        ],
+                                        showEditBtn: false,
+                                        translateY: "-translate-y-[40px]",
+                                        translateX: "-translate-x-[150px]",
+                                    }}
+                                />
+                            )}
+                        </div>
+                    )}
+                    <div className="mt-[30px]">
+                        {!todos.length && sectionId ? (
+                            <TodoChangeSection
+                                id={generateTaskId(sectionId)}
+                                sort={0}
+                                action={"createSection"}
+                                primaryButtonName="Добавить раздел"
+                                nameValue=""
+                                hideAddSectionButton={false}
+                            />
+                        ) : (
+                            todos.map((section) => {
+                                return (
+                                    <li className="mb-10" key={section.id}>
+                                        <TodoSection section={section} />
+                                        <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
+                                        {section.showTasks && (
+                                            <TodosList
+                                                todoitems={section.items}
+                                            />
+                                        )}
 
-                                    <TodoChange
-                                        id={section.id}
-                                        buttonsSettings={{
-                                            primaryButtonName:
-                                                "Добавить задачу",
-                                            secondaryButtonName: "Отмена",
-                                        }}
-                                        inputsSettings={{
-                                            inputPlaceHolder: "Название задачи",
-                                            textPlaceHolder: "Описание",
-                                        }}
-                                        isVisible={section.creatable}
-                                        callback={() => {
-                                            closeAddTodoForm(section.id);
-                                        }}
-                                    />
-
-                                    {isActiveAddTaskBtn && (
-                                        <AddTaskButton
-                                            onClick={() => {
-                                                openAddTodoForm(section.id);
+                                        <TodoChange
+                                            id={section.id}
+                                            buttonsSettings={{
+                                                primaryButtonName:
+                                                    "Добавить задачу",
+                                                secondaryButtonName: "Отмена",
+                                            }}
+                                            inputsSettings={{
+                                                inputPlaceHolder:
+                                                    "Название задачи",
+                                                textPlaceHolder: "Описание",
+                                            }}
+                                            isVisible={section.creatable}
+                                            callback={() => {
+                                                closeAddTodoForm(section.id);
                                             }}
                                         />
-                                    )}
-                                    <TodoChangeSection
-                                        id={section.id}
-                                        sort={section.sort}
-                                        action={"createSection"}
-                                        primaryButtonName="Добавить раздел"
-                                        nameValue=""
-                                    />
-                                </li>
-                            );
-                        })
-                    )}
+
+                                        {isActiveAddTaskBtn && (
+                                            <AddTaskButton
+                                                onClick={() => {
+                                                    openAddTodoForm(section.id);
+                                                }}
+                                            />
+                                        )}
+                                        <TodoChangeSection
+                                            id={section.id}
+                                            sort={section.sort}
+                                            action={"createSection"}
+                                            primaryButtonName="Добавить раздел"
+                                            nameValue=""
+                                        />
+                                    </li>
+                                );
+                            })
+                        )}
+                    </div>
                 </ul>
             </div>
         </>

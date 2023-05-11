@@ -460,8 +460,25 @@ export const useTaskTree = () => {
                 recursiveComplete(tree[inc].items);
             }
         }
-      
+
+        const setUncompleteRecursive = (tasks: ITodoItem[], taskId: string) => {
+            if (!isComplete) {
+                const task = findTaskInTree(tasks, taskId);
+                if (task && task.parentId) {
+                    const taskParent = findTaskInTree(tasks, task.parentId);
+                    if (taskParent) {
+                        taskParent.isComplete = false;
+                        arrayJsonItems.push(taskParent);
+                        setUncompleteRecursive(tasks, taskParent.id);
+                    }
+                }
+            }
+        }
+
+
         recursiveComplete(tasksclones);
+        setUncompleteRecursive(tasksclones, taskId);
+
         setJsonItems(arrayJsonItems, todosItems, "task", false);
         setTodos({ data: tasksclones });
         return tasksclones;

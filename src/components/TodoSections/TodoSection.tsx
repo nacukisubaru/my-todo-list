@@ -71,6 +71,7 @@ const TodoSection: FC<ITodoSectionProps> = ({ section }) => {
                                     },
                                 ],
                                 showEditBtn: false,
+                                translateX: "-translate-x-[150px]",
                             }}
                         />
                     )}
