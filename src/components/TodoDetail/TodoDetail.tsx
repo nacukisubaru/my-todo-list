@@ -7,6 +7,7 @@ import Modal from "../../ui/Modal/Modal";
 import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import TodoChange from "../TodoChange/TodoChange";
 import { useToolTodo } from "../../hooks/useToolTodo";
+import CheckBox from "../../ui/CheckBox/CheckBox";
 
 interface ITodoDetailProps {}
 
@@ -14,8 +15,11 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
     const { setVisibleDetailTodo, setCurrentTodo } = useActions();
     const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
     const { currentTodo } = useAppSelector((state) => state.todosReducer);
-    const { mutateAllTasks, findTaskInTree, mutateTask } = useTaskTree();
-    const {setTodoEditInputs, todoEditInputs} = useToolTodo(currentTodo.id, "todo");
+    const { mutateAllTasks, findTaskInTree, mutateTask, completeTasks } = useTaskTree();
+    const { setTodoEditInputs, todoEditInputs } = useToolTodo(
+        currentTodo.id,
+        "todo"
+    );
 
     const closeDetail = () => {
         setVisibleDetailTodo({ isActive: false });
@@ -66,6 +70,14 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
             false,
             true
         );
+    };
+
+    const completeTodo = (isComplete: boolean) => {
+        const tasks = completeTasks(currentTodo.id, isComplete);
+        const task = findTaskInTree(tasks, currentTodo.id);
+        if (task) {
+            setCurrentTodo({todo: task});
+        }
     }
 
     return (
@@ -95,16 +107,26 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                         inputPlaceHolder: "Название задачи",
                         textPlaceHolder: "Описание",
                         textValue: todoEditInputs.text,
-                        inputValue: todoEditInputs.name
+                        inputValue: todoEditInputs.name,
                     }}
                     isVisible={currentTodo.editable}
                     callback={closeEditTodo}
                     action="change"
                 />
+
                 {!currentTodo.editable && (
-                    <div className="text-start" onClick={openEditTodo}>
-                        <b>{currentTodo.name}</b>
-                        <p className="mb-[15px]">{currentTodo.description}</p>
+                    <div className="display flex">
+                        <CheckBox
+                            checkCallback={completeTodo}
+                            checked={currentTodo.isComplete}
+                        />
+
+                        <div className="text-start -mt-[4px] ml-[10px]" onClick={openEditTodo}>
+                            <span className={`${currentTodo.isComplete && 'line-through'}`}><b>{currentTodo.name}</b></span>
+                            <p className="mb-[15px]">
+                                {currentTodo.description}
+                            </p>
+                        </div>
                     </div>
                 )}
                 <div className="mb-[15px]">
@@ -133,8 +155,10 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                             isVisible={currentTodo.creatable}
                             callback={closeCreateTodo}
                         />
-
-                        <AddTaskButton onClick={openCreateTodo} />
+                        
+                        {!currentTodo.isComplete && (
+                             <AddTaskButton onClick={openCreateTodo} />
+                        )}
                     </div>
                 </div>
             </div>

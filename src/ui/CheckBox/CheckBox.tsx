@@ -1,9 +1,9 @@
 import { FC, useState } from "react";
 
 interface ICheckBox {
-    label: string;
+    label?: string;
     checked?: boolean;
-    onClick: () => void;
+    onClick?: () => void;
     checkCallback: (checked: boolean) => void;
 }
 
@@ -13,7 +13,6 @@ const CheckBox: FC<ICheckBox> = ({
     onClick,
     checkCallback,
 }) => {
- 
     const check = (isChecked: boolean) => {
         if (isChecked) {
             checkCallback(false);
@@ -21,6 +20,10 @@ const CheckBox: FC<ICheckBox> = ({
             checkCallback(true);
         }
     };
+
+    const clickLabel = () => {
+        onClick && onClick();
+    }
 
     return (
         <>
@@ -32,8 +35,10 @@ const CheckBox: FC<ICheckBox> = ({
                         viewBox="0 0 24 24"
                         stroke-width="1.5"
                         stroke="currentColor"
-                        className="w-[15px] h-[15px] absolute ml-[2px] mt-[2px] cursor-pointer"
-                        onClick={()=> {check(checked)}}
+                        className="w-[15px] h-[15px] absolute ml-[2px] mt-[2px] cursor-pointer text-white font-bold"
+                        onClick={() => {
+                            check(checked);
+                        }}
                     >
                         <path
                             stroke-linecap="round"
@@ -45,17 +50,23 @@ const CheckBox: FC<ICheckBox> = ({
 
                 <input
                     className={`appearance-none w-[18px] h-[18px] rounded-xl border border-gray-950 border-solid cursor-pointer ${
-                        checked ? "bg-[#e3e3e3]" : ""
+                        checked ? "bg-gray-500" : ""
                     }`}
-                    onClick={()=> {check(checked)}}
+                    onClick={() => {
+                        check(checked);
+                    }}
                     type="checkbox"
                 />
-                <label
-                    className="-mt-[3px] ml-2 cursor-pointer"
-                    onClick={onClick}
-                >
-                    {label}
-                </label>
+                {label && (
+                    <label
+                        className={`-mt-[3px] ml-2 cursor-pointer ${
+                            checked && "line-through"
+                        }`}
+                        onClick={clickLabel}
+                    >
+                        {label}
+                    </label>
+                )}
             </div>
         </>
     );

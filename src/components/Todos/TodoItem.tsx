@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import { IToolTaskSettings } from "../../types/ui.types";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -82,6 +82,44 @@ const TodoItem: FC<ITodoItemProps> = ({
         }
     };
 
+    const itemMenu = [
+        {
+            name: "Добавить задачу выше",
+            onClick: showUpperAddForm,
+        },
+        {
+            name: "Добавить задачу ниже",
+            onClick: showLowerAddForm,
+        },
+        {
+            name: "Изменить задачу",
+            onClick: openTodoChangePanel,
+        },
+        {
+            name: "Удалить задачу",
+            onClick: removeTodo,
+        },
+    ];
+
+    const [menu, setMenu] = useState(itemMenu);
+
+    useEffect(() => {
+        if (todo.isComplete) {
+            setMenu([
+                {
+                    name: "Изменить задачу",
+                    onClick: openTodoChangePanel,
+                },
+                {
+                    name: "Удалить задачу",
+                    onClick: removeTodo,
+                },
+            ]);
+        } else {
+            setMenu(itemMenu);
+        }
+    }, [todo.isComplete]);
+
     return (
         <>
             <TodoChange
@@ -146,26 +184,10 @@ const TodoItem: FC<ITodoItemProps> = ({
                                 clickEditBtn: openTodoChangePanel,
                             }}
                             settings={{
-                                menuItems: [
-                                    {
-                                        name: "Добавить задачу выше",
-                                        onClick: showUpperAddForm,
-                                    },
-                                    {
-                                        name: "Добавить задачу ниже",
-                                        onClick: showLowerAddForm,
-                                    },
-                                    {
-                                        name: "Изменить задачу",
-                                        onClick: openTodoChangePanel,
-                                    },
-                                    {
-                                        name: "Удалить задачу",
-                                        onClick: removeTodo,
-                                    },
-                                ],
+                                menuItems: menu,
                                 showEditBtn: true,
                                 ...toolTaskSettings,
+                                translateY: '-translate-y-[80px]'
                             }}
                         />
                     )}

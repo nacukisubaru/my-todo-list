@@ -427,29 +427,32 @@ export const useTaskTree = () => {
 
     const completeTasks = (taskId: string, isComplete: boolean) => {
         const tasksclones = recursiveCloneTree(todos);
+        const arrayJsonItems: ITodoItem[] = [];
 
         const recursiveComplete = (tree: ITodoItem[], depth: boolean = false) => {
             for (let inc in tree) {
                 if (depth) {
                     tree[inc].items.map((item) => {
-                        if (item.parentId === tree[inc].id) {
+                        if (item.parentId === tree[inc].id && !item.isComplete) {
                             item.isComplete = isComplete;
+                            arrayJsonItems.push(item);
                         }
-                      
                         recursiveComplete(tree[inc].items, true);
                     });
                 } else {
                     if (tree[inc].id === taskId) {
                         tree[inc].isComplete = isComplete;
+                        arrayJsonItems.push(tree[inc]);
                     }
-                    if (tree[inc].parentId === taskId) {
+                    if (tree[inc].parentId === taskId && !tree[inc].isComplete) {
                         tree[inc].items.map((item) => {
                             if (item.parentId === tree[inc].id) {
                                 item.isComplete = isComplete;
+                                arrayJsonItems.push(item);
                             }
                             recursiveComplete(tree[inc].items, true);
                         });
-
+                        arrayJsonItems.push(tree[inc]);
                         tree[inc].isComplete = isComplete;
                     }
                 }
@@ -457,8 +460,9 @@ export const useTaskTree = () => {
                 recursiveComplete(tree[inc].items);
             }
         }
-
+      
         recursiveComplete(tasksclones);
+        setJsonItems(arrayJsonItems, todosItems, "task", false);
         setTodos({ data: tasksclones });
         return tasksclones;
     }
