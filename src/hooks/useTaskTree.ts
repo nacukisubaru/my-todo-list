@@ -425,6 +425,44 @@ export const useTaskTree = () => {
         return tasksclones;
     }
 
+    const completeTasks = (taskId: string, isComplete: boolean) => {
+        const tasksclones = recursiveCloneTree(todos);
+
+        const recursiveComplete = (tree: ITodoItem[], depth: boolean = false) => {
+            for (let inc in tree) {
+                if (depth) {
+                    tree[inc].items.map((item) => {
+                        if (item.parentId === tree[inc].id) {
+                            item.isComplete = isComplete;
+                        }
+                      
+                        recursiveComplete(tree[inc].items, true);
+                    });
+                } else {
+                    if (tree[inc].id === taskId) {
+                        tree[inc].isComplete = isComplete;
+                    }
+                    if (tree[inc].parentId === taskId) {
+                        tree[inc].items.map((item) => {
+                            if (item.parentId === tree[inc].id) {
+                                item.isComplete = isComplete;
+                            }
+                            recursiveComplete(tree[inc].items, true);
+                        });
+
+                        tree[inc].isComplete = isComplete;
+                    }
+                }
+
+                recursiveComplete(tree[inc].items);
+            }
+        }
+
+        recursiveComplete(tasksclones);
+        setTodos({ data: tasksclones });
+        return tasksclones;
+    }
+
     return {
         findTaskInTree,
         recursiveCloneTree,
@@ -434,6 +472,7 @@ export const useTaskTree = () => {
         mutateAllTasks,
         createTaskSection,
         createSection,
+        completeTasks,
         generateTaskId
     };
 }

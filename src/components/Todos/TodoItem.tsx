@@ -8,6 +8,7 @@ import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import TodoChange from "../TodoChange/TodoChange";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
+import { useActions } from "../../hooks/useActions";
 
 interface ITodoItemProps {
     todo: ITodoItem;
@@ -22,7 +23,7 @@ const TodoItem: FC<ITodoItemProps> = ({
     showSubtasks = true,
     onClick,
 }) => {
-    const { mutateTask, removeTask } = useTaskTree();
+    const { mutateTask, completeTasks, removeTask, findTaskInTree } = useTaskTree();
     const {
         toggleTaskList,
         showUpperOrLowerForm,
@@ -35,6 +36,7 @@ const TodoItem: FC<ITodoItemProps> = ({
     } = useToolTodo(todo.id, "todo");
 
     const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
+    const {setCurrentTodo} = useActions();
 
     const closeUpperOrLowerForm = (field: string) => {
         mutateTask(
@@ -63,6 +65,21 @@ const TodoItem: FC<ITodoItemProps> = ({
 
     const removeTodo = () => {
         removeTask(todo.id);
+    };
+
+    const completeTodo = async (isComplete: boolean) => {
+        const tasks = await completeTasks(todo.id, isComplete);
+        if (isVisibleDetailTodo) {
+            if (todo.parentId) {
+                const parent = findTaskInTree(tasks, todo.parentId);
+                if (parent) {
+                    const task = findTaskInTree(tasks, parent.id);
+                    if (task) {
+                        setCurrentTodo({todo: task});
+                    }
+                }
+            }
+        }
     };
 
     return (
@@ -116,7 +133,12 @@ const TodoItem: FC<ITodoItemProps> = ({
                             </div>
                         )}
 
-                        <CheckBox label={todo.name} onClick={onClick} />
+                        <CheckBox
+                            label={todo.name}
+                            onClick={onClick}
+                            checkCallback={completeTodo}
+                            checked={todo.isComplete}
+                        />
                     </div>
                     {toolPanelIsVisible && (
                         <ToolTaskPanel
