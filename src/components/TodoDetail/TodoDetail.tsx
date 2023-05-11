@@ -115,7 +115,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                         todoitems={currentTodo.items}
                         toolTaskSettings={{
                             translateY: "-translate-y-[120px]",
-                            translateX: "-translate-x-[145px]",
+                            translateX: "-translate-x-[115px]",
                         }}
                         showChildrens={false}
                     />

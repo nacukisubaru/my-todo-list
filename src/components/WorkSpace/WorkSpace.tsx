@@ -22,8 +22,8 @@ const WorkSpace = () => {
 
     return (
         <>
-            <Header />
             <SectionsMenu />
+            <Header />
             <TodoSectionsList />
             <TodoDetail />
         </>
