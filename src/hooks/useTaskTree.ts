@@ -31,7 +31,7 @@ export const useTaskTree = () => {
         });
         
         const taskId = bcrypt.hashSync(strParams, salt);
-        return taskId.replace(/\/+$/, '').replace('.', '');
+        return taskId.replaceAll('/', '').replaceAll('.', '');
     }
 
     const recursiveCloneTree = (tree: ITodoItem[] | any[]): ITodoItem[] | any[] => {

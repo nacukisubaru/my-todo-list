@@ -5,6 +5,8 @@ import React from "react";
 import WorkSpace from "./pages/WorkSpace/WorkSpace";
 import StartPage from "./pages/WorkSpace/StartPage";
 import "./App.css";
+import RegistrationPage from "./pages/Login/RegistrationPage";
+import LoginPage from "./pages/Login/LoginPage";
 
 const router = createBrowserRouter([
     {
@@ -22,6 +24,14 @@ const router = createBrowserRouter([
     {
         path: "/app/section/:sectionId/task/:todoId",
         element: <WorkSpace />,
+    },
+    {
+        path: "/app/registration",
+        element: <RegistrationPage />,
+    },
+    {
+        path: "/app/login",
+        element: <LoginPage />,
     },
 ]);
 function App() {
