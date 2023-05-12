@@ -6,7 +6,7 @@ import BurgerMenuItem from "./BurgerMenuItem";
 
 interface IBurgerMenuItemsProps {
     items: ISection[];
-    setId: (id: string) => void;
+    setItem: (item: ISection) => void;
     toggleArrow: (id: string, value: boolean) => void;
     count: number;
     menu: IMenuItem[];
@@ -15,7 +15,7 @@ interface IBurgerMenuItemsProps {
 const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
     items,
     count,
-    setId,
+    setItem,
     toggleArrow,
     menu,
 }) => {
@@ -27,14 +27,14 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
                         <BurgerMenuItem
                             count={count}
                             item={item}
-                            setId={setId}
+                            setItem={setItem}
                             menu={menu}
                             toggleArrow={toggleArrow}
                         />
                         {item.showSections && (
                             <BurgerMenuItems
                                 items={item.items}
-                                setId={setId}
+                                setItem={setItem}
                                 count={count + count}
                                 menu={menu}
                                 toggleArrow={toggleArrow}

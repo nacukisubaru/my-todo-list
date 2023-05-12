@@ -4,14 +4,16 @@ interface IState {
     isActiveAddTaskBtn: boolean,
     isActiveAddSectionBtn: boolean,
     showMenu: boolean,
-    isVisibleDetailTodo: boolean
+    isVisibleDetailTodo: boolean,
+    isVisibleCompleteTasks: boolean
 }
 
 const initialState:IState = {
     isActiveAddTaskBtn: true,
     isActiveAddSectionBtn: true,
     showMenu: false,
-    isVisibleDetailTodo: false
+    isVisibleDetailTodo: false,
+    isVisibleCompleteTasks: false
 };
 
 export const uiSlice = createSlice({
@@ -29,6 +31,9 @@ export const uiSlice = createSlice({
         },
         setVisibleDetailTodo: (state, action: PayloadAction<{isActive: boolean}>) => {
             state.isVisibleDetailTodo = action.payload.isActive;
+        },
+        setVisibleCompleteTasks: (state, action: PayloadAction<{isActive: boolean}>) => {
+            state.isVisibleCompleteTasks = action.payload.isActive;
         }
     },
 }); 

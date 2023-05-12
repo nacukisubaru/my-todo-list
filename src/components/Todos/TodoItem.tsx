@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import { IToolTaskSettings } from "../../types/ui.types";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -8,6 +8,7 @@ import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import TodoChange from "../TodoChange/TodoChange";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
+import { useActions } from "../../hooks/useActions";
 
 interface ITodoItemProps {
     todo: ITodoItem;
@@ -22,7 +23,7 @@ const TodoItem: FC<ITodoItemProps> = ({
     showSubtasks = true,
     onClick,
 }) => {
-    const { mutateTask, removeTask } = useTaskTree();
+    const { mutateTask, completeTasks, removeTask, findTaskInTree } = useTaskTree();
     const {
         toggleTaskList,
         showUpperOrLowerForm,
@@ -35,6 +36,7 @@ const TodoItem: FC<ITodoItemProps> = ({
     } = useToolTodo(todo.id, "todo");
 
     const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
+    const {setCurrentTodo} = useActions();
 
     const closeUpperOrLowerForm = (field: string) => {
         mutateTask(
@@ -64,6 +66,59 @@ const TodoItem: FC<ITodoItemProps> = ({
     const removeTodo = () => {
         removeTask(todo.id);
     };
+
+    const completeTodo = async (isComplete: boolean) => {
+        const tasks = await completeTasks(todo.id, isComplete);
+        if (isVisibleDetailTodo) {
+            if (todo.parentId) {
+                const parent = findTaskInTree(tasks, todo.parentId);
+                if (parent) {
+                    const task = findTaskInTree(tasks, parent.id);
+                    if (task) {
+                        setCurrentTodo({todo: task});
+                    }
+                }
+            }
+        }
+    };
+
+    const itemMenu = [
+        {
+            name: "Добавить задачу выше",
+            onClick: showUpperAddForm,
+        },
+        {
+            name: "Добавить задачу ниже",
+            onClick: showLowerAddForm,
+        },
+        {
+            name: "Изменить задачу",
+            onClick: openTodoChangePanel,
+        },
+        {
+            name: "Удалить задачу",
+            onClick: removeTodo,
+        },
+    ];
+
+    const [menu, setMenu] = useState(itemMenu);
+
+    useEffect(() => {
+        if (todo.isComplete) {
+            setMenu([
+                {
+                    name: "Изменить задачу",
+                    onClick: openTodoChangePanel,
+                },
+                {
+                    name: "Удалить задачу",
+                    onClick: removeTodo,
+                },
+            ]);
+        } else {
+            setMenu(itemMenu);
+        }
+    }, [todo.isComplete]);
 
     return (
         <>
@@ -116,7 +171,12 @@ const TodoItem: FC<ITodoItemProps> = ({
                             </div>
                         )}
 
-                        <CheckBox label={todo.name} onClick={onClick} />
+                        <CheckBox
+                            label={todo.name}
+                            onClick={onClick}
+                            checkCallback={completeTodo}
+                            checked={todo.isComplete}
+                        />
                     </div>
                     {toolPanelIsVisible && (
                         <ToolTaskPanel
@@ -124,26 +184,10 @@ const TodoItem: FC<ITodoItemProps> = ({
                                 clickEditBtn: openTodoChangePanel,
                             }}
                             settings={{
-                                menuItems: [
-                                    {
-                                        name: "Добавить задачу выше",
-                                        onClick: showUpperAddForm,
-                                    },
-                                    {
-                                        name: "Добавить задачу ниже",
-                                        onClick: showLowerAddForm,
-                                    },
-                                    {
-                                        name: "Изменить задачу",
-                                        onClick: openTodoChangePanel,
-                                    },
-                                    {
-                                        name: "Удалить задачу",
-                                        onClick: removeTodo,
-                                    },
-                                ],
+                                menuItems: menu,
                                 showEditBtn: true,
-                                ...toolTaskSettings,
+                                translateX: "-translate-x-[151px]",
+                                translateY: '-translate-y-[80px]'
                             }}
                         />
                     )}

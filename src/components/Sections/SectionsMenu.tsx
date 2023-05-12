@@ -5,11 +5,11 @@ import { useModal } from "../../hooks/useModal";
 import { useSection } from "../../hooks/useSection";
 import Modal from "../../ui/Modal/Modal";
 import BurgerMenu from "../../ui/BurgerMenu/BurgerMenu";
-import { ITodoItem } from "../../types/todo.types";
+import { ISection, ITodoItem } from "../../types/todo.types";
 
 const SectionsMenu = () => {
     const { sections } = useAppSelector((state) => state.sectionsReducer);
-    const { setSectionId } = useActions();
+    const { setSectionId, setCurrentSection } = useActions();
     const {
         setSectionEdit,
         setSortPosition,
@@ -21,8 +21,9 @@ const SectionsMenu = () => {
     const [action, setAction] = useState("create");
     const [sectionName, setNameSection] = useState("");
 
-    const choiseSection = (id: string) => {
-        setSectionId({ sectionId: id });
+    const choiseSection = (item: ISection) => {
+        setSectionId({ sectionId: item.id });
+        setCurrentSection({section: item});
     };
 
     const openAddSection = (position: string, section: ITodoItem) => {
@@ -110,7 +111,7 @@ const SectionsMenu = () => {
             </Modal>
             <BurgerMenu
                 items={sections}
-                setId={choiseSection}
+                setItem={choiseSection}
                 menu={[
                     {
                         name: "Добавить раздел выше",
