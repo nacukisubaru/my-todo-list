@@ -1,34 +1,34 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { host } from "../../../http/http.request.config";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import authBaseQuery from "../api/authBaseQuery";
 
 export const todoSectionsApi = createApi({
     reducerPath: 'todoSectionsApi',
-    baseQuery: fetchBaseQuery({baseUrl: host + '/sections-todo-list/'}),
+    baseQuery: authBaseQuery,
     endpoints: (build) => ({
         add: build.mutation({
             query: (body) => ({
-                url: 'create',
+                url: '/sections-todo-list/create',
                 method: 'POST',
                 body
             }),
         }),
         update: build.mutation({
             query: (body) => ({
-                url: 'update',
+                url: '/sections-todo-list/update',
                 method: 'POST',
                 body
             }),
         }),
         remove: build.mutation({
             query:(body) => ({
-                url: 'remove',
+                url: '/sections-todo-list/remove',
                 method: 'POST',
                 body
             }),
         }),
         updateSort: build.mutation({
             query: (body) => ({
-                url: 'updateSort',
+                url: '/sections-todo-list/updateSort',
                 method: 'POST',
                 body
             }),
