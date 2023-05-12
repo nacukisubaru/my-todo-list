@@ -4,6 +4,7 @@ import { useActions } from "../../hooks/useActions";
 import { IToolTaskSettings } from "../../types/ui.types";
 import TodoItem from "./TodoItem";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { useNavigate } from "react-router-dom";
 
 interface ITodosListProps {
     todoitems: ITodoItem[];
@@ -17,11 +18,15 @@ const TodosList: FC<ITodosListProps> = ({
     showChildrens = true,
 }) => {
     const { setVisibleDetailTodo, setCurrentTodo } = useActions();
+    const {isVisibleCompleteTasks} = useAppSelector(state => state.uiReducer);
+    const section = useAppSelector(state => state.sectionsReducer.currentSection);
+    const navigate = useNavigate();
+
     const showDetail = (todo: ITodoItem) => {
         setVisibleDetailTodo({ isActive: true });
         setCurrentTodo({ todo });
+        navigate(`/app/section/${section.id}/task/${todo.id}`);
     };
-    const {isVisibleCompleteTasks} = useAppSelector(state => state.uiReducer);
 
     return (
         <ul>

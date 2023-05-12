@@ -1,7 +1,5 @@
-import { FC, useEffect } from "react";
-import { getTodosBySection } from "../../store/services/todo/todo.slice";
+import { FC } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { useDispatch } from "react-redux";
 import TodoChange from "../TodoChange/TodoChange";
 import TodoSection from "./TodoSection";
 import TodosList from "../Todos/TodosList";
@@ -11,34 +9,25 @@ import { useActions } from "../../hooks/useActions";
 import TodoChangeSection from "./TodoChangeSection";
 import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import { useToolTodo } from "../../hooks/useToolTodo";
+import { useParams } from "react-router-dom";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
-    const { sectionId } = useAppSelector((state) => state.sectionsReducer);
     let isActiveAddTaskBtn = useAppSelector(
         (state) => state.uiReducer.isActiveAddTaskBtn
     );
-    const { isVisibleCompleteTasks, currentProject } = useAppSelector(
+    const { isVisibleCompleteTasks } = useAppSelector(
         (state) => state.uiReducer
     );
+    let { currentSection } = useAppSelector((state) => state.sectionsReducer);
 
-    const dispatch = useDispatch();
     const { mutateTask, mutateAllTasks, generateTaskId } = useTaskTree();
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
         "",
         "todo"
     );
     const { setActiveAddTaskBtn, setVisibleCompleteTasks } = useActions();
-
-    useEffect(() => {
-        const getTodos = async () => {
-            await dispatch(getTodosBySection(sectionId));
-        };
-
-        if (sectionId) {
-            getTodos();
-        }
-    }, [sectionId]);
+    const { sectionId } = useParams();
 
     const openAddTodoForm = async (id: string) => {
         setActiveAddTaskBtn({ isActive: false });
@@ -71,13 +60,15 @@ const TodoSectionsList: FC = () => {
         <>
             <div className="display flex justify-center">
                 <ul className="w-[165vh] mt-[50px] px-[30px]">
-                    {currentProject && (
+                    {currentSection && (
                         <div
                             className="display flex justify-between"
                             onMouseOver={showToolPanel}
                             onMouseOut={hideToolPanel}
                         >
-                            <div className="font-bold text-xl">{currentProject.name}</div>
+                            <div className="font-bold text-xl">
+                                {currentSection.name}
+                            </div>
                             {toolPanelIsVisible && (
                                 <ToolTaskPanel
                                     callbacks={{
@@ -86,7 +77,9 @@ const TodoSectionsList: FC = () => {
                                     settings={{
                                         menuItems: [
                                             {
-                                                name: !isVisibleCompleteTasks ? "Показать выполненные" : "Скрыть выполненные",
+                                                name: !isVisibleCompleteTasks
+                                                    ? "Показать выполненные"
+                                                    : "Скрыть выполненные",
                                                 onClick: showCompleteTasks,
                                             },
                                         ],

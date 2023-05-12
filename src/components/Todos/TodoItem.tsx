@@ -186,7 +186,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                             settings={{
                                 menuItems: menu,
                                 showEditBtn: true,
-                                translateX: "-translate-x-[120px]",
+                                translateX: "-translate-x-[151px]",
                                 translateY: '-translate-y-[80px]'
                             }}
                         />

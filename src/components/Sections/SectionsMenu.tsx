@@ -9,7 +9,7 @@ import { ISection, ITodoItem } from "../../types/todo.types";
 
 const SectionsMenu = () => {
     const { sections } = useAppSelector((state) => state.sectionsReducer);
-    const { setSectionId, setCurrentProject } = useActions();
+    const { setSectionId, setCurrentSection } = useActions();
     const {
         setSectionEdit,
         setSortPosition,
@@ -23,7 +23,7 @@ const SectionsMenu = () => {
 
     const choiseSection = (item: ISection) => {
         setSectionId({ sectionId: item.id });
-        setCurrentProject({project: item});
+        setCurrentSection({section: item});
     };
 
     const openAddSection = (position: string, section: ITodoItem) => {

@@ -8,6 +8,8 @@ import AddTaskButton from "../../ui/Buttons/AddTaskButton/AddTaskButton";
 import TodoChange from "../TodoChange/TodoChange";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import CheckBox from "../../ui/CheckBox/CheckBox";
+import { useNavigate, useParams } from "react-router-dom";
+import useCopyToClipboard from "../../hooks/useCopyToClickboard";
 
 interface ITodoDetailProps {}
 
@@ -21,7 +23,12 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
         "todo"
     );
 
+    const [copy] = useCopyToClipboard()
+    const {sectionId} = useParams();
+    const navigate = useNavigate();
+    
     const closeDetail = () => {
+        navigate(`/app/section/${sectionId}`);
         setVisibleDetailTodo({ isActive: false });
     };
 
@@ -80,6 +87,10 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
         }
     }
 
+    const copyLink = () => {
+        copy(window.location.href);
+    }
+
     return (
         <Modal
             modalSettings={{
@@ -91,6 +102,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                 showButtons: false,
                 showUpperButtons: true,
             }}
+            toolPanel={{menu: [{name: 'Скопировать ссылку на задачу', onClick: copyLink }]}}
             callbacks={{
                 primaryBtnClick: () => {},
                 secondaryBtnClick: closeDetail,

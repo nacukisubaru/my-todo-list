@@ -4,6 +4,7 @@ import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
 import { ISection, ITodoItem } from "../../types/todo.types";
 import { IMenuItem } from "../../types/ui.types";
 import ArrowButton from "../Buttons/ArrowButton/ArrowButton";
+import { useNavigate } from "react-router-dom";
 
 interface IBurgerMenuItemProps {
     count: number;
@@ -24,6 +25,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
         "",
         "section"
     );
+    const navigate = useNavigate();
 
     return (
         <>
@@ -45,10 +47,10 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                                     }}
                                 />
                             </span>
-
                             <span
                                 className="w-[100%]"
                                 onClick={() => {
+                                    navigate(`/app/section/${item.id}`);
                                     setItem(item);
                                 }}
                             >
@@ -83,6 +85,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                         className="w-[100%] ml-3"
                         key={item.id}
                         onClick={() => {
+                            navigate(`/app/section/${item.id}`);
                             setItem(item);
                         }}
                     >

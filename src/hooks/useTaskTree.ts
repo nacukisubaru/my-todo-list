@@ -10,7 +10,7 @@ import bcrypt from 'bcryptjs';
 
 export const useTaskTree = () => {
     let { todos, todosItems, currentTodo } = useAppSelector((state) => state.todosReducer);
-    let { sections, sectionItems, sectionId } = useAppSelector((state) => state.sectionsReducer);
+    let { sections, sectionItems, currentSection } = useAppSelector((state) => state.sectionsReducer);
     const {isVisibleDetailTodo} = useAppSelector((state => state.uiReducer));
     const [createTodo] = todoApi.useAddMutation();
     const [removeTodo] = todoApi.useRemoveMutation();
@@ -25,7 +25,13 @@ export const useTaskTree = () => {
 
     const generateTaskId = (params?: any) => {
         const salt = bcrypt.genSaltSync(10) + Date.now();
-        return bcrypt.hashSync(params, salt);
+        const arrayParams = Object.values(params);
+        const strParams: any = arrayParams.reduce((paramPrev: any, paramNext: any) => {
+           return paramPrev + paramNext;
+        });
+        
+        const taskId = bcrypt.hashSync(strParams, salt);
+        return taskId.replace(/\/+$/, '').replace('.', '');
     }
 
     const recursiveCloneTree = (tree: ITodoItem[] | any[]): ITodoItem[] | any[] => {
@@ -172,9 +178,7 @@ export const useTaskTree = () => {
     }
 
     const createTask = async (taskId: string, editFields: ITodoEditFields, position?: string) => {
-
-        const salt = bcrypt.genSaltSync(10) + Date.now();
-        const newTaskId = bcrypt.hashSync(editFields.name + editFields.description, salt);
+        const newTaskId = generateTaskId(editFields);
 
         const tasksclones = recursiveCloneTree(todos);
         const foundTask = findTaskInTree(tasksclones, taskId);
@@ -247,9 +251,7 @@ export const useTaskTree = () => {
 
     const createSection = async (sectionId: string, name: string, sortByPosition: ISortByPosition, subsection: boolean = false) => {
 
-        const salt = bcrypt.genSaltSync(10) + Date.now();
-        const newTaskId = bcrypt.hashSync(name, salt);
-
+        const newTaskId = generateTaskId(name);
         const tasksclones = recursiveCloneTree(sections);
         const foundTask = findTaskInTree(tasksclones, sectionId);
 
@@ -300,9 +302,7 @@ export const useTaskTree = () => {
     }
 
     const createTaskSection = async (name: string, sort: number) => {
-        const salt = bcrypt.genSaltSync(10) + Date.now();
-        const id = bcrypt.hashSync(name, salt);
-
+        const id = generateTaskId(name);
         const tasksclones = recursiveCloneTree(todos);
 
         const sectonObj: ITodoItem = {
@@ -310,7 +310,7 @@ export const useTaskTree = () => {
             name,
             showTasks: true,
             parentId: null,
-            sectionId,
+            sectionId: currentSection.id,
             description: "",
             type: "section",
             sort: 0,

@@ -6,6 +6,7 @@ interface IState {
     sections: ITodoItem[],
     sectionItems: ITodoItem[],
     sectionId: string,
+    currentSection: any,
     status: string,
     error: string
 }
@@ -13,6 +14,7 @@ interface IState {
 const initialState:IState = {
     sections: [],
     sectionItems: [],
+    currentSection: {},
     sectionId: '',
     status: "",
     error: ""
@@ -38,6 +40,9 @@ export const sectionsSlice = createSlice({
         },
         setSectionItems: (state, action: PayloadAction<{data: ITodoItem[]}>) => {
             state.sectionItems = action.payload.data;
+        },
+        setCurrentSection: (state, action: PayloadAction<{section: any}>) => {
+            state.currentSection = action.payload.section;
         }
     },
     extraReducers: {
