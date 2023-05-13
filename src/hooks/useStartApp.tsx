@@ -6,7 +6,7 @@ import { getTodosBySection } from "../store/services/todo/todo.slice";
 import { useTaskTree } from "./useTaskTree";
 import { useAppSelector } from "./useAppSelector";
 import { useActions } from "./useActions";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const useStartApp = () => {
     const dispatch = useDispatch();
@@ -14,15 +14,22 @@ export const useStartApp = () => {
 
     let { sections } = useAppSelector((state) => state.sectionsReducer);
     let { todos } = useAppSelector((state) => state.todosReducer);
-    
+
     const { findTaskInTree } = useTaskTree();
-    const { setCurrentSection, setCurrentTodo, setVisibleDetailTodo } = useActions();
+    const { setCurrentSection, setCurrentTodo, setVisibleDetailTodo, setAuth } = useActions();
     const { sectionId, todoId } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const get = async () => {
             await updPositions.refetch();
-            await dispatch(getSections());
+            const res = await dispatch(getSections());
+            if (res.error) {
+                navigate('/app/login');
+                setAuth({isAuth: false});
+            } else {
+                setAuth({isAuth: true});
+            }
         };
         get();
     }, []);

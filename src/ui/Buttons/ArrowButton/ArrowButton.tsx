@@ -1,12 +1,12 @@
 import { FC, useState } from "react";
 
 interface IArrowButton {
-    isArrowOpen: boolean;
+    isArrowOpen?: boolean;
     color?: string;
     onClick: (param: any) => void;
 }
 
-const ArrowButton: FC<IArrowButton> = ({ isArrowOpen, color, onClick }) => {
+const ArrowButton: FC<IArrowButton> = ({ isArrowOpen = false, color, onClick }) => {
     const [isOpen, setOpen] = useState(isArrowOpen);
 
     const toggleArrow = () => {

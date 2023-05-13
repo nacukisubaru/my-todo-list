@@ -3,11 +3,13 @@ import { useDispatch } from "react-redux"
 import { todosActions } from "../store/services/todo/todo.slice";
 import { uiActions } from "../store/reducers/ui.slice";
 import { sectionsActions } from "../store/services/sections/sections.slice";
+import { authActions } from "../store/services/auth/auth.slice";
 
 const allActions = {
     ...todosActions,
     ...uiActions,
-    ...sectionsActions
+    ...sectionsActions,
+    ...authActions
 }
 
 export const useActions = () => {

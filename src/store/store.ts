@@ -6,19 +6,25 @@ import { todoJsonApi } from "./services/todo/todo-json.api";
 import { todoSectionsApi } from "./services/todo/todo-sections.api";
 import { sectionsApi } from "./services/sections/sections.api";
 import { sectionsReducer } from "./services/sections/sections.slice";
+import { authReducer } from "./services/auth/auth.slice";
+
+
+const arrayMiddlewares: any[] = [
+    todoApi.middleware,
+    todoJsonApi.middleware,
+    todoSectionsApi.middleware,
+    sectionsApi.middleware
+];
 
 export const makeStore = () => configureStore({
     reducer: {
         todosReducer,
         sectionsReducer,
-        uiReducer
+        uiReducer,
+        authReducer
     },
-    middleware: getDefaultMiddleware => getDefaultMiddleware({serializableCheck: false}).concat(
-        todoApi.middleware,
-        todoJsonApi.middleware,
-        todoSectionsApi.middleware,
-        sectionsApi.middleware
-    ),
+
+    middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }).concat(arrayMiddlewares),
 });
 
 

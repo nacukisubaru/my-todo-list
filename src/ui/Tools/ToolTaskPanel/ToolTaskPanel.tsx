@@ -4,8 +4,8 @@ import ToolMenu from "../ToolMenu";
 import { IMenuItem } from "../../../types/ui.types";
 
 interface ICallbacks {
-    clickEditBtn: () => void;
-    setShowMenu: (show: boolean) => void;
+    clickEditBtn?: () => void;
+    setShowMenu?: (show: boolean) => void;
 }
 
 interface ISettings {
@@ -36,13 +36,17 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({
 
     const showMenu = () => {
         setVisibleMenu(true);
-        setShowMenu(true);
+        setShowMenu && setShowMenu(true);
     };
+
+    const editBtnAction = () => {
+        clickEditBtn && clickEditBtn();
+    }
 
     return (
         <div className="display flex">
             {showEditBtn && (
-                <ToolButton onClick={clickEditBtn}>
+                <ToolButton onClick={editBtnAction}>
                     <svg width="24" height="24">
                         <g fill="none" fillRule="evenodd">
                             <path

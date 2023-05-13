@@ -5,7 +5,7 @@ import {ITodoItem} from "../../../types/todo.types";
 interface IState {
     todos: ITodoItem[],
     todosItems: ITodoItem[],
-    currentTodo: ITodoItem,
+    currentTodo: any,
     status: string,
     error: string
 }

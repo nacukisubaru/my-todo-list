@@ -14,7 +14,6 @@ interface ITodosListProps {
 
 const TodosList: FC<ITodosListProps> = ({
     todoitems,
-    toolTaskSettings,
     showChildrens = true,
 }) => {
     const { setVisibleDetailTodo, setCurrentTodo } = useActions();
@@ -40,7 +39,6 @@ const TodosList: FC<ITodosListProps> = ({
                                     onClick={() => {
                                         showDetail(item);
                                     }}
-                                    toolTaskSettings={toolTaskSettings}
                                     showSubtasks={showChildrens}
                                 />
                                 <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />
@@ -54,7 +52,6 @@ const TodosList: FC<ITodosListProps> = ({
                                     onClick={() => {
                                         showDetail(item);
                                     }}
-                                    toolTaskSettings={toolTaskSettings}
                                     showSubtasks={showChildrens}
                                 />
                                 <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />

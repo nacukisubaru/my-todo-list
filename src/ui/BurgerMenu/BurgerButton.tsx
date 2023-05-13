@@ -11,9 +11,9 @@ const BurgerButton: FC<IBurgerButtonProps> = () => {
 
     const showBurgerMenu = () => {
         if (showMenu) {
-            toggleMenu({isActive: false});
+            toggleMenu({isShow: false});
         } else {
-            toggleMenu({isActive: true});
+            toggleMenu({isShow: true});
         }
     }
 

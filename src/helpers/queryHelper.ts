@@ -32,7 +32,7 @@ export const thunkAxiosPost = async (path = "", params = {}, rejectWithValue: an
     let request = axios;
 
     try {
-        const response = await request.post(url, params);
+        const response = await request.post(url, params, {headers: {Authorization: `Bearer ${localStorage.getItem('accessToken')}`}});
         if (!response || !response.data) {
             throw new Error('error');
         }
@@ -49,7 +49,7 @@ export const thunkAxiosGet = async (path = "", params = {}, rejectWithValue: any
     let request = axios;
  
     try {
-        const response = await request.get(url);
+        const response = await request.get(url, {headers: {Authorization: `Bearer ${localStorage.getItem('accessToken')}`}});
         if (!response || !response.data) {
             throw new Error('error');
         }

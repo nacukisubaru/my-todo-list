@@ -5,7 +5,7 @@ import { useModal } from "../../hooks/useModal";
 import { useSection } from "../../hooks/useSection";
 import Modal from "../../ui/Modal/Modal";
 import BurgerMenu from "../../ui/BurgerMenu/BurgerMenu";
-import { ISection, ITodoItem } from "../../types/todo.types";
+import { ITodoItem } from "../../types/todo.types";
 
 const SectionsMenu = () => {
     const { sections } = useAppSelector((state) => state.sectionsReducer);
@@ -21,7 +21,7 @@ const SectionsMenu = () => {
     const [action, setAction] = useState("create");
     const [sectionName, setNameSection] = useState("");
 
-    const choiseSection = (item: ISection) => {
+    const choiseSection = (item: ITodoItem) => {
         setSectionId({ sectionId: item.id });
         setCurrentSection({section: item});
     };

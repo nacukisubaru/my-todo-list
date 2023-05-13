@@ -1,14 +1,14 @@
 import { FC } from "react";
-import { ISection } from "../../types/todo.types";
+import { ITodoItem } from "../../types/todo.types";
 import BurgerMenuItems from "./BurgerMenuItems";
 import { IMenuItem } from "../../types/ui.types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useActions";
 
 interface IBurgerMenu {
-    items: ISection[];
+    items: ITodoItem[];
     menu: IMenuItem[];
-    setItem: (item: ISection) => void;
+    setItem: (item: ITodoItem) => void;
     toggleArrow: (id: string, value: boolean) => void;
 }
 
@@ -19,7 +19,7 @@ const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setItem, toggleArrow }) => {
     return (
         <>
         {showMenu && (
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={toggleMenu}></div>
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => {toggleMenu({isShow: false})}}></div>
         )}
         <div className={`px-[15px] py-[60px] xl:w-[280px] h-[100%] w-[360px] md:w-[500px] fixed bg-gray-100 ${showMenu ? 'translate-x-[0px]' : '-translate-x-[1000px]'} duration-300`}>
             <div className="display flex justify-center">
