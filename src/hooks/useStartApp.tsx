@@ -14,7 +14,6 @@ export const useStartApp = () => {
 
     let { sections } = useAppSelector((state) => state.sectionsReducer);
     let { todos } = useAppSelector((state) => state.todosReducer);
-    const { isAuth } = useAppSelector((state) => state.authReducer);
 
     const { findTaskInTree } = useTaskTree();
     const { setCurrentSection, setCurrentTodo, setVisibleDetailTodo, setAuth } = useActions();

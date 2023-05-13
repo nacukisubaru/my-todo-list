@@ -8,6 +8,14 @@ import { sectionsApi } from "./services/sections/sections.api";
 import { sectionsReducer } from "./services/sections/sections.slice";
 import { authReducer } from "./services/auth/auth.slice";
 
+
+const arrayMiddlewares: any[] = [
+    todoApi.middleware,
+    todoJsonApi.middleware,
+    todoSectionsApi.middleware,
+    sectionsApi.middleware
+];
+
 export const makeStore = () => configureStore({
     reducer: {
         todosReducer,
@@ -15,12 +23,8 @@ export const makeStore = () => configureStore({
         uiReducer,
         authReducer
     },
-    middleware: getDefaultMiddleware => getDefaultMiddleware({serializableCheck: false}).concat(
-        todoApi.middleware,
-        todoJsonApi.middleware,
-        todoSectionsApi.middleware,
-        sectionsApi.middleware
-    ),
+
+    middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }).concat(arrayMiddlewares),
 });
 
 

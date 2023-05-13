@@ -15,14 +15,6 @@ export interface ITodoItem {
     isComplete: boolean,
     items: ITodoItem[] | []
 }
-
-export interface ISection {
-    id: string,
-    name: string,
-    showSections: boolean,
-    items: ISection[]
-}
-
 export interface ITodoEditFields {
     name: string,
     description: string

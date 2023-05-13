@@ -343,7 +343,7 @@ export const useTaskTree = () => {
     const getFieldRecursive = (tree: ITodoItem[], field: string) => {
         const listFields: string[] = [];
         const getField = (tree: ITodoItem[], field: string) => {
-            tree.map((item) => {
+            tree.map((item: any) => {
                 listFields.push(item[field]);
                 getField(item.items, field);
             });

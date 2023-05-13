@@ -26,8 +26,8 @@ export const uiSlice = createSlice({
         setActiveAddSectionBtn: (state, action: PayloadAction<{isActive: boolean}>) => {
             state.isActiveAddSectionBtn = action.payload.isActive;
         },
-        toggleMenu: (state, action: PayloadAction<{isActive: boolean}>) => {
-            state.showMenu = action.payload.isActive;
+        toggleMenu: (state, action: PayloadAction<{isShow: boolean}>) => {
+            state.showMenu = action.payload.isShow;
         },
         setVisibleDetailTodo: (state, action: PayloadAction<{isActive: boolean}>) => {
             state.isVisibleDetailTodo = action.payload.isActive;

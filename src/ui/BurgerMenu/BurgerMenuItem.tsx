@@ -1,15 +1,15 @@
 import { FC } from "react";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
-import { ISection, ITodoItem } from "../../types/todo.types";
+import { ITodoItem } from "../../types/todo.types";
 import { IMenuItem } from "../../types/ui.types";
 import ArrowButton from "../Buttons/ArrowButton/ArrowButton";
 import { useNavigate } from "react-router-dom";
 
 interface IBurgerMenuItemProps {
     count: number;
-    item: ISection;
-    setItem: (item: ISection) => void;
+    item: ITodoItem;
+    setItem: (item: ITodoItem) => void;
     toggleArrow: (id: string, value: boolean) => void;
     menu: IMenuItem[];
 }
@@ -32,7 +32,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
             {item.items.length > 0 ? (
                 <div
                     className={`display flex justify-between hover:bg-gray-200 cursor-pointer -ml-[20px]`}
-                    style={ item.parentId && { marginLeft: `${count}px` }}
+                    style={ item.parentId ? { marginLeft: `${count}px` } : {}}
                     onMouseOver={showToolPanel}
                     onMouseOut={hideToolPanel}
                 >
@@ -77,7 +77,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
             ) : (
                 <div
                     className={`display flex justify-between hover:bg-gray-200 cursor-pointer`}
-                    style={ item.parentId && { marginLeft: `${count}px` }}
+                    style={ item.parentId ? { marginLeft: `${count}px` } : {}}
                     onMouseOver={showToolPanel}
                     onMouseOut={hideToolPanel}
                 >

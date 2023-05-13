@@ -1,12 +1,12 @@
 import { FC } from "react";
-import { ISection } from "../../types/todo.types";
+import { ITodoItem } from "../../types/todo.types";
 
 import { IMenuItem } from "../../types/ui.types";
 import BurgerMenuItem from "./BurgerMenuItem";
 
 interface IBurgerMenuItemsProps {
-    items: ISection[];
-    setItem: (item: ISection) => void;
+    items: ITodoItem[];
+    setItem: (item: ITodoItem) => void;
     toggleArrow: (id: string, value: boolean) => void;
     count: number;
     menu: IMenuItem[];
