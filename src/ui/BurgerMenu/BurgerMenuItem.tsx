@@ -66,9 +66,9 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                             }}
                             settings={{
                                 menuItems: menu,
-                                translateY: "24px",
                                 showEditBtn: false,
                                 colorBtn: "bg-gray-200",
+                                translateX: '-translate-x-[150px]'
                             }}
                             parent={item}
                         />
@@ -99,9 +99,9 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                             }}
                             settings={{
                                 menuItems: menu,
-                                translateY: "24px",
                                 showEditBtn: false,
                                 colorBtn: "bg-gray-200",
+                                translateX: '-translate-x-[150px]'
                             }}
                             parent={item}
                         />
