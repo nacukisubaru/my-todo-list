@@ -184,7 +184,26 @@ const TodoItem: FC<ITodoItemProps> = ({
                                 clickEditBtn: openTodoChangePanel,
                             }}
                             settings={{
-                                menuItems: menu,
+                                menuItems: [
+                                    {
+                                        name: "Добавить задачу выше",
+                                        onClick: showUpperAddForm,
+                                        isDeactive: todo.isComplete
+                                    },
+                                    {
+                                        name: "Добавить задачу ниже",
+                                        onClick: showLowerAddForm,
+                                        isDeactive: todo.isComplete
+                                    },
+                                    {
+                                        name: "Изменить задачу",
+                                        onClick: openTodoChangePanel,
+                                    },
+                                    {
+                                        name: "Удалить задачу",
+                                        onClick: removeTodo,
+                                    },
+                                ],
                                 showEditBtn: true,
                                 translateX: "-translate-x-[151px]",
                                 translateY: '-translate-y-[80px]'
