@@ -114,7 +114,7 @@ const TodoChange: FC<ITodoChange> = ({
             break;
         }
 
-        if (action === "createSection" || action === "changeSection") {
+        if (action === "createSection") {
             callback && callback();
         }
     };
