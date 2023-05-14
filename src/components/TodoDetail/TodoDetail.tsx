@@ -10,6 +10,9 @@ import { useToolTodo } from "../../hooks/useToolTodo";
 import CheckBox from "../../ui/CheckBox/CheckBox";
 import { useNavigate, useParams } from "react-router-dom";
 import useCopyToClipboard from "../../hooks/useCopyToClickboard";
+import HTMLReactParser from "html-react-parser";
+import EditButton from "../../ui/Buttons/EditButton/EditButton";
+import { textBreak, wrapLinksInTags } from "../../helpers/stringHelper";
 
 interface ITodoDetailProps {}
 
@@ -133,18 +136,21 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                             checked={currentTodo.isComplete}
                         />
 
-                        <div className="text-start -mt-[4px] ml-[10px]" onClick={openEditTodo}>
-                            <span className={`${currentTodo.isComplete && 'line-through'}`}><b>{currentTodo.name}</b></span>
-                            <p className="mb-[15px]">
-                                {currentTodo.description}
-                            </p>
+                        <div className="text-start -mt-[4px] ml-[10px]">
+                            <div className="display flex">
+                                <span className={`${currentTodo.isComplete && 'line-through'}`}><b>{currentTodo.name}</b></span>
+                                <span className="ml-[7px] -mt-[2px]"><EditButton onClick={openEditTodo}/></span>
+                            </div>
+                            <div className="mb-[15px] break-words max-w-[15rem] md:max-w-2xl">
+                                {currentTodo.description && HTMLReactParser(textBreak(wrapLinksInTags(currentTodo.description)))}
+                            </div>
                         </div>
                     </div>
                 )}
-                <div className="mb-[15px]">
+                <div className="mb-[15px] text-start">
                     <b>Подзадачи:</b>
                 </div>
-                <div className="-ml-[28px]">
+                <div className="-ml-[20px]">
                     <TodosList
                         todoitems={currentTodo.items}
                         toolTaskSettings={{
