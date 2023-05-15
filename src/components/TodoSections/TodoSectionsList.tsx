@@ -10,6 +10,7 @@ import TodoChangeSection from "./TodoChangeSection";
 import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import { useParams } from "react-router-dom";
+import { DragDropContext } from "react-beautiful-dnd";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
@@ -55,6 +56,10 @@ const TodoSectionsList: FC = () => {
             setVisibleCompleteTasks({ isActive: true });
         }
     };
+
+    const onDragEnd = () => {
+     
+    }
 
     return (
         <>
@@ -102,52 +107,61 @@ const TodoSectionsList: FC = () => {
                                 hideAddSectionButton={false}
                             />
                         ) : (
-                            todos.map((section) => {
-                                return (
-                                    <li className="mb-10" key={section.id}>
-                                        <TodoSection section={section} />
-                                        <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
-                                        {section.showTasks && (
-                                            <TodosList
-                                                todoitems={section.items}
-                                            />
-                                        )}
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                {todos.map((section) => {
+                                    return (
+                                        <li className="mb-10" key={section.id}>
+                                            <TodoSection section={section} />
+                                            <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
 
-                                        <TodoChange
-                                            id={section.id}
-                                            buttonsSettings={{
-                                                primaryButtonName:
-                                                    "Добавить задачу",
-                                                secondaryButtonName: "Отмена",
-                                            }}
-                                            inputsSettings={{
-                                                inputPlaceHolder:
-                                                    "Название задачи",
-                                                textPlaceHolder: "Описание",
-                                            }}
-                                            isVisible={section.creatable}
-                                            callback={() => {
-                                                closeAddTodoForm(section.id);
-                                            }}
-                                        />
+                                            {section.showTasks && (
+                                                <TodosList
+                                                    droppableId={section.id}
+                                                    todoitems={section.items}
+                                                />
+                                            )}
 
-                                        {isActiveAddTaskBtn && (
-                                            <AddTaskButton
-                                                onClick={() => {
-                                                    openAddTodoForm(section.id);
+                                            <TodoChange
+                                                id={section.id}
+                                                buttonsSettings={{
+                                                    primaryButtonName:
+                                                        "Добавить задачу",
+                                                    secondaryButtonName:
+                                                        "Отмена",
+                                                }}
+                                                inputsSettings={{
+                                                    inputPlaceHolder:
+                                                        "Название задачи",
+                                                    textPlaceHolder: "Описание",
+                                                }}
+                                                isVisible={section.creatable}
+                                                callback={() => {
+                                                    closeAddTodoForm(
+                                                        section.id
+                                                    );
                                                 }}
                                             />
-                                        )}
-                                        <TodoChangeSection
-                                            id={section.id}
-                                            sort={section.sort}
-                                            action={"createSection"}
-                                            primaryButtonName="Добавить раздел"
-                                            nameValue=""
-                                        />
-                                    </li>
-                                );
-                            })
+
+                                            {isActiveAddTaskBtn && (
+                                                <AddTaskButton
+                                                    onClick={() => {
+                                                        openAddTodoForm(
+                                                            section.id
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                            <TodoChangeSection
+                                                id={section.id}
+                                                sort={section.sort}
+                                                action={"createSection"}
+                                                primaryButtonName="Добавить раздел"
+                                                nameValue=""
+                                            />
+                                        </li>
+                                    );
+                                })}
+                            </DragDropContext>
                         )}
                     </div>
                 </ul>
