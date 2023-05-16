@@ -6,12 +6,13 @@ import { useActions } from "./useActions";
 import { useAppSelector } from "./useAppSelector";
 import { sectionsApi } from "../store/services/sections/sections.api";
 import { IMutateList } from "../types/ui.types";
+import { DraggableLocation } from "react-beautiful-dnd";
 import bcrypt from 'bcryptjs';
 
 export const useTaskTree = () => {
     let { todos, todosItems, currentTodo } = useAppSelector((state) => state.todosReducer);
     let { sections, sectionItems, currentSection } = useAppSelector((state) => state.sectionsReducer);
-    const {isVisibleDetailTodo} = useAppSelector((state => state.uiReducer));
+    const { isVisibleDetailTodo } = useAppSelector((state => state.uiReducer));
     const [createTodo] = todoApi.useAddMutation();
     const [removeTodo] = todoApi.useRemoveMutation();
     const [addTodoItemsJson] = todoJsonApi.useAddItemsMutation();
@@ -21,15 +22,15 @@ export const useTaskTree = () => {
     const [addTodoSection] = todoSectionsApi.useAddMutation();
     const [removeSection] = todoSectionsApi.useRemoveMutation();
     const [addSection] = sectionsApi.useAddMutation();
-    const {setCurrentTodo} = useActions();
+    const { setCurrentTodo } = useActions();
 
     const generateTaskId = (params?: any) => {
         const salt = bcrypt.genSaltSync(10) + Date.now();
         const arrayParams = Object.values(params);
         const strParams: any = arrayParams.reduce((paramPrev: any, paramNext: any) => {
-           return paramPrev + paramNext;
+            return paramPrev + paramNext;
         });
-        
+
         const taskId = bcrypt.hashSync(strParams, salt);
         return taskId.replaceAll('/', '').replaceAll('.', '');
     }
@@ -61,7 +62,7 @@ export const useTaskTree = () => {
     }
 
     const findTaskInTree = (tree: ITodoItem[], taskId: string): ITodoItem | false => {
-        const recursiveFind = (tree: ITodoItem[], taskId: string): ITodoItem  | undefined => {
+        const recursiveFind = (tree: ITodoItem[], taskId: string): ITodoItem | undefined => {
             for (let inc in tree) {
                 if (tree[inc].id && tree[inc].id === taskId) {
                     return tree[inc];
@@ -110,14 +111,14 @@ export const useTaskTree = () => {
         if (foundTask) {
             mutateList.map((item) => {
                 foundTask[item.field] = item.value;
-            })
+            });
         }
-        
+
         if (isDetailTodo) {
-            setCurrentTodo({todo: tasksclones[0]});
+            setCurrentTodo({ todo: tasksclones[0] });
         } else {
             if (changeSection) {
-                await setSections({data: tasksclones});
+                await setSections({ data: tasksclones });
             } else {
                 await setTodos({ data: tasksclones });
             }
@@ -177,7 +178,7 @@ export const useTaskTree = () => {
         return false;
     }
 
-    const createTask = async (taskId: string, editFields: ITodoEditFields, position?: string) => {
+    const createTask = async (taskId: string, editFields: ITodoEditFields, position?: string, sort?: number) => {
         const newTaskId = generateTaskId(editFields);
 
         const tasksclones = recursiveCloneTree(todos);
@@ -185,49 +186,69 @@ export const useTaskTree = () => {
 
         const create = async (foundTask: ITodoItem | false, sortByPosition?: ISortByPosition) => {
             if (foundTask && foundTask.items) {
-                let sort = 0;
-                const lastTask = foundTask.items[foundTask.items.length - 1];
-                if (lastTask) {
-                    sort = lastTask.sort + 1;
-                }
+                if (sort === undefined) {
+                    sort = 0;
+                    const lastTask = foundTask.items[foundTask.items.length - 1];
+                    if (lastTask) {
+                        sort = lastTask.sort + 1;
+                    }
 
-                if (sortByPosition) {
-                    const sortPos = sortPositions(foundTask.items, sortByPosition);
-                    if (sortPos !== false) {
-                        sort = sortPos;
+                    if (sortByPosition) {
+                        const sortPos = sortPositions(foundTask.items, sortByPosition);
+                        if (sortPos !== false) {
+                            sort = sortPos;
+                        }
                     }
                 }
-
-                const items: ITodoItem[] = foundTask.items;
+                const { name, description } = editFields;
                 const todoItem: ITodoItem = {
-                    ...editFields,
-                    showTasks: true,
-                    id: newTaskId,
+                    name,
+                    description,
+                    showTasks: editFields.showTasks !== undefined ? editFields.showTasks : true,
+                    id: editFields.id ? editFields.id : newTaskId,
                     sort,
-                    parentId: foundTask.id,
-                    items: [],
-                    isComplete: false,
+                    parentId: foundTask.id ,
+                    items: editFields.items ? editFields.items : [],
+                    isComplete: editFields.isComplete !== undefined ? editFields.isComplete : false,
                     editable: false,
                     creatableLower: false,
                     creatableUpper: false,
                     creatable: false
                 };
 
-                items.push(todoItem);
+                if (editFields.id && editFields.parentId) {
+                    const parentEditableTask = findTaskInTree(tasksclones, editFields.parentId);
+                    if (parentEditableTask) {
+                        const itemsWithoutEditItem = parentEditableTask.items.filter((item) => {
+                            if (item.id !== editFields.id) {
+                                return item;
+                            }    
+                        });
+                        parentEditableTask.items = itemsWithoutEditItem;
+                    }
+                }
+
+                foundTask.items.push(todoItem);
                 if (foundTask.type === "section") {
-                    todoItem.parentId = null;
                     todoItem.sectionId = foundTask.id;
                 } else {
                     todoItem.sectionId = foundTask.sectionId;
                 }
 
-                createTodo(todoItem);
-
                 foundTask.items.sort((a, b) => a.sort - b.sort);
+                reindex(foundTask.items);
                 await setTodos({ data: tasksclones });
 
+                if (!editFields.id) {
+                    const prepareCreate = {...todoItem};
+                    if (foundTask.type === "section") {
+                        prepareCreate.parentId = null;
+                    }
+                    createTodo(prepareCreate);
+                }
+
                 if (sortByPosition) {
-                    setJsonItems(items, todosItems, foundTask.type, false);
+                    setJsonItems(foundTask.items, todosItems, foundTask.type, false);
                 }
 
                 return foundTask;
@@ -239,11 +260,14 @@ export const useTaskTree = () => {
                 const foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
                 return create(foundParentTask, { sortPosition: foundTask.sort, position });
             } else {
+                if (editFields.id && position) {
+                    return create(foundTask, { sortPosition: foundTask.sort, position });
+                }
                 if (position && foundTask.sectionId) {
                     const foundParentTask = findTaskInTree(tasksclones, foundTask.sectionId);
                     return create(foundParentTask, { sortPosition: foundTask.sort, position });
                 } else {
-                   return create(foundTask);
+                    return create(foundTask);
                 }
             }
         }
@@ -288,10 +312,10 @@ export const useTaskTree = () => {
                 items: [],
             };
 
-            if(subsection) {
+            if (subsection) {
                 sectionItem.parentId = foundTask.id;
             }
-            
+
             items.push(sectionItem);
 
             items.sort((a: any, b: any) => a.sort - b.sort);
@@ -368,7 +392,7 @@ export const useTaskTree = () => {
 
         const remove = async (foundTask: ITodoItem, parentTask?: ITodoItem) => {
             let todoRemoveList: string[] = [];
-            
+
             if (isSection) {
                 todoRemoveList = getFieldRecursive(foundTask.items, "id");
                 todoRemoveList.push(foundTask.id);
@@ -387,8 +411,8 @@ export const useTaskTree = () => {
                 }
             }
 
-            if(isVisibleDetailTodo && parentTask) {
-                setCurrentTodo({todo: parentTask});
+            if (isVisibleDetailTodo && parentTask) {
+                setCurrentTodo({ todo: parentTask });
             }
         }
 
@@ -484,6 +508,28 @@ export const useTaskTree = () => {
         return tasksclones;
     }
 
+    const reindex = (todoItems: ITodoItem[]) => {
+        todoItems.map((item, index) => {
+            item.index = index;
+        });
+    }
+
+    const dragAndDropSort = (destination: DraggableLocation, draggableId: string) => {
+        const todosclones = recursiveCloneTree(todos);
+        const droppableTask = findTaskInTree(todosclones, destination.droppableId);
+        const draggableTask = findTaskInTree(todosclones, draggableId);
+
+        if(droppableTask && draggableTask) {
+            let pos = 'upper';
+            if (droppableTask.index && destination.index > droppableTask.index) {
+                pos = 'lower';
+            } else {
+                pos = 'upper';
+            }
+            createTask(droppableTask.id, draggableTask, pos);
+        }
+    }
+
     return {
         findTaskInTree,
         recursiveCloneTree,
@@ -494,6 +540,7 @@ export const useTaskTree = () => {
         createTaskSection,
         createSection,
         completeTasks,
-        generateTaskId
+        generateTaskId,
+        dragAndDropSort
     };
 }

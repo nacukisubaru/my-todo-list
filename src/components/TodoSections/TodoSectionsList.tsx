@@ -22,7 +22,7 @@ const TodoSectionsList: FC = () => {
     );
     let { currentSection } = useAppSelector((state) => state.sectionsReducer);
 
-    const { mutateTask, mutateAllTasks, generateTaskId } = useTaskTree();
+    const { mutateTask, mutateAllTasks, generateTaskId, dragAndDropSort } = useTaskTree();
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
         "",
         "todo"
@@ -57,8 +57,8 @@ const TodoSectionsList: FC = () => {
         }
     };
 
-    const onDragEnd = () => {
-     
+    const onDragEnd = (draggable: any) => {
+        dragAndDropSort(draggable.destination, draggable.draggableId);
     }
 
     return (
@@ -116,8 +116,8 @@ const TodoSectionsList: FC = () => {
 
                                             {section.showTasks && (
                                                 <TodosList
-                                                    droppableId={section.id}
                                                     todoitems={section.items}
+                                                    isDragAndDropList={true}
                                                 />
                                             )}
 

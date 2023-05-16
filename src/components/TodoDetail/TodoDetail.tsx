@@ -13,7 +13,6 @@ import useCopyToClipboard from "../../hooks/useCopyToClickboard";
 import HTMLReactParser from "html-react-parser";
 import EditButton from "../../ui/Buttons/EditButton/EditButton";
 import { textBreak, wrapLinksInTags } from "../../helpers/stringHelper";
-import { DragDropContext } from "react-beautiful-dnd";
 
 interface ITodoDetailProps {}
 
@@ -152,17 +151,17 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                     <b>Подзадачи:</b>
                 </div>
                 <div className="-ml-[20px]">
-                    <DragDropContext onDragEnd={() => {}}>
-                        <TodosList
-                            todoitems={currentTodo.items}
-                            toolTaskSettings={{
-                                translateY: "-translate-y-[120px]",
-                                translateX: "-translate-x-[115px]",
-                            }}
-                            showChildrens={false}
-                            droppableId="dropInDetail"
-                        />
-                    </DragDropContext>
+                   
+                    <TodosList
+                        todoitems={currentTodo.items}
+                        toolTaskSettings={{
+                            translateY: "-translate-y-[120px]",
+                            translateX: "-translate-x-[115px]",
+                        }}
+                        showChildrens={false}
+                        isDragAndDropList={false}
+                    />
+               
                     <div className="ml-[20px] text-start">
                         <TodoChange
                             id={currentTodo.id}
