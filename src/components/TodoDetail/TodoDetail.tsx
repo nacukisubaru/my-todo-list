@@ -151,6 +151,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                     <b>Подзадачи:</b>
                 </div>
                 <div className="-ml-[20px]">
+                   
                     <TodosList
                         todoitems={currentTodo.items}
                         toolTaskSettings={{
@@ -158,7 +159,9 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                             translateX: "-translate-x-[115px]",
                         }}
                         showChildrens={false}
+                        isDragAndDropList={false}
                     />
+               
                     <div className="ml-[20px] text-start">
                         <TodoChange
                             id={currentTodo.id}

@@ -1,12 +1,11 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { Provider } from 'react-redux';
+import { Provider } from "react-redux";
 import { store } from "./store/store";
-import React from "react";
 import WorkSpace from "./pages/WorkSpace/WorkSpace";
 import StartPage from "./pages/WorkSpace/StartPage";
-import "./App.css";
 import RegistrationPage from "./pages/Login/RegistrationPage";
 import LoginPage from "./pages/Login/LoginPage";
+import "./App.css";
 
 const router = createBrowserRouter([
     {
@@ -36,10 +35,8 @@ const router = createBrowserRouter([
 ]);
 function App() {
     return (
-      <Provider store={store}>
-        <React.StrictMode>
+        <Provider store={store}>
             <RouterProvider router={router} />
-        </React.StrictMode>
         </Provider>
     );
 }

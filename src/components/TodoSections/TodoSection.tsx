@@ -21,11 +21,11 @@ const TodoSection: FC<ITodoSectionProps> = ({ section }) => {
         todoEditInputs,
     } = useToolTodo(section.id, "section");
 
-    const {removeTask} = useTaskTree();
+    const { removeTask } = useTaskTree();
 
     const removeSection = () => {
         removeTask(section.id, true);
-    }
+    };
 
     return (
         <>

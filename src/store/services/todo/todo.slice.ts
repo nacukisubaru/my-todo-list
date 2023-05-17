@@ -32,6 +32,15 @@ export const getTodo: any = createAsyncThunk(
     }
 );
 
+
+export const updPositions: any = createAsyncThunk(
+    'updPositions/fetch',
+    async (_, { rejectWithValue }) => {
+        return thunkAxiosGet('/todo-list/updTodosPositions', {}, rejectWithValue);
+    }
+);
+
+
 export const todosSlice = createSlice({
     name: 'todos',
     initialState,
