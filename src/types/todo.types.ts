@@ -26,6 +26,14 @@ export interface ITodoEditFields {
     items?: ITodoItem[]
 }
 
+export interface ISectionEditFields {
+    name: string,
+    id?: string,
+    showSections?: boolean,
+    parentId?: string | null,
+    items?: ITodoItem[]
+}
+
 export interface ISortByPosition {
     sortPosition?: number,
     position: string

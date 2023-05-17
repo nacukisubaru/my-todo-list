@@ -5,6 +5,7 @@ import { ITodoItem } from "../../types/todo.types";
 import { IMenuItem } from "../../types/ui.types";
 import ArrowButton from "../Buttons/ArrowButton/ArrowButton";
 import { useNavigate } from "react-router-dom";
+import DndWrapper from "../../components/DnD/DndWrapper";
 
 interface IBurgerMenuItemProps {
     count: number;
@@ -12,12 +13,16 @@ interface IBurgerMenuItemProps {
     setItem: (item: ITodoItem) => void;
     toggleArrow: (id: string, value: boolean) => void;
     menu: IMenuItem[];
+    itemWithArrow: boolean;
+    index: number
 }
 
 const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
     count,
     item,
     menu,
+    itemWithArrow,
+    index,
     setItem,
     toggleArrow,
 }) => {
@@ -29,35 +34,50 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
 
     return (
         <>
-            {item.items.length > 0 ? (
+            <DndWrapper id={item.id} index={index}>
                 <div
-                    className={`display flex justify-between hover:bg-gray-200 cursor-pointer -ml-[20px]`}
-                    style={ item.parentId ? { marginLeft: `${count}px` } : {}}
+                    className={`display flex justify-between hover:bg-gray-200 cursor-pointer ${
+                        itemWithArrow && "-ml-[20px]"
+                    } `}
+                    style={item.parentId ? { marginLeft: `${count}px` } : {}}
                     onMouseOver={showToolPanel}
                     onMouseOut={hideToolPanel}
                 >
-                    <li className="w-[100%] ml-3" key={item.id}>
-                        <div className="display flex ">
-                            <span className="mr-[5px]">
-                                <ArrowButton
-                                    isArrowOpen={item.showSections}
-                                    color="bg-inherit"
-                                    onClick={(value: boolean) => {
-                                        toggleArrow(item.id, value);
+                    {itemWithArrow ? (
+                        <li className="w-[100%] ml-3" key={item.id}>
+                            <div className="display flex ">
+                                <span className="mr-[5px]">
+                                    <ArrowButton
+                                        isArrowOpen={item.showSections}
+                                        color="bg-inherit"
+                                        onClick={(value: boolean) => {
+                                            toggleArrow(item.id, value);
+                                        }}
+                                    />
+                                </span>
+                                <span
+                                    className="w-[100%]"
+                                    onClick={() => {
+                                        navigate(`/app/section/${item.id}`);
+                                        setItem(item);
                                     }}
-                                />
-                            </span>
-                            <span
-                                className="w-[100%]"
-                                onClick={() => {
-                                    navigate(`/app/section/${item.id}`);
-                                    setItem(item);
-                                }}
-                            >
-                                {item.name}
-                            </span>
-                        </div>
-                    </li>
+                                >
+                                    {item.name}
+                                </span>
+                            </div>
+                        </li>
+                    ) : (
+                        <li
+                            className="w-[100%] ml-3"
+                            key={item.id}
+                            onClick={() => {
+                                navigate(`/app/section/${item.id}`);
+                                setItem(item);
+                            }}
+                        >
+                            {item.name}
+                        </li>
+                    )}
 
                     {toolPanelIsVisible && (
                         <ToolTaskPanel
@@ -68,46 +88,13 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                                 menuItems: menu,
                                 showEditBtn: false,
                                 colorBtn: "bg-gray-200",
-                                translateX: '-translate-x-[150px]'
+                                translateX: "-translate-x-[150px]",
                             }}
                             parent={item}
                         />
                     )}
                 </div>
-            ) : (
-                <div
-                    className={`display flex justify-between hover:bg-gray-200 cursor-pointer`}
-                    style={ item.parentId ? { marginLeft: `${count}px` } : {}}
-                    onMouseOver={showToolPanel}
-                    onMouseOut={hideToolPanel}
-                >
-                    <li
-                        className="w-[100%] ml-3"
-                        key={item.id}
-                        onClick={() => {
-                            navigate(`/app/section/${item.id}`);
-                            setItem(item);
-                        }}
-                    >
-                        {item.name}
-                    </li>
-
-                    {toolPanelIsVisible && (
-                        <ToolTaskPanel
-                            callbacks={{
-                                clickEditBtn: () => {},
-                            }}
-                            settings={{
-                                menuItems: menu,
-                                showEditBtn: false,
-                                colorBtn: "bg-gray-200",
-                                translateX: '-translate-x-[150px]'
-                            }}
-                            parent={item}
-                        />
-                    )}
-                </div>
-            )}
+            </DndWrapper>
         </>
     );
 };

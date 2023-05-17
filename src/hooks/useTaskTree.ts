@@ -1,6 +1,6 @@
 import { todoJsonApi } from "../store/services/todo/todo-json.api";
 import { todoApi } from "../store/services/todo/todo.api";
-import { ISortByPosition, ITodoEditFields, ITodoItem, taskType } from "../types/todo.types";
+import { ISectionEditFields, ISortByPosition, ITodoEditFields, ITodoItem, taskType } from "../types/todo.types";
 import { todoSectionsApi } from "../store/services/todo/todo-sections.api";
 import { useActions } from "./useActions";
 import { useAppSelector } from "./useAppSelector";
@@ -15,6 +15,15 @@ interface ICreateTaskSectionParams {
     editFields?: ITodoEditFields,
     sortFunc?: (items: ITodoItem[]) => void
 }
+
+interface ICreateSectionParams {
+    sectionId: string,
+    editFields: ISectionEditFields,
+    sortByPosition: ISortByPosition,
+    subsection?: boolean,
+    sectionsList?: ITodoItem[]
+}
+
 
 export const useTaskTree = () => {
     let { todos, todosItems, currentTodo } = useAppSelector((state) => state.todosReducer);
@@ -214,7 +223,7 @@ export const useTaskTree = () => {
                     showTasks: editFields.showTasks !== undefined ? editFields.showTasks : true,
                     id: editFields.id ? editFields.id : newTaskId,
                     sort,
-                    parentId: foundTask.id ,
+                    parentId: foundTask.id,
                     items: editFields.items ? editFields.items : [],
                     isComplete: editFields.isComplete !== undefined ? editFields.isComplete : false,
                     editable: false,
@@ -229,7 +238,7 @@ export const useTaskTree = () => {
                         const itemsWithoutEditItem = parentEditableTask.items.filter((item) => {
                             if (item.id !== editFields.id) {
                                 return item;
-                            }    
+                            }
                         });
                         parentEditableTask.items = itemsWithoutEditItem;
                     }
@@ -247,7 +256,7 @@ export const useTaskTree = () => {
                 await setTodos({ data: tasksclones });
 
                 if (!editFields.id) {
-                    const prepareCreate = {...todoItem};
+                    const prepareCreate = { ...todoItem };
                     if (foundTask.type === "section") {
                         prepareCreate.parentId = null;
                     }
@@ -280,13 +289,33 @@ export const useTaskTree = () => {
         }
     }
 
-    const createSection = async (sectionId: string, name: string, sortByPosition: ISortByPosition, subsection: boolean = false) => {
+    const createSection = async (params: ICreateSectionParams) => {
+        const { sectionId, editFields, sortByPosition, subsection = false, sectionsList } = params;
+        let { name, id, showSections, items } = editFields;
+        let isEdit: boolean = false;
+        if (!id) {
+            id = generateTaskId(name);
+        } else {
+            isEdit = true;
+        }
 
-        const newTaskId = generateTaskId(name);
-        const tasksclones = recursiveCloneTree(sections);
+        if (showSections === undefined) {
+            showSections = true;
+        }
+
+        if (!items) {
+            items = [];
+        }
+
+        let tasksclones = sectionsList;
+        if (!tasksclones) {
+            tasksclones = recursiveCloneTree(sections);
+        }
+
         const foundTask = findTaskInTree(tasksclones, sectionId);
 
         if (foundTask) {
+
             let sort = sortByPosition.sortPosition;
             let foundParentTask;
             let items: any;
@@ -302,43 +331,72 @@ export const useTaskTree = () => {
                     foundParentTask = findTaskInTree(tasksclones, foundTask.parentId);
                     if (foundParentTask) {
                         items = foundParentTask.items;
+
+                        if (isEdit) {
+                            foundParentTask.items = foundParentTask.items.filter((task) => {
+                                if (task.id !== id) {
+                                    return task;
+                                }
+                            })
+                        }
                     }
+
                 } else {
                     items = tasksclones;
+                    if (isEdit) {
+                        tasksclones = tasksclones.filter((task) => {
+                            if (task.id !== id) {
+                                return task;
+                            }
+                        })
+                    }
                 }
             }
 
             sortPositions(items, sortByPosition);
-
             const sectionItem: any = {
-                id: newTaskId,
+                id,
                 name,
-                showSections: true,
+                showSections,
                 sort,
                 parentId: foundParentTask ? foundParentTask.id : null,
-                items: [],
+                items: editFields.items !== undefined ? editFields.items : [],
             };
 
-            if (subsection) {
+            if (subsection && !isEdit) {
                 sectionItem.parentId = foundTask.id;
+                foundTask.items.push(sectionItem);
+                foundTask.items.sort((a: any, b: any) => a.sort - b.sort);
+                setJsonItems(foundTask.items, sectionItems, foundTask.type, true);
+            } else {
+                if (foundParentTask && foundTask.parentId) {
+                    foundParentTask.items.push(sectionItem);
+                    foundParentTask.items.sort((a: any, b: any) => a.sort - b.sort);
+                    reindex(foundParentTask.items);
+                    setJsonItems(foundParentTask.items, sectionItems, foundTask.type, true);
+                } else {
+                    tasksclones.push(sectionItem);
+                    tasksclones.sort((a: any, b: any) => a.sort - b.sort);
+                    reindex(tasksclones);
+                    setJsonItems(tasksclones, sectionItems, foundTask.type, true);
+                }
             }
 
-            items.push(sectionItem);
-            items.sort((a: any, b: any) => a.sort - b.sort);
-            addSection(sectionItem);
+            if (!isEdit) {
+                addSection(sectionItem);
+            }
+
             setSections({ data: tasksclones });
-            setJsonItems(items, sectionItems, foundTask.type, true);
         }
     }
 
-
     const createTaskSection = async (params: ICreateTaskSectionParams) => {
-        const {name, sort, editFields, sortFunc} = params;
+        const { name, sort, editFields, sortFunc } = params;
 
         let tasksclones = recursiveCloneTree(todos);
         let id = generateTaskId(name);
         let showTasks = true;
-        
+
         if (editFields && editFields.id) {
             id = editFields.id;
             if (editFields.showTasks !== undefined) {
@@ -381,7 +439,7 @@ export const useTaskTree = () => {
             const itemsWithoutEditItem = tasksclones.filter((item) => {
                 if (item.id !== editFields.id) {
                     return item;
-                }    
+                }
             });
 
             tasksclones = itemsWithoutEditItem;
@@ -546,8 +604,15 @@ export const useTaskTree = () => {
         });
     }
 
-    const dragAndDropSort = (destination: DraggableLocation, draggableId: string) => {
-        const todosclones = recursiveCloneTree(todos);
+    const dragAndDropSort = (destination: DraggableLocation, draggableId: string, dragSection: boolean = false) => {
+        let tasks;
+        if (dragSection) {
+            tasks = sections;
+        } else {
+            tasks = todos;
+        }
+
+        const todosclones = recursiveCloneTree(tasks);
         const droppableTask = findTaskInTree(todosclones, destination.droppableId);
         const draggableTask = findTaskInTree(todosclones, draggableId);
 
@@ -559,13 +624,22 @@ export const useTaskTree = () => {
                 pos = 'upper';
             }
 
-            if (draggableTask.type === "section") {
-                const sort = (items: ITodoItem[]) => {
-                    sortPositions(items, {sortPosition: droppableTask.sort, position: pos});
-                }
-                createTaskSection({name: draggableTask.name, sort: droppableTask.sort, editFields: draggableTask, sortFunc: sort});
+            if (dragSection) {
+                createSection({
+                    sectionId: droppableTask.id,
+                    editFields: draggableTask,
+                    sortByPosition: { sortPosition: droppableTask.sort, position: pos },
+                    sectionsList: todosclones,
+                });
             } else {
-                createTask(droppableTask.id, draggableTask, pos);
+                if (draggableTask.type === "section") {
+                    const sort = (items: ITodoItem[]) => {
+                        sortPositions(items, { sortPosition: droppableTask.sort, position: pos });
+                    }
+                    createTaskSection({ name: draggableTask.name, sort: droppableTask.sort, editFields: draggableTask, sortFunc: sort });
+                } else {
+                    createTask(droppableTask.id, draggableTask, pos);
+                }
             }
         }
     }

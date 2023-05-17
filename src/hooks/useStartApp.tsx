@@ -1,8 +1,7 @@
 import { useDispatch } from "react-redux";
-import { todoApi } from "../store/services/todo/todo.api";
 import { useEffect } from "react";
 import { getSections } from "../store/services/sections/sections.slice";
-import { getTodosBySection } from "../store/services/todo/todo.slice";
+import { getTodosBySection, updPositions } from "../store/services/todo/todo.slice";
 import { useTaskTree } from "./useTaskTree";
 import { useAppSelector } from "./useAppSelector";
 import { useActions } from "./useActions";
@@ -10,7 +9,6 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export const useStartApp = () => {
     const dispatch = useDispatch();
-    const updPositions = todoApi.useUpdTodosPositionsQuery({});
 
     let { sections } = useAppSelector((state) => state.sectionsReducer);
     let { todos } = useAppSelector((state) => state.todosReducer);
@@ -22,7 +20,7 @@ export const useStartApp = () => {
 
     useEffect(() => {
         const get = async () => {
-            await updPositions.refetch();
+            await dispatch(updPositions());
             const res = await dispatch(getSections());
             if (res.error) {
                 navigate('/app/login');
