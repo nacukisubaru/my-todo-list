@@ -112,70 +112,65 @@ const TodoSectionsList: FC = () => {
                             <DragDropContext onDragEnd={onDragEnd}>
                                 {todos.map((section, index) => {
                                     return (
-                                        <DndWrapper
-                                            id={section.id}
-                                            index={index}
-                                        >
-                                            <li
-                                                className="mb-10"
-                                                key={section.id}
+                                        <li className="mb-10" key={section.id}>
+                                            <DndWrapper
+                                                id={section.id}
+                                                index={index}
                                             >
                                                 <TodoSection
                                                     section={section}
                                                 />
                                                 <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
-
-                                                {section.showTasks && (
+                                            </DndWrapper>
+                                            {section.showTasks && (
+                                                <>
                                                     <TodosList
                                                         todoitems={
                                                             section.items
                                                         }
                                                         isDragAndDropList={true}
                                                     />
-                                                )}
+                                                </>
+                                            )}
 
-                                                <TodoChange
-                                                    id={section.id}
-                                                    buttonsSettings={{
-                                                        primaryButtonName:
-                                                            "Добавить задачу",
-                                                        secondaryButtonName:
-                                                            "Отмена",
-                                                    }}
-                                                    inputsSettings={{
-                                                        inputPlaceHolder:
-                                                            "Название задачи",
-                                                        textPlaceHolder:
-                                                            "Описание",
-                                                    }}
-                                                    isVisible={
-                                                        section.creatable
-                                                    }
-                                                    callback={() => {
-                                                        closeAddTodoForm(
+                                            <TodoChange
+                                                id={section.id}
+                                                buttonsSettings={{
+                                                    primaryButtonName:
+                                                        "Добавить задачу",
+                                                    secondaryButtonName:
+                                                        "Отмена",
+                                                }}
+                                                inputsSettings={{
+                                                    inputPlaceHolder:
+                                                        "Название задачи",
+                                                    textPlaceHolder: "Описание",
+                                                }}
+                                                isVisible={section.creatable}
+                                                callback={() => {
+                                                    closeAddTodoForm(
+                                                        section.id
+                                                    );
+                                                }}
+                                            />
+
+                                            {isActiveAddTaskBtn && (
+                                                <AddTaskButton
+                                                    onClick={() => {
+                                                        openAddTodoForm(
                                                             section.id
                                                         );
                                                     }}
                                                 />
-
-                                                {isActiveAddTaskBtn && (
-                                                    <AddTaskButton
-                                                        onClick={() => {
-                                                            openAddTodoForm(
-                                                                section.id
-                                                            );
-                                                        }}
-                                                    />
-                                                )}
-                                                <TodoChangeSection
-                                                    id={section.id}
-                                                    sort={section.sort}
-                                                    action={"createSection"}
-                                                    primaryButtonName="Добавить раздел"
-                                                    nameValue=""
-                                                />
-                                            </li>
-                                        </DndWrapper>
+                                            )}
+                                            <TodoChangeSection
+                                                id={section.id}
+                                                sort={section.sort}
+                                                action={"createSection"}
+                                                primaryButtonName="Добавить раздел"
+                                                nameValue=""
+                                            />
+                                        </li>
                                     );
                                 })}
                             </DragDropContext>
