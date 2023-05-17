@@ -24,13 +24,25 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
             {items.map((item) => {
                 return (
                     <>
-                        <BurgerMenuItem
-                            count={count}
-                            item={item}
-                            setItem={setItem}
-                            menu={menu}
-                            toggleArrow={toggleArrow}
-                        />
+                        {item.items.length > 0 ? (
+                            <BurgerMenuItem
+                                count={count}
+                                item={item}
+                                setItem={setItem}
+                                menu={menu}
+                                toggleArrow={toggleArrow}
+                                itemWithArrow={true}
+                            />
+                        ) : (
+                            <BurgerMenuItem
+                                count={count}
+                                item={item}
+                                setItem={setItem}
+                                menu={menu}
+                                toggleArrow={toggleArrow}
+                                itemWithArrow={false}
+                            />
+                        )}
                         {item.showSections && (
                             <BurgerMenuItems
                                 items={item.items}

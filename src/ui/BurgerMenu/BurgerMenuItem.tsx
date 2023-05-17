@@ -12,12 +12,14 @@ interface IBurgerMenuItemProps {
     setItem: (item: ITodoItem) => void;
     toggleArrow: (id: string, value: boolean) => void;
     menu: IMenuItem[];
+    itemWithArrow: boolean;
 }
 
 const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
     count,
     item,
     menu,
+    itemWithArrow,
     setItem,
     toggleArrow,
 }) => {
@@ -29,13 +31,15 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
 
     return (
         <>
-            {item.items.length > 0 ? (
-                <div
-                    className={`display flex justify-between hover:bg-gray-200 cursor-pointer -ml-[20px]`}
-                    style={ item.parentId ? { marginLeft: `${count}px` } : {}}
-                    onMouseOver={showToolPanel}
-                    onMouseOut={hideToolPanel}
-                >
+            <div
+                className={`display flex justify-between hover:bg-gray-200 cursor-pointer ${
+                    itemWithArrow && "-ml-[20px]"
+                } `}
+                style={item.parentId ? { marginLeft: `${count}px` } : {}}
+                onMouseOver={showToolPanel}
+                onMouseOut={hideToolPanel}
+            >
+                {itemWithArrow ? (
                     <li className="w-[100%] ml-3" key={item.id}>
                         <div className="display flex ">
                             <span className="mr-[5px]">
@@ -58,29 +62,7 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                             </span>
                         </div>
                     </li>
-
-                    {toolPanelIsVisible && (
-                        <ToolTaskPanel
-                            callbacks={{
-                                clickEditBtn: () => {},
-                            }}
-                            settings={{
-                                menuItems: menu,
-                                showEditBtn: false,
-                                colorBtn: "bg-gray-200",
-                                translateX: '-translate-x-[150px]'
-                            }}
-                            parent={item}
-                        />
-                    )}
-                </div>
-            ) : (
-                <div
-                    className={`display flex justify-between hover:bg-gray-200 cursor-pointer`}
-                    style={ item.parentId ? { marginLeft: `${count}px` } : {}}
-                    onMouseOver={showToolPanel}
-                    onMouseOut={hideToolPanel}
-                >
+                ) : (
                     <li
                         className="w-[100%] ml-3"
                         key={item.id}
@@ -91,23 +73,23 @@ const BurgerMenuItem: FC<IBurgerMenuItemProps> = ({
                     >
                         {item.name}
                     </li>
+                )}
 
-                    {toolPanelIsVisible && (
-                        <ToolTaskPanel
-                            callbacks={{
-                                clickEditBtn: () => {},
-                            }}
-                            settings={{
-                                menuItems: menu,
-                                showEditBtn: false,
-                                colorBtn: "bg-gray-200",
-                                translateX: '-translate-x-[150px]'
-                            }}
-                            parent={item}
-                        />
-                    )}
-                </div>
-            )}
+                {toolPanelIsVisible && (
+                    <ToolTaskPanel
+                        callbacks={{
+                            clickEditBtn: () => {},
+                        }}
+                        settings={{
+                            menuItems: menu,
+                            showEditBtn: false,
+                            colorBtn: "bg-gray-200",
+                            translateX: "-translate-x-[150px]",
+                        }}
+                        parent={item}
+                    />
+                )}
+            </div>
         </>
     );
 };
