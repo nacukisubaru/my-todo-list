@@ -9,6 +9,13 @@ import { IMutateList } from "../types/ui.types";
 import { DraggableLocation } from "react-beautiful-dnd";
 import bcrypt from 'bcryptjs';
 
+interface ICreateTaskSectionParams {
+    name: string,
+    sort: number,
+    editFields?: ITodoEditFields,
+    sortFunc?: (items: ITodoItem[]) => void
+}
+
 export const useTaskTree = () => {
     let { todos, todosItems, currentTodo } = useAppSelector((state) => state.todosReducer);
     let { sections, sectionItems, currentSection } = useAppSelector((state) => state.sectionsReducer);
@@ -317,7 +324,6 @@ export const useTaskTree = () => {
             }
 
             items.push(sectionItem);
-
             items.sort((a: any, b: any) => a.sort - b.sort);
             addSection(sectionItem);
             setSections({ data: tasksclones });
@@ -325,14 +331,25 @@ export const useTaskTree = () => {
         }
     }
 
-    const createTaskSection = async (name: string, sort: number) => {
-        const id = generateTaskId(name);
-        const tasksclones = recursiveCloneTree(todos);
+
+    const createTaskSection = async (params: ICreateTaskSectionParams) => {
+        const {name, sort, editFields, sortFunc} = params;
+
+        let tasksclones = recursiveCloneTree(todos);
+        let id = generateTaskId(name);
+        let showTasks = true;
+        
+        if (editFields && editFields.id) {
+            id = editFields.id;
+            if (editFields.showTasks !== undefined) {
+                showTasks = editFields.showTasks;
+            }
+        }
 
         const sectonObj: ITodoItem = {
             id,
             name,
-            showTasks: true,
+            showTasks: showTasks,
             parentId: null,
             sectionId: currentSection.id,
             description: "",
@@ -343,22 +360,37 @@ export const useTaskTree = () => {
             creatableLower: false,
             creatableUpper: false,
             isComplete: false,
-            items: []
+            items: editFields && editFields.items ? editFields.items : []
         };
 
-        tasksclones.map((item) => {
-            if (item.sort <= sort) {
-                item.sort = item.sort - 1;
-            }
+        if (sortFunc) {
+            sortFunc(tasksclones);
+        } else {
+            tasksclones.map((item) => {
+                if (item.sort <= sort) {
+                    item.sort = item.sort - 1;
+                }
 
-            if (item.sort >= sort) {
-                item.sort = item.sort + 1;
-            }
-        });
+                if (item.sort >= sort) {
+                    item.sort = item.sort + 1;
+                }
+            });
+        }
+
+        if (editFields && editFields.id) {
+            const itemsWithoutEditItem = tasksclones.filter((item) => {
+                if (item.id !== editFields.id) {
+                    return item;
+                }    
+            });
+
+            tasksclones = itemsWithoutEditItem;
+        }
 
         sectonObj.sort = sort;
         tasksclones.push(sectonObj);
         tasksclones.sort((a, b) => a.sort - b.sort);
+        reindex(tasksclones);
         await setTodos({ data: tasksclones });
         await addTodoSectionsJson({ jsonData: tasksclones });
         await addTodoSection(sectonObj);
@@ -519,14 +551,22 @@ export const useTaskTree = () => {
         const droppableTask = findTaskInTree(todosclones, destination.droppableId);
         const draggableTask = findTaskInTree(todosclones, draggableId);
 
-        if(droppableTask && draggableTask) {
+        if (droppableTask && draggableTask && droppableTask.index !== undefined) {
             let pos = 'upper';
-            if (droppableTask.index && destination.index > droppableTask.index) {
+            if (destination.index > droppableTask.index) {
                 pos = 'lower';
             } else {
                 pos = 'upper';
             }
-            createTask(droppableTask.id, draggableTask, pos);
+
+            if (draggableTask.type === "section") {
+                const sort = (items: ITodoItem[]) => {
+                    sortPositions(items, {sortPosition: droppableTask.sort, position: pos});
+                }
+                createTaskSection({name: draggableTask.name, sort: droppableTask.sort, editFields: draggableTask, sortFunc: sort});
+            } else {
+                createTask(droppableTask.id, draggableTask, pos);
+            }
         }
     }
 

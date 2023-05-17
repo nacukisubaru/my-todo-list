@@ -86,7 +86,7 @@ const TodoChange: FC<ITodoChange> = ({
 
     const createSectionTodo = () => {
         if (sortByPosition?.sortPosition !== undefined) {
-            createTaskSection(name.current.value, sortByPosition?.sortPosition);
+            createTaskSection({name: name.current.value, sort: sortByPosition?.sortPosition});
         }
     }
 

@@ -11,6 +11,7 @@ import ToolTaskPanel from "../../ui/Tools/ToolTaskPanel/ToolTaskPanel";
 import { useToolTodo } from "../../hooks/useToolTodo";
 import { useParams } from "react-router-dom";
 import { DragDropContext } from "react-beautiful-dnd";
+import DndWrapper from "../DnD/DndWrapper";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
@@ -22,7 +23,8 @@ const TodoSectionsList: FC = () => {
     );
     let { currentSection } = useAppSelector((state) => state.sectionsReducer);
 
-    const { mutateTask, mutateAllTasks, generateTaskId, dragAndDropSort } = useTaskTree();
+    const { mutateTask, mutateAllTasks, generateTaskId, dragAndDropSort } =
+        useTaskTree();
     const { showToolPanel, hideToolPanel, toolPanelIsVisible } = useToolTodo(
         "",
         "todo"
@@ -59,7 +61,7 @@ const TodoSectionsList: FC = () => {
 
     const onDragEnd = (draggable: any) => {
         dragAndDropSort(draggable.destination, draggable.draggableId);
-    }
+    };
 
     return (
         <>
@@ -108,57 +110,72 @@ const TodoSectionsList: FC = () => {
                             />
                         ) : (
                             <DragDropContext onDragEnd={onDragEnd}>
-                                {todos.map((section) => {
+                                {todos.map((section, index) => {
                                     return (
-                                        <li className="mb-10" key={section.id}>
-                                            <TodoSection section={section} />
-                                            <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
-
-                                            {section.showTasks && (
-                                                <TodosList
-                                                    todoitems={section.items}
-                                                    isDragAndDropList={true}
+                                        <DndWrapper
+                                            id={section.id}
+                                            index={index}
+                                        >
+                                            <li
+                                                className="mb-10"
+                                                key={section.id}
+                                            >
+                                                <TodoSection
+                                                    section={section}
                                                 />
-                                            )}
+                                                <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
 
-                                            <TodoChange
-                                                id={section.id}
-                                                buttonsSettings={{
-                                                    primaryButtonName:
-                                                        "Добавить задачу",
-                                                    secondaryButtonName:
-                                                        "Отмена",
-                                                }}
-                                                inputsSettings={{
-                                                    inputPlaceHolder:
-                                                        "Название задачи",
-                                                    textPlaceHolder: "Описание",
-                                                }}
-                                                isVisible={section.creatable}
-                                                callback={() => {
-                                                    closeAddTodoForm(
-                                                        section.id
-                                                    );
-                                                }}
-                                            />
+                                                {section.showTasks && (
+                                                    <TodosList
+                                                        todoitems={
+                                                            section.items
+                                                        }
+                                                        isDragAndDropList={true}
+                                                    />
+                                                )}
 
-                                            {isActiveAddTaskBtn && (
-                                                <AddTaskButton
-                                                    onClick={() => {
-                                                        openAddTodoForm(
+                                                <TodoChange
+                                                    id={section.id}
+                                                    buttonsSettings={{
+                                                        primaryButtonName:
+                                                            "Добавить задачу",
+                                                        secondaryButtonName:
+                                                            "Отмена",
+                                                    }}
+                                                    inputsSettings={{
+                                                        inputPlaceHolder:
+                                                            "Название задачи",
+                                                        textPlaceHolder:
+                                                            "Описание",
+                                                    }}
+                                                    isVisible={
+                                                        section.creatable
+                                                    }
+                                                    callback={() => {
+                                                        closeAddTodoForm(
                                                             section.id
                                                         );
                                                     }}
                                                 />
-                                            )}
-                                            <TodoChangeSection
-                                                id={section.id}
-                                                sort={section.sort}
-                                                action={"createSection"}
-                                                primaryButtonName="Добавить раздел"
-                                                nameValue=""
-                                            />
-                                        </li>
+
+                                                {isActiveAddTaskBtn && (
+                                                    <AddTaskButton
+                                                        onClick={() => {
+                                                            openAddTodoForm(
+                                                                section.id
+                                                            );
+                                                        }}
+                                                    />
+                                                )}
+                                                <TodoChangeSection
+                                                    id={section.id}
+                                                    sort={section.sort}
+                                                    action={"createSection"}
+                                                    primaryButtonName="Добавить раздел"
+                                                    nameValue=""
+                                                />
+                                            </li>
+                                        </DndWrapper>
                                     );
                                 })}
                             </DragDropContext>
