@@ -7,6 +7,7 @@ export interface ITodoItem {
     showTasks:boolean,
     type?: taskType,
     showSections?: boolean,
+    isDragDisabled?: boolean,
     sort: number,
     index?: number,
     creatable:boolean,
@@ -23,6 +24,7 @@ export interface ITodoEditFields {
     parentId?: string | null,
     showTasks?: boolean,
     isComplete?: boolean,
+    isDragDisabled?: boolean,
     items?: ITodoItem[]
 }
 

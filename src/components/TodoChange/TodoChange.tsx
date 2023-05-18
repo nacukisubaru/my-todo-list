@@ -58,7 +58,11 @@ const TodoChange: FC<ITodoChange> = ({
     const createTodo = async () => {
         const TaskName = name.current.value;
         const TaskDesc = description.current.value;
-        const task = await createTask(id, { name: TaskName, description: TaskDesc }, sortByPosition?.position);
+        const task = await createTask({ 
+            taskId: id, 
+            editFields: { name: TaskName, description: TaskDesc }, 
+            position: sortByPosition?.position
+        });
         if (isVisibleDetailTodo && task) {
             setCurrentTodo({todo: task});
         }

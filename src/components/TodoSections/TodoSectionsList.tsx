@@ -60,7 +60,10 @@ const TodoSectionsList: FC = () => {
     };
 
     const onDragEnd = (draggable: any) => {
-        dragAndDropSort(draggable.destination, draggable.draggableId);
+        dragAndDropSort({
+            destination: draggable.destination, 
+            draggableId: draggable.draggableId
+        });
     };
 
     return (

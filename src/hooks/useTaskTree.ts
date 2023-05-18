@@ -24,6 +24,12 @@ interface ICreateSectionParams {
     sectionsList?: ITodoItem[]
 }
 
+interface ICreateTaskParams {
+    taskId: string, 
+    editFields: ITodoEditFields, 
+    position?: string,
+    tasks?: ITodoItem[]
+}
 
 export const useTaskTree = () => {
     let { todos, todosItems, currentTodo } = useAppSelector((state) => state.todosReducer);
@@ -194,28 +200,31 @@ export const useTaskTree = () => {
         return false;
     }
 
-    const createTask = async (taskId: string, editFields: ITodoEditFields, position?: string, sort?: number) => {
+    const createTask = async (params: ICreateTaskParams) => {
+        let {taskId, editFields, position, tasks} = params;
+        if (tasks === undefined) {
+            tasks = todos;
+        }
+        
         const newTaskId = generateTaskId(editFields);
-
-        const tasksclones = recursiveCloneTree(todos);
+        const tasksclones = recursiveCloneTree(tasks);
         const foundTask = findTaskInTree(tasksclones, taskId);
 
         const create = async (foundTask: ITodoItem | false, sortByPosition?: ISortByPosition) => {
             if (foundTask && foundTask.items) {
-                if (sort === undefined) {
-                    sort = 0;
-                    const lastTask = foundTask.items[foundTask.items.length - 1];
-                    if (lastTask) {
-                        sort = lastTask.sort + 1;
-                    }
+                let sort = 0;
+                const lastTask = foundTask.items[foundTask.items.length - 1];
+                if (lastTask) {
+                    sort = lastTask.sort + 1;
+                }
 
-                    if (sortByPosition) {
-                        const sortPos = sortPositions(foundTask.items, sortByPosition);
-                        if (sortPos !== false) {
-                            sort = sortPos;
-                        }
+                if (sortByPosition) {
+                    const sortPos = sortPositions(foundTask.items, sortByPosition);
+                    if (sortPos !== false) {
+                        sort = sortPos;
                     }
                 }
+                
                 const { name, description } = editFields;
                 const todoItem: ITodoItem = {
                     name,
@@ -226,6 +235,7 @@ export const useTaskTree = () => {
                     parentId: foundTask.id,
                     items: editFields.items ? editFields.items : [],
                     isComplete: editFields.isComplete !== undefined ? editFields.isComplete : false,
+                    isDragDisabled: editFields.isDragDisabled !== undefined ? editFields.isDragDisabled : false,
                     editable: false,
                     creatableLower: false,
                     creatableUpper: false,
@@ -451,7 +461,9 @@ export const useTaskTree = () => {
         reindex(tasksclones);
         await setTodos({ data: tasksclones });
         await addTodoSectionsJson({ jsonData: tasksclones });
-        await addTodoSection(sectonObj);
+        if (!editFields) {
+            await addTodoSection(sectonObj);
+        }
     }
 
     const getFieldRecursive = (tree: ITodoItem[], field: string) => {
@@ -589,7 +601,6 @@ export const useTaskTree = () => {
             }
         }
 
-
         recursiveComplete(tasksclones);
         setUncompleteRecursive(tasksclones, taskId);
 
@@ -604,12 +615,24 @@ export const useTaskTree = () => {
         });
     }
 
-    const dragAndDropSort = (destination: DraggableLocation, draggableId: string, dragSection: boolean = false) => {
+    interface IDragAndDropSortParams {
+        destination: DraggableLocation, 
+        draggableId: string, 
+        dragSection?: boolean,
+        items?: ITodoItem[]
+    }
+
+    const dragAndDropSort = (params: IDragAndDropSortParams) => {
+        const {destination, draggableId, dragSection = false, items} = params;
         let tasks;
         if (dragSection) {
             tasks = sections;
         } else {
             tasks = todos;
+        }
+
+        if (items !== undefined) {
+            tasks = items;
         }
 
         const todosclones = recursiveCloneTree(tasks);
@@ -638,7 +661,7 @@ export const useTaskTree = () => {
                     }
                     createTaskSection({ name: draggableTask.name, sort: droppableTask.sort, editFields: draggableTask, sortFunc: sort });
                 } else {
-                    createTask(droppableTask.id, draggableTask, pos);
+                    createTask({ taskId: droppableTask.id, editFields: draggableTask, position: pos, tasks: todosclones});
                 }
             }
         }
