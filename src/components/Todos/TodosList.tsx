@@ -21,7 +21,7 @@ const TodosList: FC<ITodosListProps> = ({
             {todoitems.map((item, index) => (
                 <>
                     {isDragAndDropList ? (
-                        <DndWrapper id={item.id} index={index}>
+                        <DndWrapper id={item.id} index={index} isDragDisabled={item.isDragDisabled}>
                             <TodoListItem
                                 item={item}
                                 isDragAndDropList={isDragAndDropList}

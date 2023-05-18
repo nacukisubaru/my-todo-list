@@ -21,7 +21,11 @@ const TodoListItem: FC<ITodoListItem> = ({
     showChildrens,
     isDragAndDropList,
 }) => {
+    const { mutateAllTasks, mutateTask, findTaskInTree } = useTaskTree();
     const { setVisibleDetailTodo, setCurrentTodo } = useActions();
+    const { todos } = useAppSelector(
+        (state) => state.todosReducer
+    );
     const { isVisibleCompleteTasks } = useAppSelector(
         (state) => state.uiReducer
     );
@@ -37,12 +41,42 @@ const TodoListItem: FC<ITodoListItem> = ({
     };
     const { dragAndDropSort } = useTaskTree();
 
-    const onDragEnd = (draggable: any) => {
-        dragAndDropSort(draggable.destination, draggable.draggableId);
+    const onDragEnd = async (draggable: any) => {
+        const items = mutateAllTasks((item) => {
+            item.isDragDisabled = false;
+        }, false);
+        dragAndDropSort({
+            destination: draggable.destination, 
+            draggableId: draggable.draggableId,
+            items
+        });
     };
 
+    const changeDraggable = () => {
+        if (item.parentId) {
+            const parent = findTaskInTree(todos, item.parentId);
+            if (parent && parent.type !== "section") {
+                mutateTask(parent.id, [{ field: "isDragDisabled", value: true }]);
+            }
+        }    
+    };
+
+    const onDragStart = () => {
+        if (item.parentId) {
+           const parent = findTaskInTree(todos, item.parentId);
+           
+            if (parent && parent.type !== "section") {
+                mutateTask(parent.id, [{ field: "isDragDisabled", value: true }]);
+            }
+        }
+    }
+
     return (
-        <div className="ml-5" key={item.id}>
+        <div
+            className="ml-5"
+            key={item.id}
+            onTouchStart={changeDraggable}
+        >
             {!item.isComplete && (
                 <>
                     <TodoItem
@@ -70,7 +104,7 @@ const TodoListItem: FC<ITodoListItem> = ({
             )}
 
             {item.showTasks && showChildrens && (
-                <DragDropContext onDragEnd={onDragEnd}>
+                <DragDropContext onDragEnd={onDragEnd} onBeforeDragStart={onDragStart}>
                     <TodosList
                         todoitems={item.items}
                         toolTaskSettings={{

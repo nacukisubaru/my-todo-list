@@ -24,7 +24,11 @@ const BurgerMenuItems: FC<IBurgerMenuItemsProps> = ({
 
     const {dragAndDropSort} = useTaskTree();
     const onDragEnd = (draggable: any) => {
-        dragAndDropSort(draggable.destination, draggable.draggableId, true);
+        dragAndDropSort({
+            destination: draggable.destination, 
+            draggableId: draggable.draggableId,
+            dragSection: true
+        });
     };
 
     return (

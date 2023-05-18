@@ -4,10 +4,11 @@ import { Draggable, Droppable } from "react-beautiful-dnd";
 interface IDndWrapper {
     id: string,
     index: number,
-    children: any
+    children: any,
+    isDragDisabled?: boolean
 }
 
-const DndWrapper: FC<IDndWrapper> = ({id, index, children}) => {
+const DndWrapper: FC<IDndWrapper> = ({id, index, isDragDisabled = false, children}) => {
     return (
         <>
             <Droppable droppableId={id} key={id}>
@@ -17,6 +18,7 @@ const DndWrapper: FC<IDndWrapper> = ({id, index, children}) => {
                             key={id}
                             draggableId={id}
                             index={index}
+                            isDragDisabled={isDragDisabled}
                         >
                             {(provided) => (
                                 <div

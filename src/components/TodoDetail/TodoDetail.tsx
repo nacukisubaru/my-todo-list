@@ -123,6 +123,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                         textPlaceHolder: "Описание",
                         textValue: todoEditInputs.text,
                         inputValue: todoEditInputs.name,
+                        heightText: 'h-[45vh]'
                     }}
                     isVisible={currentTodo.editable}
                     callback={closeEditTodo}
