@@ -13,6 +13,7 @@ interface IInputsSettings {
     textValue?: string;
     inputPlaceHolder: string;
     textPlaceHolder: string;
+    heightText?: string;
 }
 
 interface IButtonsSettings {
@@ -40,7 +41,7 @@ const TodoChange: FC<ITodoChange> = ({
     action = "create",
     sortByPosition
 }) => {
-    const { inputPlaceHolder, textPlaceHolder, inputValue, textValue } =
+    const { inputPlaceHolder, textPlaceHolder, inputValue, textValue, heightText } =
         inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
 
@@ -162,7 +163,7 @@ const TodoChange: FC<ITodoChange> = ({
                         {action !== "createSection" && action !== "changeSection" &&  (
                             <textarea
                                 ref={description}
-                                className="resize-none h-[70px] hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0"
+                                className={`resize-none ${heightText ? heightText : 'h-[70px]'} hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0`}
                                 placeholder={textPlaceHolder}
                                 onChange={changeField}
                             ></textarea>
