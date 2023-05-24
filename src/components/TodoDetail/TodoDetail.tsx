@@ -144,7 +144,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                                 <span className="ml-[7px] -mt-[2px]"><EditButton onClick={openEditTodo}/></span>
                             </div>
                             <div className="mb-[15px] break-words max-w-[15rem] md:max-w-2xl">
-                                {currentTodo.description && HTMLReactParser(replaceEntityTags(wrapLinksInTags(currentTodo.description)))}
+                                {currentTodo.description && HTMLReactParser(replaceEntityTags(currentTodo.description))}
                             </div>
                         </div>
                     </div>
