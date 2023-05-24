@@ -11,6 +11,8 @@
     "host": "vite preview --host"
   },
   "dependencies": {
+    "@progress/kendo-react-editor": "^5.13.1",
+    "@progress/kendo-theme-default": "^6.3.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/react-redux": "^7.1.25",
     "axios": "^1.3.6",

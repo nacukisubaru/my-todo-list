@@ -7,6 +7,9 @@ import { todoSectionsApi } from "../../store/services/todo/todo-sections.api";
 import { todoApi } from "../../store/services/todo/todo.api";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { Editor, EditorTools } from "@progress/kendo-react-editor";
+import { iframeToEntity, replaceEntityTags } from "../../helpers/stringHelper";
+import "@progress/kendo-theme-default/dist/all.css";
 
 interface IInputsSettings {
     inputValue?: string;
@@ -29,7 +32,8 @@ interface ITodoChange {
     callback?: () => void;
     action?: changeAction;
     position?: string;
-    sortByPosition?: ISortByPosition
+    sortByPosition?: ISortByPosition;
+    showToolBarEditor?: boolean;
 }
 
 const TodoChange: FC<ITodoChange> = ({
@@ -39,42 +43,86 @@ const TodoChange: FC<ITodoChange> = ({
     isVisible = false,
     callback,
     action = "create",
-    sortByPosition
+    sortByPosition,
+    showToolBarEditor = false,
 }) => {
-    const { inputPlaceHolder, textPlaceHolder, inputValue, textValue, heightText } =
-        inputsSettings;
+    const {
+        Bold,
+        Italic,
+        Underline,
+        Strikethrough,
+        ForeColor,
+        BackColor,
+        CleanFormatting,
+        AlignLeft,
+        AlignCenter,
+        AlignRight,
+        AlignJustify,
+        Indent,
+        Outdent,
+        OrderedList,
+        UnorderedList,
+        NumberedList,
+        BulletedList,
+        Undo,
+        Redo,
+        FontSize,
+        FontName,
+        FormatBlock,
+        Link,
+        Unlink,
+        InsertImage,
+        ViewHtml,
+        InsertTable,
+        InsertFile,
+        SelectAll,
+        Print,
+        Pdf,
+        AddRowBefore,
+        AddRowAfter,
+        AddColumnBefore,
+        AddColumnAfter,
+        DeleteRow,
+        DeleteColumn,
+        DeleteTable,
+        MergeCells,
+        SplitCell,
+    } = EditorTools;
+
+    const { inputPlaceHolder, inputValue, textValue } = inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
 
     const { createTask, mutateTask, createTaskSection } = useTaskTree();
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
-    const {isVisibleDetailTodo} = useAppSelector(state => state.uiReducer);
+    const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
     const { setActiveAddTaskBtn, setCurrentTodo } = useActions();
-    
+
     const [updSection] = todoSectionsApi.useUpdateMutation();
     const [updTodo] = todoApi.useUpdateMutation();
 
+    const [textEditorContent, setTextEditorContent] = useState("");
+
     const name: any = useRef();
-    const description: any = useRef();
 
     const createTodo = async () => {
         const TaskName = name.current.value;
-        const TaskDesc = description.current.value;
-        const task = await createTask({ 
-            taskId: id, 
-            editFields: { name: TaskName, description: TaskDesc }, 
-            position: sortByPosition?.position
+        const TaskDesc = textEditorContent;
+        const task = await createTask({
+            taskId: id,
+            editFields: { name: TaskName, description: TaskDesc },
+            position: sortByPosition?.position,
         });
         if (isVisibleDetailTodo && task) {
-            setCurrentTodo({todo: task});
+            setCurrentTodo({ todo: task });
         }
         name.current.value = "";
-        description.current.value = "";
+        setTextEditorContent('');
         setPrimaryBtnDisabled(true);
     };
 
     const changeTodo = async () => {
         const TaskName = name.current.value;
-        const TaskDesc = description.current.value;
+        const TaskDesc = replaceEntityTags(textEditorContent);
         const arrayTodo = [
             { field: "name", value: TaskName },
             { field: "description", value: TaskDesc },
@@ -91,9 +139,12 @@ const TodoChange: FC<ITodoChange> = ({
 
     const createSectionTodo = () => {
         if (sortByPosition?.sortPosition !== undefined) {
-            createTaskSection({name: name.current.value, sort: sortByPosition?.sortPosition});
+            createTaskSection({
+                name: name.current.value,
+                sort: sortByPosition?.sortPosition,
+            });
         }
-    }
+    };
 
     const changeSectionTodo = async () => {
         const task = await mutateTask(id, [
@@ -101,22 +152,22 @@ const TodoChange: FC<ITodoChange> = ({
             { field: "editable", value: false },
         ]);
         updSection(task);
-    }
+    };
 
     const applyActionTodo = () => {
-        switch(action) {
-            case 'change':
+        switch (action) {
+            case "change":
                 changeTodo();
-            break;
-            case 'create':
+                break;
+            case "create":
                 createTodo();
-            break;
-            case 'createSection':
+                break;
+            case "createSection":
                 createSectionTodo();
-            break;
-            case 'changeSection':
+                break;
+            case "changeSection":
                 changeSectionTodo();
-            break;
+                break;
         }
 
         if (action === "createSection") {
@@ -141,11 +192,14 @@ const TodoChange: FC<ITodoChange> = ({
     useEffect(() => {
         if (isVisible && (action === "change" || action === "changeSection")) {
             name.current.value = inputValue;
-            if (textValue) {
-                description.current.value = textValue;
-            }
         }
     }, [isVisible]);
+
+    const setEditorContent = (current: any) => {
+        if (current.target && current.target.contentElement) {
+            setTextEditorContent(replaceEntityTags(current.target.contentElement.innerHTML));
+        }
+    };
 
     return (
         <>
@@ -160,15 +214,77 @@ const TodoChange: FC<ITodoChange> = ({
                             onChange={changeField}
                             onInput={changeField}
                         />
-                        {action !== "createSection" && action !== "changeSection" &&  (
-                            <textarea
-                                ref={description}
-                                className={`resize-none ${heightText ? heightText : 'h-[70px]'} hover:outline-none hover:outline-offset-0 active:outline-none active:outline-offset-0 focus:outline-none focus:outline-offset-0`}
-                                placeholder={textPlaceHolder}
-                                onChange={changeField}
-                            ></textarea>
-                        )}
+                        {action !== "createSection" &&
+                            action !== "changeSection" && (
+                                <>
+                                    {showToolBarEditor ? (
+                                        <Editor
+                                            tools={[
+                                                [
+                                                    Bold,
+                                                    Italic,
+                                                    Underline,
+                                                    Strikethrough,
+                                                ],
+                                                ForeColor,
+                                                BackColor,
+                                                [CleanFormatting],
+                                                [
+                                                    AlignLeft,
+                                                    AlignCenter,
+                                                    AlignRight,
+                                                    AlignJustify,
+                                                ],
+                                                [Indent, Outdent],
+                                                [OrderedList, UnorderedList],
+                                                [NumberedList, BulletedList],
+                                                FontSize,
+                                                FontName,
+                                                FormatBlock,
+                                                [SelectAll],
+                                                [Undo, Redo],
+                                                [
+                                                    Link,
+                                                    Unlink,
+                                                    InsertImage,
+                                                    ViewHtml,
+                                                ],
+                                                [InsertTable, InsertFile],
+                                                [Pdf, Print],
+                                                [
+                                                    AddRowBefore,
+                                                    AddRowAfter,
+                                                    AddColumnBefore,
+                                                    AddColumnAfter,
+                                                ],
+                                                [
+                                                    DeleteRow,
+                                                    DeleteColumn,
+                                                    DeleteTable,
+                                                ],
+                                                [MergeCells, SplitCell],
+                                            ]}
+                                            contentStyle={{
+                                                height: 300,
+                                            }}
+                                            onChange={setEditorContent}
+                                            defaultContent={iframeToEntity(textValue)}
+                                        />
+                                    ) : (
+                                        <Editor
+                                            contentStyle={{
+                                                height: 300,
+                                            }}
+                                            onChange={setEditorContent}
+                                            style={{height:'100px'}}
+                                            defaultContent={textValue}
+                                            value={textEditorContent}
+                                        />
+                                    )}
+                                </>
+                            )}
                     </div>
+                 
                     <div className="display flex justify-end mx-[7px] my-[7px]">
                         <span className="mr-[8px]">
                             <BasicButton
