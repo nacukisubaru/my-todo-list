@@ -7,14 +7,14 @@ interface IMenuItem {
 
 interface ILeftMenu {
     items: IMenuItem[],
-    itemClick: (id: number) => void
+    itemClick: (item: IMenuItem) => void
 }
 
 const LeftMenu: FC<ILeftMenu> = ({ items, itemClick }) => {
     return (
         <ul>
             {items.map((item: any) =>{ 
-                return <li onClick={() => {itemClick(item.id)}}>{item.name}</li>
+                return <li onClick={() => {itemClick(item)}}>{item.name}</li>
             })}
         </ul>
     );
