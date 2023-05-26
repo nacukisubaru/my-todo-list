@@ -10,6 +10,7 @@ import {
 } from "@progress/kendo-react-layout";
 import { EditorUtils } from "@progress/kendo-react-editor";
 import { insertImageFiles } from "./utils";
+import UploadedImagesSelect from "../UploadedImagesSelect/UploadedImagesSelect";
 
 export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?: any; }) => {
   const [selected, setSelected] = React.useState(0);
@@ -18,8 +19,6 @@ export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?
   let src: HTMLInputElement | null;
   let altText: HTMLInputElement | null;
   let title: HTMLInputElement | null;
-  let width: HTMLInputElement | null;
-  let height: HTMLInputElement | null;
 
   const onTabSelect = (event: TabStripSelectEventArguments) => {
     setFiles([]);
@@ -47,8 +46,8 @@ export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?
       src: src ? src.value : null,
       title: title ? title.value : null,
       alt: altText ? altText.value : null,
-      width: width ? width.value : null,
-      height: height ? height.value : null,
+      width: 700,
+      height: 500
     };
 
     const attrs = Object.keys(data)
@@ -79,59 +78,6 @@ export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?
     attrs = state.selection.node.attrs;
   }
 
-  const fields = (
-    <React.Fragment>
-      <div className="k-edit-label">
-        <label htmlFor="k-editor-image-alt">Alternate text</label>
-      </div>
-      <div className="k-edit-field">
-        <input
-          type="text"
-          className="k-textbox"
-          id="k-editor-image-alt"
-          defaultValue={attrs.alt}
-          ref={(e) => (altText = e)}
-        />
-      </div>
-      <div className="k-edit-label">
-        <label htmlFor="k-editor-image-title">Title</label>
-      </div>
-      <div className="k-edit-field">
-        <input
-          type="text"
-          className="k-textbox"
-          id="k-editor-image-title"
-          defaultValue={attrs.title}
-          ref={(e) => (title = e)}
-        />
-      </div>
-      <div className="k-edit-label">
-        <label htmlFor="k-editor-image-width">Width (px)</label>
-      </div>
-      <div className="k-edit-field">
-        <input
-          type="text"
-          className="k-textbox"
-          id="k-editor-image-width"
-          defaultValue={attrs.width}
-          ref={(e) => (width = e)}
-        />
-      </div>
-      <div className="k-edit-label">
-        <label htmlFor="k-editor-image-height">Height (px)</label>
-      </div>
-      <div className="k-edit-field">
-        <input
-          type="text"
-          className="k-textbox"
-          id="k-editor-image-height"
-          defaultValue={attrs.height}
-          ref={(e) => (height = e)}
-        />
-      </div>
-    </React.Fragment>
-  );
-
   const buttons = (
     <div className={"text-right"} style={{ clear: "both" }}>
       <Button onClick={onClose}>Cancel</Button>
@@ -141,6 +87,18 @@ export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?
     </div>
   );
 
+  const [visibleImagesSelect, setVisibleImagesSelect] = React.useState<boolean>(false);
+  const [fileLink, setFileLink] = React.useState('');
+
+  const showUploadedImagesSelect = () => {
+    setVisibleImagesSelect(true);
+  }
+
+  const closeUploadedImagesSelect = () => {
+    setVisibleImagesSelect(false);
+  }
+
+
   return ReactDOM.createPortal(
     <Window
       title="Insert Image"
@@ -148,6 +106,9 @@ export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?
       initialWidth={500}
       initialHeight={480}
     >
+      {visibleImagesSelect && (
+        <UploadedImagesSelect show={visibleImagesSelect} onClose={closeUploadedImagesSelect} callbackSelectFile={setFileLink}/>
+      )}
       <TabStrip selected={selected} onSelect={onTabSelect} animation={false}>
         {Object.entries(attrs).length === 0 && (
           <TabStripTab title="Upload">
@@ -170,12 +131,12 @@ export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?
                   onAdd={onAddFiles}
                 />
               </div>
-              {fields}
               {buttons}
             </div>
           </TabStripTab>
         )}
         <TabStripTab title="By URL">
+          <Button onClick={showUploadedImagesSelect}>Загрузить с сервера</Button>
           <div className="k-edit-form-container pt-3 pb-3">
             <div className="k-edit-label">
               <label htmlFor="k-editor-image-url">Web address</label>
@@ -189,9 +150,10 @@ export const InsertImageDialog = (props: { onClose?: any; view?: any; imageNode?
                 disabled={/^data:image/.test(attrs.src || "")}
                 ref={(e) => (src = e)}
                 autoFocus={true}
+                value={fileLink}
+                onChange={(e)=> {setFileLink(e.target.value)}}
               />
             </div>
-            {fields}
             {buttons}
           </div>
         </TabStripTab>

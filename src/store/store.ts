@@ -7,13 +7,17 @@ import { todoSectionsApi } from "./services/todo/todo-sections.api";
 import { sectionsApi } from "./services/sections/sections.api";
 import { sectionsReducer } from "./services/sections/sections.slice";
 import { authReducer } from "./services/auth/auth.slice";
+import { filesApi } from "./services/files/files.api";
+import { filesFolderApi } from "./services/files/files-folder.api";
 
 
 const arrayMiddlewares: any[] = [
     todoApi.middleware,
     todoJsonApi.middleware,
     todoSectionsApi.middleware,
-    sectionsApi.middleware
+    sectionsApi.middleware,
+    filesApi.middleware,
+    filesFolderApi.middleware
 ];
 
 export const makeStore = () => configureStore({
@@ -21,7 +25,9 @@ export const makeStore = () => configureStore({
         todosReducer,
         sectionsReducer,
         uiReducer,
-        authReducer
+        authReducer,
+        [filesFolderApi.reducerPath]: filesFolderApi.reducer,
+        [filesApi.reducerPath]: filesApi.reducer,
     },
 
     middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }).concat(arrayMiddlewares),
