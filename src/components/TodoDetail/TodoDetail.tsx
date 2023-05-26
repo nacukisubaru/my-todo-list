@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useCopyToClipboard from "../../hooks/useCopyToClickboard";
 import HTMLReactParser from "html-react-parser";
 import EditButton from "../../ui/Buttons/EditButton/EditButton";
-import { replaceEntityTags, wrapLinksInTags } from "../../helpers/stringHelper";
+import { replaceEntityTags } from "../../helpers/stringHelper";
 
 interface ITodoDetailProps {}
 

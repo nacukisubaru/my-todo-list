@@ -7,9 +7,13 @@ import { todoSectionsApi } from "../../store/services/todo/todo-sections.api";
 import { todoApi } from "../../store/services/todo/todo.api";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { Editor, EditorTools } from "@progress/kendo-react-editor";
+import { Editor, EditorMountEvent, EditorTools, ProseMirror } from "@progress/kendo-react-editor";
 import { iframeToEntity, replaceEntityTags } from "../../helpers/stringHelper";
 import "@progress/kendo-theme-default/dist/all.css";
+
+import { insertImageFiles } from "../InsertImagePlugin/utils";
+import { insertImagePlugin } from "../InsertImagePlugin/InsertImagePlugin";
+import { InsertImage } from "../InsertImagePlugin/InsetImageTool";
 
 interface IInputsSettings {
     inputValue?: string;
@@ -71,7 +75,6 @@ const TodoChange: FC<ITodoChange> = ({
         FormatBlock,
         Link,
         Unlink,
-        InsertImage,
         ViewHtml,
         InsertTable,
         InsertFile,
@@ -201,6 +204,34 @@ const TodoChange: FC<ITodoChange> = ({
         }
     };
 
+    const onImageInsert = (args: any) => {
+        const { files, view, event } = args;
+        const nodeType = view.state.schema.nodes.image;
+    
+        const position =
+          event.type === "drop"
+            ? view.posAtCoords({ left: event.clientX, top: event.clientY })
+            : null;
+    
+        insertImageFiles({ view, files, nodeType, position });
+    
+        return files.length > 0;
+      };
+    
+      const onMount = (event: EditorMountEvent) => {
+        const state = event.viewProps.state;
+        const plugins = [...state.plugins, insertImagePlugin(onImageInsert)];
+    
+        return new ProseMirror.EditorView(
+          { mount: event.dom },
+          {
+            ...event.viewProps,
+            state: ProseMirror.EditorState.create({ doc: state.doc, plugins }),
+          }
+        );
+      };
+    
+
     return (
         <>
             {isVisible && (
@@ -226,6 +257,7 @@ const TodoChange: FC<ITodoChange> = ({
                                                     Underline,
                                                     Strikethrough,
                                                 ],
+                                                [InsertImage],
                                                 ForeColor,
                                                 BackColor,
                                                 [CleanFormatting],
@@ -269,6 +301,7 @@ const TodoChange: FC<ITodoChange> = ({
                                             }}
                                             onChange={setEditorContent}
                                             defaultContent={iframeToEntity(textValue)}
+                                            onMount={ onMount}
                                         />
                                     ) : (
                                         <Editor
