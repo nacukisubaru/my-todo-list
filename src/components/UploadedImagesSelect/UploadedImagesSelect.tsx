@@ -5,6 +5,7 @@ import LeftMenu from "../../ui/LeftMenu/LeftMenu";
 import { filesApi } from "../../store/services/files/files.api";
 import ImageCard from "../../ui/Cards/ImageCard";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
+import Modal from "../../ui/Modal/Modal";
 
 interface IUploadedImagesSelect {
     show?: boolean;
@@ -30,9 +31,13 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
     const files = filesApi.useGetFilesByFolderQuery(folder.id, {
         skip: folder.id === 0 ? true : false,
     });
-    const [upload] = filesApi.useUploadFilesMutation();
 
+    const [createFolder] = filesFolderApi.useCreateFolderMutation();
+
+    const [upload] = filesApi.useUploadFilesMutation();
     const [selectedFile, setSelectedFile] = useState("");
+    const [folderName, setFolderName] = useState("");
+    const [isVisibleFolderModal, showAddFolderModal] = useState(false);
 
     const setSelectedFolderId = (item: any) => {
         setFolder(item);
@@ -65,6 +70,20 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
         }
     };
 
+    const addFolder = () => {
+        createFolder({ name: folderName });
+        setFolderName('');
+        showAddFolderModal(false);
+    };
+
+    const openAddFolderModal = () => {
+        showAddFolderModal(true);
+    };
+
+    const closeAddFolderModal = () => {
+        showAddFolderModal(false);
+    };
+
     return (
         <>
             {status === "fulfilled" && (
@@ -74,49 +93,80 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                     isVisible={show}
                     onClose={onClose}
                 >
+                    <Modal
+                        modalSettings={{
+                            title: "Добавить папку",
+                            primaryBtnName: "Добавить",
+                            secondaryBtnName: "Отмена",
+                            isVisible: isVisibleFolderModal,
+                        }}
+                        callbacks={{
+                            primaryBtnClick: addFolder,
+                            secondaryBtnClick: closeAddFolderModal,
+                        }}
+                    >
+                        <div>
+                            <input
+                                type="text"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                                    focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
+                                    dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                onChange={(e) => {
+                                    setFolderName(e.target.value);
+                                }}
+                                value={folderName}
+                            />
+                        </div>
+                    </Modal>
                     <div>
                         <div className="display flex">
-                            <div className="mr-[165px]">
-                                <LeftMenu
-                                    items={data}
-                                    itemClick={setSelectedFolderId}
-                                ></LeftMenu>
+                            <div className="mr-[35px]">
+                                <div className="mb-[8px]">
+                                    <LeftMenu
+                                        items={data}
+                                        itemClick={setSelectedFolderId}
+                                    ></LeftMenu>
+                                </div>
+                                <BasicButton
+                                    name="Создать папку"
+                                    color="secondary"
+                                    onClick={openAddFolderModal}
+                                />
                             </div>
                             <div>
-                                {files.data && files.data.length > 0 &&(
-                                    <>
-                                        <div
-                                            className="mb-[45px] display grid gap-[1rem] overflow-scroll h-[62vh]"
-                                            style={{
-                                                gridTemplateColumns:
-                                                    "repeat(3, 1fr)",
-                                            }}
-                                        >
-                                            {files.data.map((item: any) => {
-                                                return (
-                                                    <span
-                                                        className="ml-[15px]"
-                                                        onClick={() => {
-                                                            setFile(item.path);
-                                                        }}
-                                                    >
-                                                        <ImageCard
-                                                            name={item.name}
-                                                            path={item.path}
-                                                            width="w-[250px]"
-                                                            cardColor={ item.path === selectedFile ? "bg-red-400" : "" }
-                                                        />
-                                                    </span>
-                                                );
-                                            })}
-                                        </div>
+                                <div
+                                    className="mb-[45px] display grid gap-[1rem] overflow-scroll h-[42vh] w-[96vh]"
+                                    style={{
+                                        gridTemplateColumns:
+                                            "repeat(3, 1fr)",
+                                    }}
+                                >
+                                    {files.data &&
+                                        files.data.map((item: any) => {
+                                            return (
+                                                <span
+                                                    className="ml-[15px]"
+                                                    onClick={() => {
+                                                        setFile(item.path);
+                                                    }}
+                                                >
+                                                    <ImageCard
+                                                        name={item.name}
+                                                        path={item.path}
+                                                        width="w-[250px]"
+                                                        cardColor={
+                                                            item.path ===
+                                                            selectedFile
+                                                                ? "bg-red-400"
+                                                                : ""
+                                                        }
+                                                    />
+                                                </span>
+                                            );
+                                        })}
+                                </div>
 
-                                        <input
-                                            type="file"
-                                            onChange={uploadImage}
-                                        />
-                                    </>
-                                )}
+                                <input type="file" onChange={uploadImage} />
                             </div>
                         </div>
                         {files.data && files.data.length > 0 && (

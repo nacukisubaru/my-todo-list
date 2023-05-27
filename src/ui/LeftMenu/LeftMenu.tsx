@@ -12,7 +12,7 @@ interface ILeftMenu {
 
 const LeftMenu: FC<ILeftMenu> = ({ items, itemClick }) => {
     return (
-        <ul>
+        <ul className="w-[150px] h-[470px] overflow-scroll">
             {items.map((item: any) =>{ 
                 return <li onClick={() => {itemClick(item)}}>{item.name}</li>
             })}
