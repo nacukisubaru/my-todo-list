@@ -33,6 +33,8 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
     });
 
     const [createFolder] = filesFolderApi.useCreateFolderMutation();
+    const [removeFile] = filesApi.useRemoveFileMutation();
+    const [deleteFolder] = filesFolderApi.useRemoveFolderMutation();
 
     const [upload] = filesApi.useUploadFilesMutation();
     const [selectedFile, setSelectedFile] = useState("");
@@ -84,6 +86,17 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
         showAddFolderModal(false);
     };
 
+    const deleteFile = (fileId: number) => {
+        removeFile(fileId);
+    }
+    
+    const removeFolder = (folder: any) => {
+        if (folder.name !== 'upload') {
+            setFolder({id: 0, name: ''});
+            deleteFolder(folder.id);
+        }
+    }
+
     return (
         <>
             {status === "fulfilled" && (
@@ -123,6 +136,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                             <div className="mr-[35px]">
                                 <div className="mb-[8px]">
                                     <LeftMenu
+                                        menuItems={[{name: 'Удалить папку', onClick: (item) => {removeFolder(item)}}]}
                                         items={data}
                                         itemClick={setSelectedFolderId}
                                     ></LeftMenu>
@@ -141,7 +155,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                                             "repeat(3, 1fr)",
                                     }}
                                 >
-                                    {files.data &&
+                                    {files.data && folder.id > 0 &&
                                         files.data.map((item: any) => {
                                             return (
                                                 <span
@@ -151,7 +165,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                                                     }}
                                                 >
                                                     <ImageCard
-                                                        name={item.name}
+                                                        name={item.originalName}
                                                         path={item.path}
                                                         width="w-[250px]"
                                                         cardColor={
@@ -160,6 +174,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                                                                 ? "bg-red-400"
                                                                 : ""
                                                         }
+                                                        removeFile={() => {deleteFile(item.id)}}
                                                     />
                                                 </span>
                                             );

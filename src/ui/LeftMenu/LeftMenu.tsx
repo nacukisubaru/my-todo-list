@@ -1,20 +1,25 @@
 import { FC } from "react";
+import ItemMenu from "./ItemMenu";
+import { IMenuItem } from "../../types/ui.types";
 
-interface IMenuItem {
-    id: number,
-    name: string
+interface IItemMenu {
+    id: number;
+    name: string;
 }
 
 interface ILeftMenu {
-    items: IMenuItem[],
-    itemClick: (item: IMenuItem) => void
+    items: IItemMenu[];
+    menuItems: IMenuItem[];
+    itemClick: (item: IItemMenu) => void;
 }
 
-const LeftMenu: FC<ILeftMenu> = ({ items, itemClick }) => {
+const LeftMenu: FC<ILeftMenu> = ({ items, menuItems, itemClick }) => {
     return (
-        <ul className="w-[150px] h-[470px] overflow-scroll">
-            {items.map((item: any) =>{ 
-                return <li onClick={() => {itemClick(item)}}>{item.name}</li>
+        <ul className=" w-[180px] h-[470px] overflow-scroll">
+            {items.map((item: any) => {
+                return (
+                    <ItemMenu item={item} menuItems={menuItems} itemClick={itemClick} />
+                );
             })}
         </ul>
     );

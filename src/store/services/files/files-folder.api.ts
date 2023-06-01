@@ -26,5 +26,12 @@ export const filesFolderApi = createApi({
             }),
             invalidatesTags: [{type: 'Folders', id: 'LIST'}]
         }),
+        removeFolder: build.mutation({
+            query: (id) => ({
+                url: '/files-folders/remove/' + id,
+                method: 'POST'
+            }),
+            invalidatesTags: [{type: 'Folders', id: 'LIST'}]
+        }),
     })
 });

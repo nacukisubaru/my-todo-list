@@ -26,5 +26,12 @@ export const filesApi = createApi({
             }),
             invalidatesTags: [{type: 'Files', id: 'LIST'}]
         }),
+        removeFile: build.mutation({
+            query: (id) => ({
+                url: '/files/remove/' + id,
+                method: 'DELETE'
+            }),
+            invalidatesTags: [{type: 'Files', id: 'LIST'}]
+        }),
     })
 });
