@@ -2,12 +2,13 @@ import { FC } from "react";
 import ToolButton from "../Tools/ToolTaskPanel/ToolButton";
 
 interface IMenuButton {
+    color?: string;
     onClick: () => void;
 }
 
-const MenuButton:FC<IMenuButton> = ({onClick}) => {
+const MenuButton:FC<IMenuButton> = ({color, onClick}) => {
     return (
-        <ToolButton onClick={onClick}>
+        <ToolButton color={color} onClick={onClick}>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

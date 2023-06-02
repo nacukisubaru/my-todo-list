@@ -1,6 +1,8 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import Card from "./Card";
-import TrashButton from "../Buttons/TrashButton";
+import ToolMenu from "../Tools/ToolMenu";
+import MenuButton from "../Buttons/MenuButton";
+import { IMenuItem } from "../../types/ui.types";
 
 interface ICardImage {
     width: string;
@@ -9,7 +11,7 @@ interface ICardImage {
     height?: string;
     maxHeight?: string;
     cardColor?: string;
-    removeFile: () => void;
+    menuItems: IMenuItem[];
 }
 
 const ImageCard: FC<ICardImage> = ({
@@ -19,8 +21,14 @@ const ImageCard: FC<ICardImage> = ({
     cardColor,
     maxHeight,
     height,
-    removeFile,
+    menuItems,
 }) => {
+    const [isVisibleMenu, setVisibleMenu] = useState(false);
+
+    const showMenu = () => {
+        setVisibleMenu(true);
+    };
+
     return (
         <Card width={width} background={cardColor}>
             <img
@@ -30,10 +38,20 @@ const ImageCard: FC<ICardImage> = ({
                 src={path}
                 alt={name}
             />
-            <div className="display flex justify-between">
-                <div className="w-[88%] truncate ...">{name}</div>
-                <TrashButton onClick={removeFile} />
+            <div className="w-[88%] truncate ...">{name}</div>
+            <div className="display flex justify-end">
+                <MenuButton color={cardColor} onClick={showMenu} />
             </div>
+            {isVisibleMenu && (
+                <ToolMenu
+                    position="static"
+                    translateX="translate-x-[100px]"
+                    menuItems={menuItems}
+                    onMouseLeave={() => {
+                        setVisibleMenu(false);
+                    }}
+                />
+            )}
         </Card>
     );
 };

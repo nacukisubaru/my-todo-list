@@ -24,3 +24,13 @@ export const iframeToEntity = (tags: any) => {
     return replaceEntityTags(tag, true);
   });
 }
+
+export const getExtensionFromStr = (str: string) => {
+  var pattern =/\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$/gmi;
+  const match = str.match(pattern);
+  if (match) {
+    return match[0];
+  }
+  
+  return false;
+}

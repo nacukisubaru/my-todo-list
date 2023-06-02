@@ -6,6 +6,8 @@ import { filesApi } from "../../store/services/files/files.api";
 import ImageCard from "../../ui/Cards/ImageCard";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 import Modal from "../../ui/Modal/Modal";
+import useCopyToClipboard from "../../hooks/useCopyToClickboard";
+import { getExtensionFromStr } from "../../helpers/stringHelper";
 
 interface IUploadedImagesSelect {
     show?: boolean;
@@ -40,6 +42,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
     const [selectedFile, setSelectedFile] = useState("");
     const [folderName, setFolderName] = useState("");
     const [isVisibleFolderModal, showAddFolderModal] = useState(false);
+    const [copy] = useCopyToClipboard();
 
     const setSelectedFolderId = (item: any) => {
         setFolder(item);
@@ -97,6 +100,15 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
         }
     }
 
+    const copyFileForEditor = (link: string) => {
+        const extension = getExtensionFromStr(link);
+        if (extension === '.mp4' || extension === '.webm') {
+            copy(`<iframe width="560" height="315" src="${link}"></iframe>`);
+        } else {
+            copy(`<img src="${link}" width="700" height="500" class="ProseMirror-selectednode" contenteditable="false" draggable="true"/>`);
+        }
+    }
+
     return (
         <>
             {status === "fulfilled" && (
@@ -149,7 +161,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                             </div>
                             <div>
                                 <div
-                                    className="mb-[45px] display grid gap-[1rem] overflow-scroll h-[42vh] w-[96vh]"
+                                    className="mb-[45px] display grid gap-[1rem] overflow-scroll h-[42vh] w-[96vh] pb-[60px]"
                                     style={{
                                         gridTemplateColumns:
                                             "repeat(3, 1fr)",
@@ -164,6 +176,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                                                         setFile(item.path);
                                                     }}
                                                 >
+                                                    <div className="max-h-[200px]">
                                                     <ImageCard
                                                         name={item.originalName}
                                                         path={item.path}
@@ -174,8 +187,12 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
                                                                 ? "bg-red-400"
                                                                 : ""
                                                         }
-                                                        removeFile={() => {deleteFile(item.id)}}
+                                                        menuItems={[
+                                                            { name: "Удалить", onClick: () => {deleteFile(item.id)} },
+                                                            { name: "Скопировать", onClick: () => {copyFileForEditor(item.path)} },
+                                                        ]}                                                
                                                     />
+                                                    </div>
                                                 </span>
                                             );
                                         })}

@@ -2,6 +2,7 @@ import { FC } from "react";
 import { IMenuItem } from "../../types/ui.types";
 
 interface IToolMenu {
+    position?: string;
     menuItems: IMenuItem[];
     translateY?: string;
     translateX?: string;
@@ -9,11 +10,11 @@ interface IToolMenu {
     onMouseLeave?: () => void
 }
 
-const ToolMenu: FC<IToolMenu> = ({ menuItems, translateX, translateY, parent, onMouseLeave }) => {
+const ToolMenu: FC<IToolMenu> = ({ menuItems, translateX, translateY, parent, position, onMouseLeave }) => {
     return (
         <div
             onMouseLeave={onMouseLeave}
-            className={`absolute ${translateX ? translateX : '-translate-x-[67px]'} ${translateY && translateY} px-[20px] py-[20px] bg-white h-auto w-[200px] rounded-[6px] shadow-xl`}
+            className={`${position ? position : 'absolute'} ${translateX ? translateX : '-translate-x-[67px]'} ${translateY && translateY} px-[20px] py-[20px] bg-white h-auto w-[200px] rounded-[6px] shadow-xl`}
         >
             <ul>
                 {menuItems.map((item) => {

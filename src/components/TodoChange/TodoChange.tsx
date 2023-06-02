@@ -289,7 +289,6 @@ const TodoChange: FC<ITodoChange> = ({
                                                 [
                                                     Link,
                                                     Unlink,
-                                                    InsertImage,
                                                     ViewHtml,
                                                 ],
                                                 [InsertTable, InsertFile],
