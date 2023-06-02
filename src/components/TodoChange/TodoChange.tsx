@@ -14,6 +14,7 @@ import "@progress/kendo-theme-default/dist/all.css";
 import { insertImageFiles } from "../InsertImagePlugin/utils";
 import { insertImagePlugin } from "../InsertImagePlugin/InsertImagePlugin";
 import { InsertImage } from "../InsertImagePlugin/InsetImageTool";
+import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
 
 interface IInputsSettings {
     inputValue?: string;
@@ -104,8 +105,13 @@ const TodoChange: FC<ITodoChange> = ({
     const [updTodo] = todoApi.useUpdateMutation();
 
     const [textEditorContent, setTextEditorContent] = useState("");
+    const [isVisibleEditor, setEditorVisible] = useState(false);
 
     const name: any = useRef();
+
+    const showEditor = (show: boolean) => {
+        setEditorVisible(show);
+    }
 
     const createTodo = async () => {
         const TaskName = name.current.value;
@@ -115,6 +121,7 @@ const TodoChange: FC<ITodoChange> = ({
             editFields: { name: TaskName, description: TaskDesc },
             position: sortByPosition?.position,
         });
+        
         if (isVisibleDetailTodo && task) {
             setCurrentTodo({ todo: task });
         }
@@ -181,6 +188,7 @@ const TodoChange: FC<ITodoChange> = ({
     const todoFormClose = () => {
         setActiveAddTaskBtn({ isActive: true });
         setPrimaryBtnDisabled(true);
+        setEditorVisible(false);
         callback && callback();
     };
 
@@ -230,7 +238,6 @@ const TodoChange: FC<ITodoChange> = ({
           }
         );
       };
-    
 
     return (
         <>
@@ -248,7 +255,11 @@ const TodoChange: FC<ITodoChange> = ({
                         {action !== "createSection" &&
                             action !== "changeSection" && (
                                 <>
-                                    {showToolBarEditor ? (
+                                    <ArrowButton 
+                                        tailwindstyles={`w-[21px] h-[22px] bg-stone-200 px-[3px]`}
+                                        onClick={showEditor}
+                                    />
+                                    {isVisibleEditor ? (
                                         <Editor
                                             tools={[
                                                 [
@@ -296,22 +307,18 @@ const TodoChange: FC<ITodoChange> = ({
                                                 ],
                                                 [MergeCells, SplitCell],
                                             ]}
-                                            contentStyle={{
-                                                height: 300,
-                                            }}
+                                          
                                             onChange={setEditorContent}
                                             defaultContent={iframeToEntity(textValue)}
                                             onMount={ onMount}
+                                            style={{height: '500px'}}
                                         />
                                     ) : (
                                         <Editor
-                                            contentStyle={{
-                                                height: 300,
-                                            }}
+                                         
                                             onChange={setEditorContent}
-                                            style={{height:'100px'}}
-                                            defaultContent={textValue}
-                                            value={textEditorContent}
+                                            style={{height:'500px'}}
+                                            defaultContent={iframeToEntity(textValue)}
                                         />
                                     )}
                                 </>

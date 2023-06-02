@@ -3,10 +3,11 @@ import { FC, useState } from "react";
 interface IArrowButton {
     isArrowOpen?: boolean;
     color?: string;
+    tailwindstyles?: string;
     onClick: (param: any) => void;
 }
 
-const ArrowButton: FC<IArrowButton> = ({ isArrowOpen = false, color, onClick }) => {
+const ArrowButton: FC<IArrowButton> = ({ isArrowOpen = false, color, tailwindstyles = '', onClick }) => {
     const [isOpen, setOpen] = useState(isArrowOpen);
 
     const toggleArrow = () => {
@@ -21,7 +22,7 @@ const ArrowButton: FC<IArrowButton> = ({ isArrowOpen = false, color, onClick }) 
     return (
         <>
             {isOpen ? (
-                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200 h-[12px] active:outline-0 focus:outline-0`} onClick={toggleArrow}>
+                <button className={`p-0  ${color ? color : 'bg-white'} ${tailwindstyles && tailwindstyles} hover:bg-gray-200 h-[12px] active:outline-0 focus:outline-0`} onClick={toggleArrow}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -38,7 +39,7 @@ const ArrowButton: FC<IArrowButton> = ({ isArrowOpen = false, color, onClick }) 
                     </svg>
                 </button>
             ) : (
-                <button className={`p-0  ${color ? color : 'bg-white'} hover:bg-gray-200 h-[12px] active:outline-0 focus:outline-0`} onClick={toggleArrow}>
+                <button className={`p-0  ${color ? color : 'bg-white'} ${tailwindstyles && tailwindstyles} hover:bg-gray-200 h-[12px] active:outline-0 focus:outline-0`} onClick={toggleArrow}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
