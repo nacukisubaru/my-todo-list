@@ -38,7 +38,8 @@ interface ITodoChange {
     action?: changeAction;
     position?: string;
     sortByPosition?: ISortByPosition;
-    showToolBarEditor?: boolean;
+    editorHeight?: string;
+    showToolBar?: boolean
 }
 
 const TodoChange: FC<ITodoChange> = ({
@@ -49,7 +50,8 @@ const TodoChange: FC<ITodoChange> = ({
     callback,
     action = "create",
     sortByPosition,
-    showToolBarEditor = false,
+    editorHeight = '500px',
+    showToolBar = false
 }) => {
     const {
         Bold,
@@ -95,9 +97,9 @@ const TodoChange: FC<ITodoChange> = ({
 
     const { inputPlaceHolder, inputValue, textValue } = inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
-
+    const isCreate = action === "create" || action === "createSection";
     const { createTask, mutateTask, createTaskSection } = useTaskTree();
-    const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(true);
+    const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(isCreate);
     const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
     const { setActiveAddTaskBtn, setCurrentTodo } = useActions();
 
@@ -193,10 +195,12 @@ const TodoChange: FC<ITodoChange> = ({
     };
 
     const changeField = () => {
-        if (name.current.value.length) {
-            setPrimaryBtnDisabled(false);
-        } else {
-            setPrimaryBtnDisabled(true);
+        if (action !== "change" && action !== "changeSection") {
+            if (name.current.value.length) {
+                setPrimaryBtnDisabled(false);
+            } else {
+                setPrimaryBtnDisabled(true);
+            }
         }
     };
 
@@ -205,6 +209,12 @@ const TodoChange: FC<ITodoChange> = ({
             name.current.value = inputValue;
         }
     }, [isVisible]);
+
+    useEffect(() => {
+        if (textValue) {
+            setTextEditorContent(textValue);
+        }
+    }, [textValue]);
 
     const setEditorContent = (current: any) => {
         if (current.target && current.target.contentElement) {
@@ -255,10 +265,13 @@ const TodoChange: FC<ITodoChange> = ({
                         {action !== "createSection" &&
                             action !== "changeSection" && (
                                 <>
-                                    <ArrowButton 
-                                        tailwindstyles={`w-[21px] h-[22px] bg-stone-200 px-[3px]`}
-                                        onClick={showEditor}
-                                    />
+                                    {showToolBar && (
+                                        <ArrowButton 
+                                            tailwindstyles={`w-[21px] h-[22px] bg-stone-200 px-[3px]`}
+                                            onClick={showEditor}
+                                        />
+                                    )}
+                                    
                                     {isVisibleEditor ? (
                                         <Editor
                                             tools={[
@@ -310,13 +323,12 @@ const TodoChange: FC<ITodoChange> = ({
                                             onChange={setEditorContent}
                                             defaultContent={iframeToEntity(textValue)}
                                             onMount={ onMount}
-                                            style={{height: '500px'}}
+                                            style={{height: editorHeight}}
                                         />
                                     ) : (
                                         <Editor
-                                         
                                             onChange={setEditorContent}
-                                            style={{height:'500px'}}
+                                            style={{height: editorHeight}}
                                             defaultContent={iframeToEntity(textValue)}
                                         />
                                     )}

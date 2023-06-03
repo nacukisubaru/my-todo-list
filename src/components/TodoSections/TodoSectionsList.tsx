@@ -155,6 +155,7 @@ const TodoSectionsList: FC = () => {
                                                         section.id
                                                     );
                                                 }}
+                                                editorHeight="150px"
                                             />
 
                                             {isActiveAddTaskBtn && (

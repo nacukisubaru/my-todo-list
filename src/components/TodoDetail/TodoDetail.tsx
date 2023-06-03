@@ -128,7 +128,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                     isVisible={currentTodo.editable}
                     callback={closeEditTodo}
                     action="change"
-                    showToolBarEditor={true}
+                    showToolBar={true}
                 />
 
                 {!currentTodo.editable && (
@@ -177,6 +177,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                             }}
                             isVisible={currentTodo.creatable}
                             callback={closeCreateTodo}
+                            editorHeight="150px"
                         />
                         
                         {!currentTodo.isComplete && (
