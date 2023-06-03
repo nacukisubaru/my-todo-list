@@ -67,6 +67,7 @@ const TodoChangeSection: FC<ITodoChangeSectionProps> = ({
                 sortByPosition={{ position: "lower", sortPosition: sort }}
                 callback={closeAddSection}
                 action={action}
+                editorHeight="150px"
             />
             {isActiveBtn && showBtn && <AddSectionButton onClick={openAddSection} hideBtnByDefault={hideAddSectionButton}/>}
         </>

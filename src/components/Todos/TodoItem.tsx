@@ -95,6 +95,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                 sortByPosition={{ position: "upper" }}
                 callback={closeUpperAddForm}
                 action="create"
+                editorHeight="150px"
             />
 
             <TodoChange
@@ -112,6 +113,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                 isVisible={todo.editable}
                 callback={closeTodoChangePanel}
                 action="change"
+                editorHeight="150px"
             />
 
             {!todo.editable && (
@@ -186,6 +188,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                 sortByPosition={{ position: "lower" }}
                 callback={closeLowerAddForm}
                 action="create"
+                editorHeight="150px"
             />
         </>
     );

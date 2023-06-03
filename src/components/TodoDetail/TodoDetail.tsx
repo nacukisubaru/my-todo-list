@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useCopyToClipboard from "../../hooks/useCopyToClickboard";
 import HTMLReactParser from "html-react-parser";
 import EditButton from "../../ui/Buttons/EditButton/EditButton";
-import { textBreak, wrapLinksInTags } from "../../helpers/stringHelper";
+import { replaceEntityTags } from "../../helpers/stringHelper";
 
 interface ITodoDetailProps {}
 
@@ -128,6 +128,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                     isVisible={currentTodo.editable}
                     callback={closeEditTodo}
                     action="change"
+                    showToolBar={true}
                 />
 
                 {!currentTodo.editable && (
@@ -143,7 +144,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                                 <span className="ml-[7px] -mt-[2px]"><EditButton onClick={openEditTodo}/></span>
                             </div>
                             <div className="mb-[15px] break-words max-w-[15rem] md:max-w-2xl">
-                                {currentTodo.description && HTMLReactParser(textBreak(wrapLinksInTags(currentTodo.description)))}
+                                {currentTodo.description && HTMLReactParser(replaceEntityTags(currentTodo.description))}
                             </div>
                         </div>
                     </div>
@@ -176,6 +177,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                             }}
                             isVisible={currentTodo.creatable}
                             callback={closeCreateTodo}
+                            editorHeight="150px"
                         />
                         
                         {!currentTodo.isComplete && (
