@@ -103,7 +103,7 @@ const UploadedImagesSelect: FC<IUploadedImagesSelect> = ({
     const copyFileForEditor = (link: string) => {
         const extension = getExtensionFromStr(link);
         if (extension === '.mp4' || extension === '.webm') {
-            copy(`<iframe width="560" height="315" src="${link}"></iframe>`);
+            copy(`<video width="640" height="480" src="${link}" controls preload="none"></video>`);
         } else {
             copy(`<img src="${link}" width="700" height="500" class="ProseMirror-selectednode" contenteditable="false" draggable="true"/>`);
         }

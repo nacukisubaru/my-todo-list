@@ -19,7 +19,7 @@ export const replaceEntityTags = (text: string, isRevert: boolean = false) => {
 }
 
 export const iframeToEntity = (tags: any) => {
-  var tagsRegex = /(<\/iframe|<iframe)/g;
+  var tagsRegex = /(<\/iframe|<iframe|video|<video)/g;
   return tags.replaceAll(tagsRegex, function (tag: any) {
     return replaceEntityTags(tag, true);
   });
