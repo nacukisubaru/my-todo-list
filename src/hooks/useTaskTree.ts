@@ -21,7 +21,8 @@ interface ICreateSectionParams {
     editFields: ISectionEditFields,
     sortByPosition: ISortByPosition,
     subsection?: boolean,
-    sectionsList?: ITodoItem[]
+    sectionsList?: ITodoItem[],
+    isAnkiSection?: boolean,
 }
 
 interface ICreateTaskParams {
@@ -205,7 +206,7 @@ export const useTaskTree = () => {
         if (tasks === undefined) {
             tasks = todos;
         }
-        
+
         const newTaskId = generateTaskId(editFields);
         const tasksclones = recursiveCloneTree(tasks);
         const foundTask = findTaskInTree(tasksclones, taskId);
@@ -239,7 +240,8 @@ export const useTaskTree = () => {
                     editable: false,
                     creatableLower: false,
                     creatableUpper: false,
-                    creatable: false
+                    creatable: false,
+                    descriptionTwo: editFields.descriptionTwo ? editFields.descriptionTwo : ""
                 };
 
                 if (editFields.id && editFields.parentId) {
@@ -301,7 +303,7 @@ export const useTaskTree = () => {
 
     const createSection = async (params: ICreateSectionParams) => {
         const { sectionId, editFields, sortByPosition, subsection = false, sectionsList } = params;
-        let { name, id, showSections, items } = editFields;
+        let { name, id, showSections, items, isAnkiSection } = editFields;
         let isEdit: boolean = false;
         if (!id) {
             id = generateTaskId(name);
@@ -371,6 +373,7 @@ export const useTaskTree = () => {
                 sort,
                 parentId: foundParentTask ? foundParentTask.id : null,
                 items: editFields.items !== undefined ? editFields.items : [],
+                isAnkiSection: isAnkiSection !== undefined ? isAnkiSection : false,
             };
 
             if (subsection && !isEdit) {

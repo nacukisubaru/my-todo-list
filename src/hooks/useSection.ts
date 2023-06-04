@@ -21,10 +21,10 @@ export const useSection = () => {
         setCurrentSection(section);
     }
 
-    const addSection = (name: string, subsection: boolean = false) => {
+    const addSection = (name: string, isAnkiSection: boolean = false, subsection: boolean = false) => {
         createSection({
             sectionId: currentSection.id, 
-            editFields: {name}, 
+            editFields: {name, isAnkiSection}, 
             sortByPosition: { sortPosition: currentSection.sort, position: sortPosition },
             subsection
         });

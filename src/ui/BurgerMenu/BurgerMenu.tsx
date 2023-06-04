@@ -19,9 +19,9 @@ const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, setItem, toggleArrow }) => {
     return (
         <>
         {showMenu && (
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => {toggleMenu({isShow: false})}}></div>
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-[1]" onClick={() => {toggleMenu({isShow: false})}}></div>
         )}
-        <div className={`px-[15px] py-[60px] xl:w-[280px] h-[100%] w-[360px] md:w-[500px] fixed bg-gray-100 ${showMenu ? 'translate-x-[0px]' : '-translate-x-[1000px]'} duration-300`}>
+        <div className={`px-[15px] z-[1] py-[60px] xl:w-[280px] h-[100%] w-[360px] md:w-[500px] fixed bg-gray-100 ${showMenu ? 'translate-x-[0px]' : '-translate-x-[1000px]'} duration-300`}>
             <div className="display flex justify-center">
                 <ul className="w-[89%]">
                     <BurgerMenuItems

@@ -19,6 +19,7 @@ export const useToolTodo = (id: string, type: type = "todo") => {
     const [todoEditInputs, setTodoEditInputs] = useState({
         name: "",
         text: "",
+        textTwo: ""
     });
 
     const mutateTasks = async (field: string, callback: (obj: any) => void, isDetail: boolean = false) => {
@@ -42,6 +43,7 @@ export const useToolTodo = (id: string, type: type = "todo") => {
             setTodoEditInputs({
                 name: foundTask.name,
                 text: foundTask.description,
+                textTwo: foundTask.descriptionTwo
             });
         }
 

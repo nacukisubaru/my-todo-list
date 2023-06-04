@@ -6,24 +6,22 @@ import { useSection } from "../../hooks/useSection";
 import Modal from "../../ui/Modal/Modal";
 import BurgerMenu from "../../ui/BurgerMenu/BurgerMenu";
 import { ITodoItem } from "../../types/todo.types";
+import CheckBox from "../../ui/CheckBox/CheckBox";
 
 const SectionsMenu = () => {
     const { sections } = useAppSelector((state) => state.sectionsReducer);
     const { setSectionId, setCurrentSection } = useActions();
-    const {
-        setSectionEdit,
-        setSortPosition,
-        addSection,
-        changeSection
-    } = useSection();
+    const { setSectionEdit, setSortPosition, addSection, changeSection } =
+        useSection();
 
     const { modalState, setModalState, closeModal } = useModal();
     const [action, setAction] = useState("create");
     const [sectionName, setNameSection] = useState("");
+    const [isAnkiSection, setAnkiSection] = useState(false);
 
     const choiseSection = (item: ITodoItem) => {
         setSectionId({ sectionId: item.id });
-        setCurrentSection({section: item});
+        setCurrentSection({ section: item });
     };
 
     const openAddSection = (position: string, section: ITodoItem) => {
@@ -60,19 +58,21 @@ const SectionsMenu = () => {
             isVisible: true,
         });
         setAction("createSubsection");
-    }
+    };
 
     const applyActionSection = () => {
         switch (action) {
             case "create":
-                addSection(sectionName);
-            break;
+                addSection(sectionName, isAnkiSection);
+                setAnkiSection(false);
+                break;
             case "createSubsection":
-                addSection(sectionName, true);
-            break;
+                addSection(sectionName, isAnkiSection, true);
+                setAnkiSection(false);
+                break;
             case "change":
                 changeSection([{ field: "name", value: sectionName }]);
-            break;
+                break;
         }
         setNameSection("");
         closeModal();
@@ -81,11 +81,17 @@ const SectionsMenu = () => {
     const closeEditSection = () => {
         closeModal();
         setNameSection("");
-    }
+    };
 
-    const toggleArrow = async (sectionId: string, isVisibleSections: boolean) => {
-        changeSection([{ field: "showSections", value: isVisibleSections }], sectionId);
-    }
+    const toggleArrow = async (
+        sectionId: string,
+        isVisibleSections: boolean
+    ) => {
+        changeSection(
+            [{ field: "showSections", value: isVisibleSections }],
+            sectionId
+        );
+    };
 
     return (
         <>
@@ -101,12 +107,21 @@ const SectionsMenu = () => {
                         type="text"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
                             focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                            dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-[15px]"
                         onChange={(target) => {
                             setNameSection(target.target.value);
                         }}
                         value={sectionName}
-                    ></input>
+                    />
+
+                    <CheckBox
+                        label="Раздел anki"
+                        checkCallback={(checked: boolean) => {
+                            setAnkiSection(checked);
+                        }}
+                        checked={isAnkiSection}
+                        strikethrough={false}
+                    ></CheckBox>
                 </div>
             </Modal>
             <BurgerMenu
@@ -127,11 +142,15 @@ const SectionsMenu = () => {
                     },
                     {
                         name: "Изменить раздел",
-                        onClick: (item) => { openEditSection(item); },
+                        onClick: (item) => {
+                            openEditSection(item);
+                        },
                     },
                     {
                         name: "Добавить подраздел",
-                        onClick: (item) => { openAddSubsection(item); },
+                        onClick: (item) => {
+                            openAddSubsection(item);
+                        },
                     },
                 ]}
                 toggleArrow={toggleArrow}

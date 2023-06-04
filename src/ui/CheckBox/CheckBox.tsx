@@ -3,6 +3,7 @@ import { FC } from "react";
 interface ICheckBox {
     label?: string;
     checked?: boolean;
+    strikethrough?: boolean;
     onClick?: () => void;
     checkCallback: (checked: boolean) => void;
 }
@@ -10,6 +11,7 @@ interface ICheckBox {
 const CheckBox: FC<ICheckBox> = ({
     label,
     checked = false,
+    strikethrough = true,
     onClick,
     checkCallback,
 }) => {
@@ -23,7 +25,7 @@ const CheckBox: FC<ICheckBox> = ({
 
     const clickLabel = () => {
         onClick && onClick();
-    }
+    };
 
     return (
         <>
@@ -58,14 +60,16 @@ const CheckBox: FC<ICheckBox> = ({
                     type="checkbox"
                 />
                 {label && (
-                    <label
-                        className={`-mt-[3px] ml-2 cursor-pointer ${
-                            checked && "line-through"
-                        }`}
-                        onClick={clickLabel}
-                    >
-                        {label}
-                    </label>
+                    <div className="-mt-[27px] ml-[24px]">
+                        <label
+                            className={` cursor-pointer ${
+                                checked && strikethrough && "line-through"
+                            }`}
+                            onClick={clickLabel}
+                        >
+                            {label}
+                        </label>
+                    </div>
                 )}
             </div>
         </>

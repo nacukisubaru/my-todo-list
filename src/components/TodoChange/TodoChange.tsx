@@ -5,20 +5,23 @@ import { ISortByPosition } from "../../types/todo.types";
 import { changeAction } from "../../types/ui.types";
 import { todoSectionsApi } from "../../store/services/todo/todo-sections.api";
 import { todoApi } from "../../store/services/todo/todo.api";
-import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { Editor, EditorMountEvent, EditorTools, ProseMirror } from "@progress/kendo-react-editor";
-import { iframeToEntity, replaceEntityTags } from "../../helpers/stringHelper";
-import "@progress/kendo-theme-default/dist/all.css";
-
+import {
+    EditorMountEvent,
+    ProseMirror,
+} from "@progress/kendo-react-editor";
+import { replaceEntityTags } from "../../helpers/stringHelper";
 import { insertImageFiles } from "../InsertImagePlugin/utils";
 import { insertImagePlugin } from "../InsertImagePlugin/InsertImagePlugin";
-import { InsertImage } from "../InsertImagePlugin/InsetImageTool";
 import ArrowButton from "../../ui/Buttons/ArrowButton/ArrowButton";
+import TodoEditor from "./TodoEditor";
+import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
+import "@progress/kendo-theme-default/dist/all.css";
 
 interface IInputsSettings {
     inputValue?: string;
     textValue?: string;
+    textTwoValue?: string;
     inputPlaceHolder: string;
     textPlaceHolder: string;
     heightText?: string;
@@ -39,8 +42,9 @@ interface ITodoChange {
     position?: string;
     sortByPosition?: ISortByPosition;
     editorHeight?: string;
-    showToolBar?: boolean
+    isVisibleEditor?: boolean;
 }
+
 
 const TodoChange: FC<ITodoChange> = ({
     id,
@@ -50,94 +54,65 @@ const TodoChange: FC<ITodoChange> = ({
     callback,
     action = "create",
     sortByPosition,
-    editorHeight = '500px',
-    showToolBar = false
+    editorHeight = "500px",
+    isVisibleEditor = false,
 }) => {
-    const {
-        Bold,
-        Italic,
-        Underline,
-        Strikethrough,
-        ForeColor,
-        BackColor,
-        CleanFormatting,
-        AlignLeft,
-        AlignCenter,
-        AlignRight,
-        AlignJustify,
-        Indent,
-        Outdent,
-        OrderedList,
-        UnorderedList,
-        NumberedList,
-        BulletedList,
-        Undo,
-        Redo,
-        FontSize,
-        FontName,
-        FormatBlock,
-        Link,
-        Unlink,
-        ViewHtml,
-        InsertTable,
-        InsertFile,
-        SelectAll,
-        Print,
-        Pdf,
-        AddRowBefore,
-        AddRowAfter,
-        AddColumnBefore,
-        AddColumnAfter,
-        DeleteRow,
-        DeleteColumn,
-        DeleteTable,
-        MergeCells,
-        SplitCell,
-    } = EditorTools;
-
-    const { inputPlaceHolder, inputValue, textValue } = inputsSettings;
+    const { inputPlaceHolder, inputValue, textValue, textTwoValue } =
+        inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
     const isCreate = action === "create" || action === "createSection";
     const { createTask, mutateTask, createTaskSection } = useTaskTree();
     const [primaryBtnIsDisabled, setPrimaryBtnDisabled] = useState(isCreate);
     const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
+    let { currentSection } = useAppSelector((state) => state.sectionsReducer);
     const { setActiveAddTaskBtn, setCurrentTodo } = useActions();
 
     const [updSection] = todoSectionsApi.useUpdateMutation();
     const [updTodo] = todoApi.useUpdateMutation();
 
-    const [textEditorContent, setTextEditorContent] = useState("");
-    const [isVisibleEditor, setEditorVisible] = useState(false);
+    const [textEditorContent, setTextEditorContent] = useState({
+        textOne: "",
+        textTwo: "",
+    });
+    const [isVisibleToolBar, setToolBarVisible] = useState(false);
 
     const name: any = useRef();
 
-    const showEditor = (show: boolean) => {
-        setEditorVisible(show);
-    }
+    const showToolBar = (show: boolean) => {
+        setToolBarVisible(show);
+    };
 
     const createTodo = async () => {
         const TaskName = name.current.value;
-        const TaskDesc = textEditorContent;
+        const TaskDesc = textEditorContent.textOne;
         const task = await createTask({
             taskId: id,
-            editFields: { name: TaskName, description: TaskDesc },
+            editFields: {
+                name: TaskName,
+                description: TaskDesc,
+                descriptionTwo: textEditorContent.textTwo,
+            },
             position: sortByPosition?.position,
         });
-        
+
         if (isVisibleDetailTodo && task) {
             setCurrentTodo({ todo: task });
         }
         name.current.value = "";
-        setTextEditorContent('');
+        setTextEditorContent({ textOne: "", textTwo: "" });
         setPrimaryBtnDisabled(true);
     };
 
     const changeTodo = async () => {
         const TaskName = name.current.value;
-        const TaskDesc = replaceEntityTags(textEditorContent);
+        const TaskDesc = replaceEntityTags(textEditorContent.textOne);
         const arrayTodo = [
             { field: "name", value: TaskName },
             { field: "description", value: TaskDesc },
+            {
+                field: "descriptionTwo",
+                value: replaceEntityTags(textEditorContent.textTwo),
+            },
             { field: "editable", value: false },
         ];
 
@@ -190,7 +165,7 @@ const TodoChange: FC<ITodoChange> = ({
     const todoFormClose = () => {
         setActiveAddTaskBtn({ isActive: true });
         setPrimaryBtnDisabled(true);
-        setEditorVisible(false);
+        setToolBarVisible(false);
         callback && callback();
     };
 
@@ -210,44 +185,66 @@ const TodoChange: FC<ITodoChange> = ({
         }
     }, [isVisible]);
 
-    useEffect(() => {
-        if (textValue) {
-            setTextEditorContent(textValue);
-        }
-    }, [textValue]);
-
     const setEditorContent = (current: any) => {
         if (current.target && current.target.contentElement) {
-            setTextEditorContent(replaceEntityTags(current.target.contentElement.innerHTML));
+            setTextEditorContent({
+                ...textEditorContent,
+                textOne: replaceEntityTags(
+                    current.target.contentElement.innerHTML
+                ),
+            });
+        }
+    };
+
+    const setEditorContentAnki = (current: any) => {
+        if (current.target && current.target.contentElement) {
+            setTextEditorContent({
+                ...textEditorContent,
+                textTwo: replaceEntityTags(
+                    current.target.contentElement.innerHTML
+                ),
+            });
         }
     };
 
     const onImageInsert = (args: any) => {
         const { files, view, event } = args;
         const nodeType = view.state.schema.nodes.image;
-    
+
         const position =
-          event.type === "drop"
-            ? view.posAtCoords({ left: event.clientX, top: event.clientY })
-            : null;
-    
+            event.type === "drop"
+                ? view.posAtCoords({ left: event.clientX, top: event.clientY })
+                : null;
+
         insertImageFiles({ view, files, nodeType, position });
-    
+
         return files.length > 0;
-      };
-    
-      const onMount = (event: EditorMountEvent) => {
+    };
+
+    const onMount = (event: EditorMountEvent) => {
         const state = event.viewProps.state;
         const plugins = [...state.plugins, insertImagePlugin(onImageInsert)];
-    
+
+        let editor = document.getElementsByClassName("k-editor")[0];
+        let iFrame = editor.querySelector("iframe");
+        if (iFrame && iFrame.contentDocument) {
+            const kendoContent =
+                iFrame.contentDocument.querySelector(".k-content");
+            if (kendoContent) {
+                kendoContent.setAttribute("style", "font-family: Arial;");
+            }
+        }
         return new ProseMirror.EditorView(
-          { mount: event.dom },
-          {
-            ...event.viewProps,
-            state: ProseMirror.EditorState.create({ doc: state.doc, plugins }),
-          }
+            { mount: event.dom },
+            {
+                ...event.viewProps,
+                state: ProseMirror.EditorState.create({
+                    doc: state.doc,
+                    plugins,
+                }),
+            }
         );
-      };
+    };
 
     return (
         <>
@@ -265,77 +262,28 @@ const TodoChange: FC<ITodoChange> = ({
                         {action !== "createSection" &&
                             action !== "changeSection" && (
                                 <>
-                                    {showToolBar && (
-                                        <ArrowButton 
+                                    {isVisibleEditor && (
+                                        <ArrowButton
                                             tailwindstyles={`w-[21px] h-[22px] bg-stone-200 px-[3px]`}
-                                            onClick={showEditor}
+                                            onClick={showToolBar}
                                         />
                                     )}
-                                    
-                                    {isVisibleEditor ? (
-                                        <Editor
-                                            tools={[
-                                                [
-                                                    Bold,
-                                                    Italic,
-                                                    Underline,
-                                                    Strikethrough,
-                                                ],
-                                                [InsertImage],
-                                                ForeColor,
-                                                BackColor,
-                                                [CleanFormatting],
-                                                [
-                                                    AlignLeft,
-                                                    AlignCenter,
-                                                    AlignRight,
-                                                    AlignJustify,
-                                                ],
-                                                [Indent, Outdent],
-                                                [OrderedList, UnorderedList],
-                                                [NumberedList, BulletedList],
-                                                FontSize,
-                                                FontName,
-                                                FormatBlock,
-                                                [SelectAll],
-                                                [Undo, Redo],
-                                                [
-                                                    Link,
-                                                    Unlink,
-                                                    ViewHtml,
-                                                ],
-                                                [InsertTable, InsertFile],
-                                                [Pdf, Print],
-                                                [
-                                                    AddRowBefore,
-                                                    AddRowAfter,
-                                                    AddColumnBefore,
-                                                    AddColumnAfter,
-                                                ],
-                                                [
-                                                    DeleteRow,
-                                                    DeleteColumn,
-                                                    DeleteTable,
-                                                ],
-                                                [MergeCells, SplitCell],
-                                            ]}
-                                          
-                                            onChange={setEditorContent}
-                                            defaultContent={iframeToEntity(textValue)}
-                                            onMount={ onMount}
-                                            style={{height: editorHeight}}
-                                        />
-                                    ) : (
-                                        <Editor
-                                            onChange={setEditorContent}
-                                            style={{height: editorHeight}}
-                                            defaultContent={iframeToEntity(textValue)}
+                                    {isVisibleEditor && (
+                                       <TodoEditor 
+                                            textValue={textValue ? textValue: ""} 
+                                            textTwoValue={textTwoValue ? textTwoValue : ""} 
+                                            editorHeight={editorHeight} 
+                                            setEditorContent={setEditorContent} 
+                                            setEditorContentAnki={setEditorContentAnki} 
+                                            onMount={onMount}
+                                            isVisibleToolBar={isVisibleToolBar}
+                                            isAnki={currentSection.isAnkiSection}
                                         />
                                     )}
                                 </>
                             )}
                     </div>
-                 
+
                     <div className="display flex justify-end mx-[7px] my-[7px]">
                         <span className="mr-[8px]">
                             <BasicButton
