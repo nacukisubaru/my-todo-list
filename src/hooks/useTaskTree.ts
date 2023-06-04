@@ -265,6 +265,19 @@ export const useTaskTree = () => {
 
                 foundTask.items.sort((a, b) => a.sort - b.sort);
                 reindex(foundTask.items);
+                foundTask.items.map((item, index) => {
+                    if (item.id === todoItem.id) {
+                        if (foundTask.items[index-1]) {
+                            item.prevTodoId = foundTask.items[index-1].id;
+                            foundTask.items[index-1].nextTodoId = item.id;
+                        }
+
+                        if (foundTask.items[index+1]) {
+                           item.nextTodoId = foundTask.items[index+1].id;
+                           foundTask.items[index+1].prevTodoId = item.id;
+                        }
+                    }
+                })
                 await setTodos({ data: tasksclones });
 
                 if (!editFields.id) {

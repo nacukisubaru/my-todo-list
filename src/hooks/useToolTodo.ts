@@ -43,7 +43,7 @@ export const useToolTodo = (id: string, type: type = "todo") => {
             setTodoEditInputs({
                 name: foundTask.name,
                 text: foundTask.description,
-                textTwo: foundTask.descriptionTwo
+                textTwo: foundTask.descriptionTwo ? foundTask.descriptionTwo : ""
             });
         }
 

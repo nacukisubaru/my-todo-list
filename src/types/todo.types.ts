@@ -3,6 +3,8 @@ export interface ITodoItem {
     name: string,
     parentId?: string | null,
     sectionId?: string,
+    nextTodoId?: string,
+    prevTodoId?: string,
     description: string,
     descriptionTwo?: string,
     showTasks:boolean,

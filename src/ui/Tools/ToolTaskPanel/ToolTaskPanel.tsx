@@ -12,6 +12,7 @@ interface ICallbacks {
 interface ISettings {
     showEditBtn: boolean;
     menuItems: IMenuItem[];
+    componentsList?: any[]
     translateX?: string;
     translateY?: string;
     colorBtn?: string;
@@ -27,9 +28,9 @@ interface IToolTaskPanelProps {
 const ToolTaskPanel: FC<IToolTaskPanelProps> = ({
     callbacks,
     settings,
-    parent
+    parent,
 }) => {
-    const { showEditBtn, menuItems, translateX, translateY, colorBtn, isVisibleToolMenu = true } =
+    const { showEditBtn, menuItems, componentsList = [], translateX, translateY, colorBtn, isVisibleToolMenu = true } =
         settings;
     const { clickEditBtn, setShowMenu } = callbacks;
 
@@ -49,6 +50,9 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({
             {showEditBtn && (
                 <EditButton onClick={editBtnAction} />
             )}
+            {componentsList.map((component) => {
+                return component;
+            })}
             <ToolButton color={colorBtn} onClick={showMenu}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

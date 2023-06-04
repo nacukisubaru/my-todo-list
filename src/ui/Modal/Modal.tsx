@@ -13,6 +13,7 @@ interface IButtonsCallbacks {
 
 interface IToolPanel {
     menu: IMenuItem[];
+    componentsList?: any[]
 }
 
 interface IModalProps {
@@ -25,7 +26,7 @@ interface IModalProps {
 
 const Modal: FC<IModalProps> = ({
     modalSettings,
-    toolPanel,
+    toolPanel = {menu: [], componentsList: []},
     callbacks,
     children,
     icon,
@@ -39,6 +40,7 @@ const Modal: FC<IModalProps> = ({
         showButtons = true,
         showUpperButtons = false,
     } = modalSettings;
+
     const { primaryBtnClick, secondaryBtnClick } = callbacks;
 
     const [isVisibleToolsMenu, setVisibleToolsMenu] = useState(false);
@@ -76,6 +78,7 @@ const Modal: FC<IModalProps> = ({
                                                     <ToolTaskPanel
                                                         settings={{
                                                             menuItems: toolPanel.menu,
+                                                            componentsList: toolPanel.componentsList,
                                                             translateY: "24px",
                                                             translateX: "-translate-x-[149px]",
                                                             showEditBtn: false,

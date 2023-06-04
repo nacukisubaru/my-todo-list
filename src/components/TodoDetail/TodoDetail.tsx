@@ -14,6 +14,8 @@ import HTMLReactParser from "html-react-parser";
 import EditButton from "../../ui/Buttons/EditButton/EditButton";
 import { replaceEntityTags } from "../../helpers/stringHelper";
 import { Button } from "@progress/kendo-react-buttons";
+import ArrowButtonUp from "../../ui/Buttons/ArrowButton/ArrowButtonUp";
+import ArrowButtonLow from "../../ui/Buttons/ArrowButton/ArrowButtonLow";
 
 interface ITodoDetailProps {}
 
@@ -105,6 +107,19 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
         setVisibleAnkiText(true);
     };
 
+    const switchTodo = (isNext: boolean = true) => {
+        setVisibleAnkiText(false);
+        if (isNext) {
+            if (currentTodo.nextTodoId) {
+                navigate(`/app/section/${sectionId}/task/${currentTodo.nextTodoId}`);
+            }
+        } else {
+            if (currentTodo.prevTodoId) {
+                navigate(`/app/section/${sectionId}/task/${currentTodo.prevTodoId}`);
+            }
+        }
+    }
+
     return (
         <Modal
             modalSettings={{
@@ -120,6 +135,10 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                 menu: [
                     { name: "Скопировать ссылку на задачу", onClick: copyLink },
                 ],
+                componentsList: [
+                    <ArrowButtonUp onClick={()=>{switchTodo(false)}}/>,
+                    <ArrowButtonLow onClick={switchTodo}/>
+                ]
             }}
             callbacks={{
                 primaryBtnClick: () => {},
