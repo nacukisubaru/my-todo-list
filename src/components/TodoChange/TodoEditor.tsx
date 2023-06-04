@@ -121,7 +121,7 @@ const TodoEditor: FC<ITodoEditorProps> = ({
                 <Editor
                     tools={componentsEditor}
                     onChange={setEditorContentAnki}
-                    value={iframeToEntity(textTwoValue)}
+                    defaultContent={iframeToEntity(textTwoValue)}
                     onMount={onMount}
                     style={{
                         height: editorHeight,

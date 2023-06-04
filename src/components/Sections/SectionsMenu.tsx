@@ -18,6 +18,7 @@ const SectionsMenu = () => {
     const [action, setAction] = useState("create");
     const [sectionName, setNameSection] = useState("");
     const [isAnkiSection, setAnkiSection] = useState(false);
+    const [checkboxAnkiDisabled, disableAnkiCheckBox] = useState(false);
 
     const choiseSection = (item: ITodoItem) => {
         setSectionId({ sectionId: item.id });
@@ -38,6 +39,10 @@ const SectionsMenu = () => {
 
     const openEditSection = async (section: ITodoItem) => {
         setNameSection(section.name);
+        if (section.isAnkiSection) {
+            setAnkiSection(section.isAnkiSection);
+        }
+        disableAnkiCheckBox(true);
         setSectionEdit(section);
         setModalState({
             title: "Изменить раздел",
@@ -72,6 +77,8 @@ const SectionsMenu = () => {
                 break;
             case "change":
                 changeSection([{ field: "name", value: sectionName }]);
+                setAnkiSection(false);
+                disableAnkiCheckBox(false);
                 break;
         }
         setNameSection("");
@@ -81,6 +88,8 @@ const SectionsMenu = () => {
     const closeEditSection = () => {
         closeModal();
         setNameSection("");
+        setAnkiSection(false);
+        disableAnkiCheckBox(false);
     };
 
     const toggleArrow = async (
@@ -121,6 +130,7 @@ const SectionsMenu = () => {
                         }}
                         checked={isAnkiSection}
                         strikethrough={false}
+                        disabled={checkboxAnkiDisabled}
                     ></CheckBox>
                 </div>
             </Modal>

@@ -4,6 +4,7 @@ interface ICheckBox {
     label?: string;
     checked?: boolean;
     strikethrough?: boolean;
+    disabled?: boolean;
     onClick?: () => void;
     checkCallback: (checked: boolean) => void;
 }
@@ -12,19 +13,24 @@ const CheckBox: FC<ICheckBox> = ({
     label,
     checked = false,
     strikethrough = true,
+    disabled = false,
     onClick,
     checkCallback,
 }) => {
     const check = (isChecked: boolean) => {
-        if (isChecked) {
-            checkCallback(false);
-        } else {
-            checkCallback(true);
+        if (!disabled) {
+            if (isChecked) {
+                checkCallback(false);
+            } else {
+                checkCallback(true);
+            }
         }
     };
 
     const clickLabel = () => {
-        onClick && onClick();
+        if (!disabled) {
+            onClick && onClick();
+        }
     };
 
     return (

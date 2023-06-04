@@ -57,7 +57,7 @@ const TodoChange: FC<ITodoChange> = ({
     editorHeight = "500px",
     isVisibleEditor = false,
 }) => {
-    const { inputPlaceHolder, inputValue, textValue, textTwoValue } =
+    const { inputPlaceHolder, inputValue, textValue = "", textTwoValue = "" } =
         inputsSettings;
     const { primaryButtonName, secondaryButtonName } = buttonsSettings;
     const isCreate = action === "create" || action === "createSection";
@@ -184,6 +184,12 @@ const TodoChange: FC<ITodoChange> = ({
             name.current.value = inputValue;
         }
     }, [isVisible]);
+
+    useEffect(() => {
+        if (textValue !== undefined && textTwoValue !== undefined) {
+            setTextEditorContent({textOne: textValue, textTwo: textTwoValue});
+        }
+    }, [textValue]);
 
     const setEditorContent = (current: any) => {
         if (current.target && current.target.contentElement) {
