@@ -109,9 +109,11 @@ const TodoItem: FC<ITodoItemProps> = ({
                     textPlaceHolder: "Описание",
                     inputValue: todoEditInputs.name,
                     textValue: todoEditInputs.text,
+                    textTwoValue: todoEditInputs.textTwo
                 }}
                 isVisible={todo.editable}
                 callback={closeTodoChangePanel}
+                isVisibleEditor={true}
                 action="change"
                 editorHeight="150px"
             />

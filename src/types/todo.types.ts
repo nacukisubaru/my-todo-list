@@ -3,7 +3,10 @@ export interface ITodoItem {
     name: string,
     parentId?: string | null,
     sectionId?: string,
+    nextTodoId?: string,
+    prevTodoId?: string,
     description: string,
+    descriptionTwo?: string,
     showTasks:boolean,
     type?: taskType,
     showSections?: boolean,
@@ -15,11 +18,13 @@ export interface ITodoItem {
     creatableLower: boolean,
     creatableUpper: boolean,
     isComplete: boolean,
-    items: ITodoItem[]
+    items: ITodoItem[],
+    isAnkiSection?: boolean,
 }
 export interface ITodoEditFields {
     name: string,
     description: string,
+    descriptionTwo?: string,
     id?: string,
     parentId?: string | null,
     showTasks?: boolean,
@@ -33,7 +38,8 @@ export interface ISectionEditFields {
     id?: string,
     showSections?: boolean,
     parentId?: string | null,
-    items?: ITodoItem[]
+    items?: ITodoItem[],
+    isAnkiSection?: boolean,
 }
 
 export interface ISortByPosition {
