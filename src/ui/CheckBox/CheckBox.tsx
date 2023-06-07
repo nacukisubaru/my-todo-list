@@ -35,7 +35,7 @@ const CheckBox: FC<ICheckBox> = ({
 
     return (
         <>
-            <div className="display flex">
+            <div className="display inline-grid">
                 {checked && (
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +66,7 @@ const CheckBox: FC<ICheckBox> = ({
                     type="checkbox"
                 />
                 {label && (
-                    <div className="-mt-[3px] ml-[13px]">
+                    <div className="-mt-[21px] ml-[24px]">
                         <label
                             className={` cursor-pointer ${
                                 checked && strikethrough && "line-through"
