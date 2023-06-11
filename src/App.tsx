@@ -5,6 +5,7 @@ import WorkSpace from "./pages/WorkSpace/WorkSpace";
 import StartPage from "./pages/WorkSpace/StartPage";
 import RegistrationPage from "./pages/Login/RegistrationPage";
 import LoginPage from "./pages/Login/LoginPage";
+import { EnglishApp } from "./modules/EnglishApp/index";
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
         path: "/app/login",
         element: <LoginPage />,
     },
+    {
+        path: "/englishApp",
+        element: <EnglishApp />
+    }
 ]);
 function App() {
     return (
