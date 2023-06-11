@@ -6,7 +6,7 @@ export const dictionaryApi = createApi({
     baseQuery: authBaseQuery,
     endpoints: (build) => ({
         add: build.mutation({
-            query: (body) => ({
+            query: (body: ICreateDictionary) => ({
                 url: '/dictionary/create',
                 method: 'POST',
                 body

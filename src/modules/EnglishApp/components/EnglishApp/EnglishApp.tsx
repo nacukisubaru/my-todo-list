@@ -1,5 +1,4 @@
-import { FC, useEffect } from "react";
-import { getDictionaryByUser } from "../../store/services/dictionary/dictionary.slice";
+import { FC } from "react";
 import DictionaryWords from "../DictionaryWords/DictionaryWords";
 import { Provider } from "react-redux";
 import { store } from "../../store/store";

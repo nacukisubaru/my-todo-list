@@ -1,3 +1,5 @@
+import bcrypt from 'bcryptjs';
+
 export const textBreak = (text: string) => {
   if (text) {
     text = text.replace('&gt;','>');
@@ -39,4 +41,15 @@ export const getExtensionFromStr = (str: string) => {
   }
   
   return false;
+}
+
+export const generateCryptId = (params?: any) => {
+    const salt = bcrypt.genSaltSync(10) + Date.now();
+    const arrayParams = Object.values(params);
+    const strParams: any = arrayParams.reduce((paramPrev: any, paramNext: any) => {
+        return paramPrev + paramNext;
+    });
+
+    const taskId = bcrypt.hashSync(strParams, salt);
+    return taskId.replaceAll('/', '').replaceAll('.', '');
 }
