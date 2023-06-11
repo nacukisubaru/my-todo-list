@@ -5,7 +5,7 @@ import WorkSpace from "./pages/WorkSpace/WorkSpace";
 import StartPage from "./pages/WorkSpace/StartPage";
 import RegistrationPage from "./pages/Login/RegistrationPage";
 import LoginPage from "./pages/Login/LoginPage";
-import { EnglishApp } from "./modules/EnglishApp/index";
+import EnglishAppSpace from "./pages/WorkSpace/EnglishAppSpace";
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/englishApp",
-        element: <EnglishApp />
+        element: <EnglishAppSpace />
     }
 ]);
 function App() {
