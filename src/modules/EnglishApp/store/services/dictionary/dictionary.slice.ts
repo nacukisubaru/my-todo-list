@@ -1,9 +1,11 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { thunkAxiosGet } from "../../../../../helpers/queryHelper";
+import { arrayUniqueByKey } from "../../../../../helpers/arrayHelper";
 
 interface IState {
     dictionary: IDictionary[],
     translateResult: ITranslateResult,
+    page: number,
     status: string,
     error: string
 }
@@ -11,6 +13,7 @@ interface IState {
 const initialState:IState = {
     dictionary: [],
     translateResult: {translatedWord: "", originalWord: ""},
+    page: 0,
     status: "",
     error: ""
 };
@@ -48,9 +51,10 @@ export const dictionarySlice = createSlice({
             state.status = 'loading';
             state.error = '';
         },
-        [getDictionaryByUser.fulfilled]: (state, action: PayloadAction<{rows: IDictionary[]}>) => {
+        [getDictionaryByUser.fulfilled]: (state, action: PayloadAction<{rows: IDictionary[], nextPage: number}>) => {
             state.status = 'resolved';
-            state.dictionary = action.payload.rows;
+            state.dictionary = arrayUniqueByKey(state.dictionary.concat(action.payload.rows));
+            state.page = action.payload.nextPage;
         },
         [getDictionaryByUser.rejected]: (state,action) => {
             state.status = 'rejected';
