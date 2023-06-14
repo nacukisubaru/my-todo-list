@@ -18,13 +18,13 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({selectLang, defaultLang}
             }
         });
     
-        setDefaultTargetLang(defaultLanguages[0].name);
+        setDefaultTargetLang(defaultLanguages[0].isoName);
     }, []);
 
     const setLanguage = (e: any) => {
         if (e.value) {
             const selectedLang = languages.filter((lang) => {
-                if (lang.name === e.value) {
+                if (lang.isoName === e.value) {
                     return lang;
                 }
             });
@@ -37,7 +37,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({selectLang, defaultLang}
 
     return (
         <AutoComplete
-            data={languages.map((lang) => {return lang.name})}
+            data={languages.map((lang) => {return lang.isoName})}
             placeholder="Выберите язык"
             onChange={setLanguage}
             defaultValue={defaultTargetLang}

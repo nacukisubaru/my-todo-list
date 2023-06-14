@@ -32,5 +32,6 @@ interface ICreateDictionary {
 
 interface ILanguage {
     code: string,
-    name: string
+    name: string,
+    isoName: string
 }
