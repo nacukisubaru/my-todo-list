@@ -1,19 +1,24 @@
 import { AutoComplete } from "@progress/kendo-react-dropdowns";
-import { FC, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { getLanguages } from "../../store/services/dictionary/dictionary.slice";
+import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 
 interface IDictionaryLanguages {
-    selectLang: (value: string) => void
+    selectLang: (value: string) => void,
+    defaultLang: string
 }
 
-const DictionaryLanguages: FC<IDictionaryLanguages> = ({selectLang}) => {
+const DictionaryLanguages: FC<IDictionaryLanguages> = ({selectLang, defaultLang}) => {
     const languages = useAppSelector(state => state.dictionaryReducer.languages);
-    const dispatch = useDispatch();
+    const [defaultTargetLang, setDefaultTargetLang] = useState("");
 
     useEffect(() => {
-        dispatch(getLanguages());
+        const defaultLanguages = languages.filter((lang) => {
+            if (lang.code === defaultLang) {
+                return lang;
+            }
+        });
+    
+        setDefaultTargetLang(defaultLanguages[0].name);
     }, []);
 
     const setLanguage = (e: any) => {
@@ -23,7 +28,10 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({selectLang}) => {
                     return lang;
                 }
             });
-            selectLang(selectedLang[0].code);
+            
+            if (selectedLang.length) {
+                selectLang(selectedLang[0].code);
+            }
         }
     }
 
@@ -32,6 +40,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({selectLang}) => {
             data={languages.map((lang) => {return lang.name})}
             placeholder="Выберите язык"
             onChange={setLanguage}
+            defaultValue={defaultTargetLang}
         />
     );
 }

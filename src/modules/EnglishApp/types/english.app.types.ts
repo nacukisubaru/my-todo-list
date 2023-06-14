@@ -7,6 +7,10 @@ interface IDictionary {
     isStudy: boolean;
 }
 
+interface IDictionarySettings {
+    targetLanguage: string
+}
+
 interface ITranslateResult {
     originalWord: string,
     translatedWord: string,

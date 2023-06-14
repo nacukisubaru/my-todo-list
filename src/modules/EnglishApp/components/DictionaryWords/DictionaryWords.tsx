@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Card from "../../../../ui/Cards/Card";
-import { getDictionaryByUser } from "../../store/services/dictionary/dictionary.slice";
+import { getDictionaryByUser, getDictionarySettings, getLanguages } from "../../store/services/dictionary/dictionary.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useDispatch } from "react-redux";
 import SpeedDialButton from "../../../../ui/Buttons/SpeedDialButton";
@@ -21,6 +21,11 @@ const DictionaryWords = () => {
     useEffect(() => {
         dispatch(getDictionaryByUser(0));
     }, []);
+
+    useEffect(() => {
+       dispatch(getDictionarySettings());
+       dispatch(getLanguages());
+    }, [])
 
     const fetchData = () => {
         dispatch(getDictionaryByUser(page));
@@ -46,8 +51,18 @@ const DictionaryWords = () => {
                             return (
                                 <div className="my-[12px]">
                                     <Card width="w-[50vh]">
-                                        <div>{word.originalWord}</div>
-                                        <div>{word.translatedWord}</div>
+                                        <div className="display flex justify-between">
+                                            <div>
+                                                <div>{word.originalWord}</div>
+                                                <div>{word.translatedWord}</div>
+                                            </div>
+
+                                            <div>
+                                                {word.languageOriginal}&#8594;
+                                                {word.languageTranslation}
+                                            </div>
+                                        </div>
+                                        
                                     </Card>
                                 </div>
                             );

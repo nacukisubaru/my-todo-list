@@ -4,6 +4,7 @@ import { arrayUniqueByKey } from "../../../../../helpers/arrayHelper";
 
 interface IState {
     dictionary: IDictionary[],
+    dictionarySettings: IDictionarySettings,
     translateResult: ITranslateResult,
     languages: ILanguage[],
     page: number,
@@ -13,6 +14,7 @@ interface IState {
 
 const initialState:IState = {
     dictionary: [],
+    dictionarySettings: {targetLanguage: ""},
     translateResult: {
         translatedWord: "", 
         originalWord: "",
@@ -28,6 +30,13 @@ export const getDictionaryByUser: any = createAsyncThunk(
     'dictionary/fetch',
     async (page, { rejectWithValue }) => {
         return thunkAxiosGet('/dictionary/get-list-by-user/', {page}, rejectWithValue);
+    }
+);
+
+export const getDictionarySettings: any = createAsyncThunk(
+    'dictionary-settings/fetch',
+    async (_, { rejectWithValue }) => {
+        return thunkAxiosGet('/dictionary-settings/get-settings-by-user/', {}, rejectWithValue);
     }
 );
 
@@ -50,7 +59,6 @@ export const dictionarySlice = createSlice({
     initialState,
     reducers: {
         addWord: (state, action: PayloadAction<IDictionary>) => {
-            console.log(action.payload)
             const dictionaryArray = [...state.dictionary];
             dictionaryArray.unshift(action.payload);
             state.dictionary = dictionaryArray;
@@ -100,6 +108,18 @@ export const dictionarySlice = createSlice({
             state.error = action.payload;
         },
 
+        [getDictionarySettings.pending]: (state) => {
+            state.status = 'loading';
+            state.error = '';
+        },
+        [getDictionarySettings.fulfilled]: (state, action: PayloadAction<IDictionarySettings>) => {
+            state.status = 'resolved';
+            state.dictionarySettings = {targetLanguage: action.payload.targetLanguage};
+        },
+        [getDictionarySettings.rejected]: (state,action) => {
+            state.status = 'rejected';
+            state.error = action.payload;
+        },
     }
 });
 

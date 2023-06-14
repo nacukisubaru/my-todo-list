@@ -17,6 +17,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     isVisible,
     closeAddWord,
 }) => {
+    const {dictionarySettings} = useAppSelector(state=>state.dictionaryReducer);
+
     const [word, setWord] = useState("");
     const [targetLang, setTargetLang] = useState("");
 
@@ -65,6 +67,12 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         }
     }, [translateResult.translatedWord]);
 
+    useEffect(() => {
+        if (dictionarySettings.targetLanguage !== '') {
+            setTargetLang(dictionarySettings.targetLanguage);
+        }
+    }, [dictionarySettings.targetLanguage])
+
     const selectTargetLang = async (lang: string) => {
         if (targetLang !== lang) {
             setTargetLang(lang);
@@ -102,7 +110,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                   focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
                 disabled={translateResult.translatedWord ? true : false}
             />
-            <DictionaryLanguages selectLang={selectTargetLang} />
+          
+            <DictionaryLanguages selectLang={selectTargetLang} defaultLang={dictionarySettings.targetLanguage}/>
         </Modal>
     );
 };
