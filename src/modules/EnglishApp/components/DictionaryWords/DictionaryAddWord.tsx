@@ -84,8 +84,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
         if(targetLang !== "") {
             translate(translateResult.originalWord, lang);
-        }
-        
+        }      
     }
 
     return (
@@ -116,9 +115,20 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                     focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
                     disabled={translateResult.translatedWord ? true : false}
                 />
-                <div className="ml-[11px]">
-                    <PlayButton onClick={() => {speak(word, targetLang)}}/>
-                </div>
+                <>
+                    {targetLang === "en" ? (
+                        <div className="display flex ml-[11px]">
+                            <span>uk</span>
+                            <PlayButton onClick={() => {speak(word, 'en-GB')}}/>
+                            <span>us</span>
+                            <PlayButton onClick={() => {speak(word, 'en-US')}}/>
+                        </div>
+                    ) : (
+                        <div className="ml-[11px]">
+                            <PlayButton onClick={() => {speak(word, targetLang)}}/>
+                        </div>
+                    )}
+                </>
             </div>
           
             <DictionaryLanguages selectLang={selectTargetLang} defaultLang={dictionarySettings.targetLanguage}/>
