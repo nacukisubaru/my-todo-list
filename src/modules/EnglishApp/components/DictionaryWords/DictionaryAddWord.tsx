@@ -7,6 +7,8 @@ import { useActions } from "../../hooks/useAction";
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../../helpers/stringHelper";
 import DictionaryLanguages from "./DictionaryLanguages";
+import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
+import PlayButton from "../../../../ui/Buttons/PlayButton";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -29,6 +31,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     const { translateResult } = useAppSelector(
         (state) => state.dictionaryReducer
     );
+
+    const {speak} = useSpeechSynthesis();
 
     const translateOrAddWord = () => {
         if (translateResult.translatedWord) {
@@ -81,6 +85,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         if(targetLang !== "") {
             translate(translateResult.originalWord, lang);
         }
+        
     }
 
     return (
@@ -97,19 +102,24 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
             }}
             maxWidth="sm:max-w-[32rem]"
         >
-            <input
-                id="addWord"
-                name="addWord"
-                type="text"
-                value={word}
-                onChange={(e) => {
-                    setWord(e.target.value);
-                }}
-                className="col-sm block w-full px-[11px] rounded-md border-0 py-1.5 
-                text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 
-                  focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
-                disabled={translateResult.translatedWord ? true : false}
-            />
+            <div className="display flex">
+                <input
+                    id="addWord"
+                    name="addWord"
+                    type="text"
+                    value={word}
+                    onChange={(e) => {
+                        setWord(e.target.value);
+                    }}
+                    className="col-sm block w-full px-[11px] rounded-md border-0 py-1.5 
+                    text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 
+                    focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
+                    disabled={translateResult.translatedWord ? true : false}
+                />
+                <div className="ml-[11px]">
+                    <PlayButton onClick={() => {speak(word, targetLang)}}/>
+                </div>
+            </div>
           
             <DictionaryLanguages selectLang={selectTargetLang} defaultLang={dictionarySettings.targetLanguage}/>
         </Modal>
