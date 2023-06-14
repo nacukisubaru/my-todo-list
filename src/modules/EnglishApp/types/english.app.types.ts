@@ -9,7 +9,8 @@ interface IDictionary {
 
 interface ITranslateResult {
     originalWord: string,
-    translatedWord: string
+    translatedWord: string,
+    textLang: string
 }
 
 interface ITranslateParams {
@@ -23,4 +24,9 @@ interface ICreateDictionary {
     translatedWord: string;
     languageOriginal: string;
     languageTranslation: string;
+}
+
+interface ILanguage {
+    code: string,
+    name: string
 }

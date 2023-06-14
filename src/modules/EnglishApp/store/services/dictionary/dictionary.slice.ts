@@ -5,6 +5,7 @@ import { arrayUniqueByKey } from "../../../../../helpers/arrayHelper";
 interface IState {
     dictionary: IDictionary[],
     translateResult: ITranslateResult,
+    languages: ILanguage[],
     page: number,
     status: string,
     error: string
@@ -12,7 +13,12 @@ interface IState {
 
 const initialState:IState = {
     dictionary: [],
-    translateResult: {translatedWord: "", originalWord: ""},
+    translateResult: {
+        translatedWord: "", 
+        originalWord: "",
+        textLang: ""
+    },
+    languages: [],
     page: 0,
     status: "",
     error: ""
@@ -22,6 +28,13 @@ export const getDictionaryByUser: any = createAsyncThunk(
     'dictionary/fetch',
     async (page, { rejectWithValue }) => {
         return thunkAxiosGet('/dictionary/get-list-by-user/', {page}, rejectWithValue);
+    }
+);
+
+export const getLanguages: any = createAsyncThunk(
+    'languages/fetch',
+    async (_, { rejectWithValue }) => {
+        return thunkAxiosGet('/yandex-cloud/get-languages-list/', {}, rejectWithValue);
     }
 );
 
@@ -43,7 +56,7 @@ export const dictionarySlice = createSlice({
             state.dictionary = dictionaryArray;
         },
         resetTranslateResult: (state) => {
-            state.translateResult = {translatedWord: "", originalWord: ""};
+            state.translateResult = {translatedWord: "", originalWord: "", textLang: ""};
         }
     },
     extraReducers: {
@@ -70,6 +83,19 @@ export const dictionarySlice = createSlice({
             state.translateResult = action.payload;
         },
         [translateWord.rejected]: (state,action) => {
+            state.status = 'rejected';
+            state.error = action.payload;
+        },
+
+        [getLanguages.pending]: (state) => {
+            state.status = 'loading';
+            state.error = '';
+        },
+        [getLanguages.fulfilled]: (state, action: PayloadAction<ILanguage[]>) => {
+            state.status = 'resolved';
+            state.languages = action.payload;
+        },
+        [getLanguages.rejected]: (state,action) => {
             state.status = 'rejected';
             state.error = action.payload;
         },

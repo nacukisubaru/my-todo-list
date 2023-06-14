@@ -22,6 +22,7 @@ interface IModalProps {
     callbacks: IButtonsCallbacks;
     children: any;
     icon?: any;
+    maxWidth?: string;
 }
 
 const Modal: FC<IModalProps> = ({
@@ -30,6 +31,7 @@ const Modal: FC<IModalProps> = ({
     callbacks,
     children,
     icon,
+    maxWidth
 }) => {
     const {
         title,
@@ -66,7 +68,7 @@ const Modal: FC<IModalProps> = ({
                     <div className="fixed inset-0 z-10 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                             <div
-                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-[50rem] overflow-auto min-w-[326px] ${
+                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full ${maxWidth ? maxWidth : 'sm:max-w-[50rem]'} overflow-auto min-w-[326px] ${
                                     heightBody && heightBody
                                 }`}
                             >

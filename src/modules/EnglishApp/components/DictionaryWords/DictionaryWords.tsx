@@ -17,6 +17,7 @@ const DictionaryWords = () => {
     );
 
     const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(getDictionaryByUser(0));
     }, []);

@@ -6,6 +6,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../../helpers/stringHelper";
+import DictionaryLanguages from "./DictionaryLanguages";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -17,6 +18,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     closeAddWord,
 }) => {
     const [word, setWord] = useState("");
+    const [targetLang, setTargetLang] = useState("");
+
     const dispatch = useDispatch();
     const { resetTranslateResult, addWord } = useActions();
     const [createWord] = dictionaryApi.useAddMutation();
@@ -25,13 +28,13 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         (state) => state.dictionaryReducer
     );
 
-    const translate = () => {
+    const translateOrAddWord = () => {
         if (translateResult.translatedWord) {
             const wordObj: IDictionary = {
                 originalWord: translateResult.originalWord,
                 translatedWord: translateResult.translatedWord,
-                languageOriginal: "ru",
-                languageTranslation: "en",
+                languageOriginal: translateResult.textLang,
+                languageTranslation: targetLang,
                 isStudy: true,
                 id: ""
             };
@@ -40,12 +43,16 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
             createWord(wordObj);
             addWord(wordObj);
         } else {
-            if (word) {
-               dispatch(translateWord({ word, targetLang: "en" }));
-            }
+            translate(word, targetLang);
         }
     };
 
+    const translate = (word: string, targetLang: string) => {
+        if (word && targetLang) {
+            dispatch(translateWord({ word, targetLang }));
+        }
+    }
+    
     const closeModalAddWord = () => {
         resetTranslateResult();
         setWord("");
@@ -56,7 +63,17 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         if (translateResult.translatedWord) {
             setWord(translateResult.translatedWord);
         }
-    }, [translateResult.translatedWord])
+    }, [translateResult.translatedWord]);
+
+    const selectTargetLang = async (lang: string) => {
+        if (targetLang !== lang) {
+            setTargetLang(lang);
+        }
+
+        if(targetLang !== "") {
+            translate(translateResult.originalWord, lang);
+        }
+    }
 
     return (
         <Modal
@@ -67,9 +84,10 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 isVisible,
             }}
             callbacks={{
-                primaryBtnClick: translate,
+                primaryBtnClick: translateOrAddWord,
                 secondaryBtnClick: closeModalAddWord,
             }}
+            maxWidth="sm:max-w-[32rem]"
         >
             <input
                 id="addWord"
@@ -79,10 +97,12 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 onChange={(e) => {
                     setWord(e.target.value);
                 }}
-                className="block w-full px-[11px] rounded-md border-0 py-1.5 
-            text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 
-            focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="col-sm block w-full px-[11px] rounded-md border-0 py-1.5 
+                text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 
+                  focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
+                disabled={translateResult.translatedWord ? true : false}
             />
+            <DictionaryLanguages selectLang={selectTargetLang} />
         </Modal>
     );
 };
