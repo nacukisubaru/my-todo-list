@@ -1,20 +1,33 @@
 import { useEffect, useState } from "react";
 import Card from "../../../../ui/Cards/Card";
-import { getDictionaryByUser, getDictionarySettings, getLanguages } from "../../store/services/dictionary/dictionary.slice";
+import {
+    getDictionaryByUser,
+    getDictionarySettings,
+    getLanguages,
+} from "../../store/services/dictionary/dictionary.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useDispatch } from "react-redux";
 import SpeedDialButton from "../../../../ui/Buttons/SpeedDialButton";
 import DictionaryAddWord from "./DictionaryAddWord";
 import { useObserverScroll } from "../../../../hooks/useObserverScroll";
+import DictionaryCard from "./DictionaryCard";
 
 const DictionaryWords = () => {
     const dictionary = useAppSelector(
         (state) => state.dictionaryReducer.dictionary
     );
 
-    const page = useAppSelector(
-        (state) => state.dictionaryReducer.page
-    );
+    const page = useAppSelector((state) => state.dictionaryReducer.page);
+
+    const [isVisibleAddWord, setVisibleAddWord] = useState(false);
+
+    const [dictionaryCard, setDictionaryCard] = useState<IDictionaryCard>({
+        originalWord: "",
+        translatedWord: "",
+        orginalLang: "",
+        translationLang: "",
+    });
+    const [isVisibleCard, setVisibleCard] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -23,15 +36,13 @@ const DictionaryWords = () => {
     }, []);
 
     useEffect(() => {
-       dispatch(getDictionarySettings());
-       dispatch(getLanguages());
-    }, [])
+        dispatch(getDictionarySettings());
+        dispatch(getLanguages());
+    }, []);
 
     const fetchData = () => {
         dispatch(getDictionaryByUser(page));
-    }
-
-    const [isVisibleAddWord, setVisibleAddWord] = useState(false);
+    };
 
     const openAddWord = () => {
         setVisibleAddWord(true);
@@ -39,6 +50,24 @@ const DictionaryWords = () => {
 
     const closeAddWord = () => {
         setVisibleAddWord(false);
+    };
+
+    const showDictionaryCard = (id: string) => {
+        const words = dictionary.filter((word) => {
+            if (word.id === id) {
+                return word;
+            }
+        });
+        if (words.length) {
+            const word = words[0];
+            setDictionaryCard({
+                orginalLang: word.languageOriginal,
+                translationLang: word.languageTranslation,
+                originalWord: word.originalWord,
+                translatedWord: word.translatedWord,
+            });
+        }
+        setVisibleCard(true);
     };
 
     const targetRef: any = useObserverScroll(fetchData, page, true);
@@ -49,7 +78,12 @@ const DictionaryWords = () => {
                     {dictionary &&
                         dictionary.map((word) => {
                             return (
-                                <div className="my-[12px]">
+                                <div
+                                    className="my-[12px]"
+                                    onClick={() => {
+                                        showDictionaryCard(word.id);
+                                    }}
+                                >
                                     <Card width="w-[50vh]">
                                         <div className="display flex justify-between">
                                             <div>
@@ -62,12 +96,11 @@ const DictionaryWords = () => {
                                                 {word.languageTranslation}
                                             </div>
                                         </div>
-                                        
                                     </Card>
                                 </div>
                             );
                         })}
-                        <div id="reff" ref={targetRef}></div>
+                    <div id="reff" ref={targetRef}></div>
                 </div>
             </div>
 
@@ -75,6 +108,16 @@ const DictionaryWords = () => {
                 isVisible={isVisibleAddWord}
                 closeAddWord={closeAddWord}
             />
+
+            {isVisibleCard && (
+                <DictionaryCard
+                    props={dictionaryCard}
+                    closeCard={() => {
+                        setVisibleCard(false);
+                    }}
+                />
+            )}
+
             <SpeedDialButton onClick={openAddWord} />
         </>
     );

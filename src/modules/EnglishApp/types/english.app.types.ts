@@ -35,3 +35,16 @@ interface ILanguage {
     name: string,
     isoName: string
 }
+
+interface IDictionaryCard {
+    originalWord: string,
+    translatedWord: string,
+    orginalLang: string,
+    translationLang: string
+}
+
+interface IExample {
+    examples: any[]
+    synonyms: any[]
+    antonyms: any[]
+}
