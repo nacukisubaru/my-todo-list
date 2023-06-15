@@ -100,7 +100,7 @@ const DictionaryWords = () => {
                                 </div>
                             );
                         })}
-                    <div id="reff" ref={targetRef}></div>
+                    <div className="mt-[50px]" id="reff" ref={targetRef}></div>
                 </div>
             </div>
 

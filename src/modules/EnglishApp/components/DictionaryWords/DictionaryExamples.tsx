@@ -15,7 +15,7 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({ examplesList }) => {
                 examplesList.map((synonim) => {
                     return (
                         <div className="display flex justify-between">
-                            <div>{synonim}</div>
+                            <div className="break-words w-[37vh]">{synonim}</div>
                             <div className="display flex">
                                 <span className="font-bold">uk</span>
                                 <PlayButton
