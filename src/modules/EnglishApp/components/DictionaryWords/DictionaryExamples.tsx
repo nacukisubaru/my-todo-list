@@ -6,14 +6,16 @@ import TranslateButton from "../../ui/Buttons/TranslateButton";
 
 interface IDictionaryExamplesProps {
     examplesList: IDictionaryExample[];
+    translateExampleLang: string;
     showTranslate: (example: IDictionaryExample, isShow: boolean) => void;
     translate: (example: IDictionaryExample) => void;
 }
 
 const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
     examplesList,
+    translateExampleLang,
     showTranslate,
-    translate
+    translate,
 }) => {
     const { speak } = useSpeechSynthesis();
 
@@ -24,25 +26,44 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                     return (
                         <div className="display flex justify-between">
                             <div>
-                                <div className="break-words w-[37vh]">
-                                    {example.translatedText && (
-                                        <ArrowButton
-                                            onClick={(isShow) => {
-                                                showTranslate(example, isShow);
-                                            }}
-                                        />
-                                    )}
-                                    
-                                    {example.originalText}
-                                    {!example.translatedText && (
-                                        <TranslateButton onClick={() => {translate(example)}}/>
-                                    )}
-                                    
-                                    
+                                <div className="break-words w-[33vh]">
+                                    <div className="display flex">
+                                        <div>
+                                            {example.translatedText && (
+                                                <ArrowButton
+                                                    onClick={(isShow) => {
+                                                        showTranslate(example, isShow);
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className={`${!example.translatedText && 'ml-[5px]'}`}>
+                                            {example.originalText}
+                                            {!example.translatedText && (
+                                                <TranslateButton
+                                                    onClick={() => {
+                                                        translate(example);
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                                 {example.translatedText &&
                                     example.showTranslate && (
-                                        <div>{example.translatedText}</div>
+                                        <>
+                                            <div className="display flex">
+                                                <div className="ml-[12px]">{example.translatedText}</div>
+                                                <PlayButton
+                                                    onClick={() => {
+                                                        speak(
+                                                            example.translatedText,
+                                                            translateExampleLang
+                                                        );
+                                                    }}
+                                                />
+                                            </div>
+                                        </>
                                     )}
                             </div>
                             <div className="display flex">

@@ -28,6 +28,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const {setDictionary} = useActions();
     const {dictionary} = useAppSelector(state => state.dictionaryReducer);
     const [translateAndAdd] = dictionaryApi.useCreateExampleAndTranslateMutation();
+    const [translateExampleLang, setLanguageTranslateExample] = useState("");
 
     useEffect(() => {
         const getExamples = async () => {
@@ -48,7 +49,14 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             
             setExamples(dictionaryExamples.concat(resultList));
         };
+        let targetLanguageCode = '';
+        if (languageTranslation !== 'en') {
+            targetLanguageCode = languageTranslation;
+        } else {
+            targetLanguageCode = languageOriginal;
+        }
 
+        setLanguageTranslateExample(targetLanguageCode);
         getExamples();
     }, []);
 
@@ -77,17 +85,10 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             showTranslate: false
         };
 
-        let targetLanguageCode = '';
-        if (languageTranslation !== 'en') {
-            targetLanguageCode = languageTranslation;
-        } else {
-            targetLanguageCode = languageOriginal;
-        }
-
         let translateResult: any = await translateAndAdd({
             dictionaryId: id,
             text: example.originalText,
-            targetLanguageCode,
+            targetLanguageCode: translateExampleLang,
             type: example.exampleType
         });
        
@@ -159,6 +160,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     })}
                     showTranslate={showTranslte}
                     translate={translate}
+                    translateExampleLang={translateExampleLang}
                 />
                 <div className="font-bold">синонимы</div>
                 <DictionaryExamples
@@ -169,6 +171,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     })}
                     showTranslate={showTranslte}
                     translate={translate}
+                    translateExampleLang={translateExampleLang}
                 />
                 <div className="font-bold">антонимы</div>
                 <DictionaryExamples
@@ -179,6 +182,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     })}
                     showTranslate={showTranslte}
                     translate={translate}
+                    translateExampleLang={translateExampleLang}
                 />
             </div>
         </Modal>
