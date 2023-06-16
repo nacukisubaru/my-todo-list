@@ -37,7 +37,7 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                                                 />
                                             )}
                                         </div>
-                                        <div className={`${!example.translatedText && 'ml-[5px]'}`}>
+                                        <div className={`w-[33vh] ${!example.translatedText && 'ml-[5px]'}`}>
                                             {example.originalText}
                                             {!example.translatedText && (
                                                 <TranslateButton

@@ -42,7 +42,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 languageOriginal: translateResult.textLang,
                 languageTranslation: targetLang,
                 isStudy: true,
-                id: ""
+                id: "",
+                dictionaryExamples: []
             };
 
             wordObj.id = generateCryptId(wordObj);
