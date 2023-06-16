@@ -65,6 +65,10 @@ export const dictionarySlice = createSlice({
         },
         resetTranslateResult: (state) => {
             state.translateResult = {translatedWord: "", originalWord: "", textLang: ""};
+        },
+        setDictionary: (state, action: PayloadAction<IDictionary[]>) => {
+            console.log({action})
+            state.dictionary = action.payload;
         }
     },
     extraReducers: {

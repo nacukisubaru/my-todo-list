@@ -12,6 +12,13 @@ export const dictionaryApi = createApi({
                 body
             }),
         }),
+        createExampleAndTranslate: build.mutation({
+            query: (body: ICreateDictionaryExample) => ({
+                url: '/dictionary-examples/create-example-and-translate',
+                method: 'POST',
+                body
+            }),
+        }),
         update: build.mutation({
             query: (body) => ({
                 url: '/dictionary/update',

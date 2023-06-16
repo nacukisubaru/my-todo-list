@@ -4,7 +4,15 @@ interface IDictionary {
     translatedWord: string;
     languageOriginal: string;
     languageTranslation: string;
+    dictionaryExamples: IDictionaryExample[]; 
     isStudy: boolean;
+}
+
+interface IDictionaryExample {
+    originalText: string,
+    translatedText: string,
+    exampleType: string,
+    showTranslate: boolean
 }
 
 interface IDictionarySettings {
@@ -40,11 +48,19 @@ interface IDictionaryCard {
     originalWord: string,
     translatedWord: string,
     orginalLang: string,
-    translationLang: string
+    translationLang: string,
+    dictionaryExamples: IDictionaryExample;
 }
 
 interface IExample {
     examples: any[]
     synonyms: any[]
     antonyms: any[]
+}
+
+interface ICreateDictionaryExample {
+    dictionaryId: string;
+    text: string;
+    targetLanguageCode: string;
+    type: string;
 }

@@ -21,11 +21,14 @@ const DictionaryWords = () => {
 
     const [isVisibleAddWord, setVisibleAddWord] = useState(false);
 
-    const [dictionaryCard, setDictionaryCard] = useState<IDictionaryCard>({
+    const [dictionaryCard, setDictionaryCard] = useState<IDictionary>({
+        id: "",
         originalWord: "",
         translatedWord: "",
-        orginalLang: "",
-        translationLang: "",
+        languageOriginal: "",
+        languageTranslation: "",
+        dictionaryExamples: [], 
+        isStudy: false
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
@@ -60,12 +63,7 @@ const DictionaryWords = () => {
         });
         if (words.length) {
             const word = words[0];
-            setDictionaryCard({
-                orginalLang: word.languageOriginal,
-                translationLang: word.languageTranslation,
-                originalWord: word.originalWord,
-                translatedWord: word.translatedWord,
-            });
+            setDictionaryCard({...word});
         }
         setVisibleCard(true);
     };
