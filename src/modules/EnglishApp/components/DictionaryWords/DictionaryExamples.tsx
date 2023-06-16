@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import ArrowButton from "../../../../ui/Buttons/ArrowButton/ArrowButton";
@@ -7,6 +7,7 @@ import TranslateButton from "../../ui/Buttons/TranslateButton";
 interface IDictionaryExamplesProps {
     examplesList: IDictionaryExample[];
     translateExampleLang: string;
+    quantityExamplesOnPage?: number;
     showTranslate: (example: IDictionaryExample, isShow: boolean) => void;
     translate: (example: IDictionaryExample) => void;
 }
@@ -14,15 +15,28 @@ interface IDictionaryExamplesProps {
 const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
     examplesList,
     translateExampleLang,
+    quantityExamplesOnPage = 5,
     showTranslate,
     translate,
 }) => {
     const { speak } = useSpeechSynthesis();
+    const [showMoreInc, setShowMoreInc] = useState(quantityExamplesOnPage);
+    const [exampleListLength, setExampleListLength] = useState(0);
+    const [isEndExampleList, setEndExampleList] = useState(false);
+
+    const showMore = () => {
+        setShowMoreInc(showMoreInc + quantityExamplesOnPage);
+        const listLength = examplesList.slice(0, showMoreInc + quantityExamplesOnPage).length;
+        setExampleListLength(listLength);
+        if (listLength === exampleListLength) {
+            setEndExampleList(true);
+        }
+    }
 
     return (
-        <>
+        <div>
             {examplesList &&
-                examplesList.map((example) => {
+                examplesList.slice(0, showMoreInc).map((example) => {
                     return (
                         <div className="display flex justify-between">
                             <div>
@@ -32,12 +46,20 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                                             {example.translatedText && (
                                                 <ArrowButton
                                                     onClick={(isShow) => {
-                                                        showTranslate(example, isShow);
+                                                        showTranslate(
+                                                            example,
+                                                            isShow
+                                                        );
                                                     }}
                                                 />
                                             )}
                                         </div>
-                                        <div className={`w-[33vh] ${!example.translatedText && 'ml-[5px]'}`}>
+                                        <div
+                                            className={`w-[33vh] ${
+                                                !example.translatedText &&
+                                                "ml-[5px]"
+                                            }`}
+                                        >
                                             {example.originalText}
                                             {!example.translatedText && (
                                                 <TranslateButton
@@ -53,7 +75,9 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                                     example.showTranslate && (
                                         <>
                                             <div className="display flex">
-                                                <div className="ml-[12px]">{example.translatedText}</div>
+                                                <div className="ml-[12px]">
+                                                    {example.translatedText}
+                                                </div>
                                                 <PlayButton
                                                     onClick={() => {
                                                         speak(
@@ -66,6 +90,7 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                                         </>
                                     )}
                             </div>
+
                             <div className="display flex">
                                 <span className="font-bold">uk</span>
                                 <PlayButton
@@ -83,7 +108,10 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                         </div>
                     );
                 })}
-        </>
+                {!isEndExampleList && (
+                    <a className="cursor-pointer" onClick={showMore}>показать еще</a>
+                )}
+        </div>
     );
 };
 

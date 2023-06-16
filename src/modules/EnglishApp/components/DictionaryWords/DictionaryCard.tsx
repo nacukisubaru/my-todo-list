@@ -172,6 +172,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     showTranslate={showTranslte}
                     translate={translate}
                     translateExampleLang={translateExampleLang}
+                    quantityExamplesOnPage={2}
                 />
                 <div className="font-bold">антонимы</div>
                 <DictionaryExamples
@@ -183,6 +184,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     showTranslate={showTranslte}
                     translate={translate}
                     translateExampleLang={translateExampleLang}
+                    quantityExamplesOnPage={2}
                 />
             </div>
         </Modal>
