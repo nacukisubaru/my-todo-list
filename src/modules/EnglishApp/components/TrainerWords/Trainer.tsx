@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getDictionaryByUser } from "../../store/services/dictionary/dictionary.slice";
+import {
+    getDictionaryByUser,
+    getLanguages,
+} from "../../store/services/dictionary/dictionary.slice";
 import { useActions } from "../../hooks/useAction";
 import Card from "../../../../ui/Cards/Card";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import ArrowRight from "../../../../ui/Buttons/ArrowButton/ArrowRigth";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
-import PassedTraining from "./PassedTraining";
-import TrainingCard from "./TrainingCard";
+import TrainerWords from "./TrainerWords";
+import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 
 const Trainer = () => {
     const dispatch = useDispatch();
@@ -22,24 +24,17 @@ const Trainer = () => {
 
     const [page, setPage] = useState(0);
     const [isTrainingEnd, setTrainingEnd] = useState(false);
+    const [isTrainingStart, setTrainingStart] = useState(false);
     const [wrongWord, setWrongWord] = useState("");
     const [correctWord, setCorrectWord] = useState("");
     const [trainingIsPassed, setPassTraining] = useState(false);
     const [inputWord, setInputWord] = useState<any>("");
     const [score, setScore] = useState(0);
+    const [trainingFirstLang, setTrainingFirstLang] = useState("");
+    const [trainingSecoundLang, setTrainingSecoundLang] = useState("");
 
     useEffect(() => {
-        const getWords = async () => {
-            const params: IGetDictionaryListParams = {
-                page,
-                languageOriginal: "ru",
-                languageTranslation: "en",
-            };
-            await resetDictionary();
-            dispatch(getDictionaryByUser(params));
-        };
-
-        getWords();
+        dispatch(getLanguages());
     }, []);
 
     const switchWord = () => {
@@ -48,8 +43,8 @@ const Trainer = () => {
             limit: pagination.limit + 1,
         });
         setPassTraining(false);
-        setCorrectWord('');
-        setWrongWord('');
+        setCorrectWord("");
+        setWrongWord("");
         setInputWord("");
     };
 
@@ -59,8 +54,8 @@ const Trainer = () => {
                 setPage(page + 1);
                 const params: IGetDictionaryListParams = {
                     page: page + 1,
-                    languageOriginal: "en",
-                    languageTranslation: "ru",
+                    languageOriginal: trainingFirstLang,
+                    languageTranslation: trainingSecoundLang,
                 };
                 dispatch(getDictionaryByUser(params));
             }
@@ -76,8 +71,8 @@ const Trainer = () => {
     const trainingAgain = async () => {
         const params: IGetDictionaryListParams = {
             page: 0,
-            languageOriginal: "ru",
-            languageTranslation: "en",
+            languageOriginal: trainingFirstLang,
+            languageTranslation: trainingSecoundLang,
         };
         await resetDictionary();
         setTrainingEnd(false);
@@ -85,6 +80,7 @@ const Trainer = () => {
         setPagination({ start: 0, limit: 1 });
         dispatch(getDictionaryByUser(params));
         setScore(0);
+        setTrainingStart(true);
     };
 
     const checkWord = (word: string) => {
@@ -114,7 +110,9 @@ const Trainer = () => {
 
             if (checkWord !== inputWord) {
                 if (inputWord.length < checkWord.length) {
-                    setWrongWord(`<span style="color:red;">${worngWord}</span>`);
+                    setWrongWord(
+                        `<span style="color:red;">${worngWord}</span>`
+                    );
                 } else {
                     setWrongWord(worngWord);
                 }
@@ -126,6 +124,27 @@ const Trainer = () => {
         }
     };
 
+    const selectFirstLang = (langCode: string) => {
+        setTrainingFirstLang(langCode);
+    };
+
+    const selectSecoundLang = (langCode: string) => {
+        setTrainingSecoundLang(langCode);
+    };
+
+    const startTraining = async () => {
+        if (trainingFirstLang && trainingSecoundLang) {
+            setTrainingStart(true);
+            const params: IGetDictionaryListParams = {
+                page,
+                languageOriginal: trainingFirstLang,
+                languageTranslation: trainingSecoundLang,
+            };
+            await resetDictionary();
+            dispatch(getDictionaryByUser(params));
+        }
+    };
+
     return (
         <div className="display flex justify-center">
             <div className="mt-[90px]">
@@ -134,12 +153,39 @@ const Trainer = () => {
                     maxWidth="max-w-[52vh]"
                     height="h-auto"
                 >
+                    {!isTrainingStart && (
+                        <>
+                            <div className="mb-[10px]">
+                                <DictionaryLanguages
+                                    selectLang={selectFirstLang}
+                                    placeholder="Выберите язык оригинала"
+                                ></DictionaryLanguages>
+                            </div>
+                            <div className="mb-[15px]">
+                                <DictionaryLanguages
+                                    selectLang={selectSecoundLang}
+                                    placeholder="Выберите язык перевода"
+                                ></DictionaryLanguages>
+                            </div>
+                            <div className="display flex justify-center">
+                                <BasicButton
+                                    name="Начать тренировку"
+                                    color="primary"
+                                    onClick={startTraining}
+                                    isDisabled={
+                                        !trainingFirstLang &&
+                                        !trainingSecoundLang
+                                            ? true
+                                            : false
+                                    }
+                                />
+                            </div>
+                        </>
+                    )}
                     {isTrainingEnd ? (
                         <div className="display flex justify-center">
                             <div>
-                                <div>
-                                    Тренировка завершена
-                                </div>
+                                <div>Тренировка завершена</div>
                                 <div className="text-center">
                                     {score} / {dictionary.length}
                                 </div>
@@ -154,34 +200,19 @@ const Trainer = () => {
                         </div>
                     ) : (
                         <>
-                            {dictionary
-                                .slice(pagination.start, pagination.limit)
-                                .map((word) => {
-                                    return (
-                                        <>
-                                            <PassedTraining
-                                                isPassed={trainingIsPassed}
-                                                wrongWord={wrongWord}
-                                                word={word}
-                                                correctWord={correctWord}
-                                            />
-                                            <TrainingCard
-                                                word={word}
-                                                checkWord={checkWord}
-                                                setInput={(value: string) => {setInputWord(value.toLowerCase())}}
-                                                isVisible={
-                                                    trainingIsPassed
-                                                        ? false
-                                                        : true
-                                                }
-                                                disableButton={!inputWord ? true : false}
-                                            />
-                                        </>
-                                    );
-                                })}
-                            {trainingIsPassed && (
-                                <ArrowRight onClick={switchWord}></ArrowRight>
-                            )}
+                            <TrainerWords
+                                words={dictionary}
+                                start={pagination.start}
+                                limit={pagination.limit}
+                                trainingIsPassed={trainingIsPassed}
+                                wrongWord={wrongWord}
+                                correctWord={correctWord}
+                                inputWord={inputWord}
+                                checkWord={checkWord}
+                                setInputWord={setInputWord}
+                                switchWord={switchWord}
+                                isVisible={isTrainingStart}
+                            />
                         </>
                     )}
                 </Card>
