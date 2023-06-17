@@ -64,3 +64,9 @@ interface ICreateDictionaryExample {
     targetLanguageCode: string;
     type: string;
 }
+
+interface IGetDictionaryListParams {
+    page: number,
+    languageOriginal?: string | string[], 
+    languageTranslation?: string | string[]
+}

@@ -35,7 +35,7 @@ const DictionaryWords = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getDictionaryByUser(0));
+        dispatch(getDictionaryByUser({page: 0}));
     }, []);
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const DictionaryWords = () => {
     }, []);
 
     const fetchData = () => {
-        dispatch(getDictionaryByUser(page));
+        dispatch(getDictionaryByUser({page}));
     };
 
     const openAddWord = () => {

@@ -12,6 +12,7 @@ import { useToolTodo } from "../../hooks/useToolTodo";
 import { useParams } from "react-router-dom";
 import { DragDropContext } from "react-beautiful-dnd";
 import DndWrapper from "../DnD/DndWrapper";
+import Divider from "../../ui/Dividers/Divider";
 
 const TodoSectionsList: FC = () => {
     let todos = useAppSelector((state) => state.todosReducer.todos);
@@ -123,7 +124,7 @@ const TodoSectionsList: FC = () => {
                                                 <TodoSection
                                                     section={section}
                                                 />
-                                                <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px]" />
+                                                <Divider />
                                             </DndWrapper>
                                             {section.showTasks && (
                                                 <>

@@ -1,12 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import Modal from "../../../../ui/Modal/Modal";
-import { getExamplesByWord } from "../../api/dictionaryapi";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import DictionaryExamples from "./DictionaryExamples";
-import { useActions } from "../../hooks/useAction";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
+import { useDictionaryExample } from "../../hooks/useDictionaryExample";
+import Divider from "../../../../ui/Dividers/Divider";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -15,102 +13,14 @@ interface IDictionaryCardProps {
 
 const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const {
-        id,
         originalWord,
         translatedWord,
         languageOriginal,
         languageTranslation,
-        dictionaryExamples,
     } = props;
 
-    const [examples, setExamples] = useState<IDictionaryExample[]>([]);
     const { speak } = useSpeechSynthesis();
-    const {setDictionary} = useActions();
-    const {dictionary} = useAppSelector(state => state.dictionaryReducer);
-    const [translateAndAdd] = dictionaryApi.useCreateExampleAndTranslateMutation();
-    const [translateExampleLang, setLanguageTranslateExample] = useState("");
-
-    useEffect(() => {
-        const getExamples = async () => {
-            let result = await getExamplesByWord(originalWord);
-            if (!result.length) {
-                result = await getExamplesByWord(translatedWord);
-            }
-
-            const examplesList = dictionaryExamples.map((example) => {
-                return example.originalText;
-            });
-           
-            const resultList = result.filter((res) => {
-                if (!examplesList.includes(res.originalText)) {
-                    return res;
-                }
-            });
-            
-            setExamples(dictionaryExamples.concat(resultList));
-        };
-        let targetLanguageCode = '';
-        if (languageTranslation !== 'en') {
-            targetLanguageCode = languageTranslation;
-        } else {
-            targetLanguageCode = languageOriginal;
-        }
-
-        setLanguageTranslateExample(targetLanguageCode);
-        getExamples();
-    }, []);
-
-    const mutateExample = (originalText: string, field: string, value: any) => {
-        const cloneExamples = examples.map((example) => {
-            return {...example};
-        });
-
-        cloneExamples.map((clone, key) => {
-            if (clone.originalText === originalText) {
-                const changableExample: any = cloneExamples;
-                changableExample[key][field] = value;
-            }
-        });
-
-        setExamples(cloneExamples);
-    }
-
-    const showTranslte = (example: IDictionaryExample, isShow: boolean) => {
-        mutateExample(example.originalText, 'showTranslate', isShow);
-    }
-
-    const translate = async (example: IDictionaryExample) => {
-        const newExample:IDictionaryExample = {
-            originalText: example.originalText, translatedText: '', exampleType: example.exampleType,
-            showTranslate: false
-        };
-
-        let translateResult: any = await translateAndAdd({
-            dictionaryId: id,
-            text: example.originalText,
-            targetLanguageCode: translateExampleLang,
-            type: example.exampleType
-        });
-       
-        if (translateResult && translateResult.data) {
-           newExample.translatedText = translateResult.data.translatedWord;
-        }
-
-        if (newExample.translatedText) {
-            const cloneDictionary = dictionary.map((word) => {
-                return {...word};
-            });
-
-            cloneDictionary.map((clone, key) => {
-                if (clone.id === id) {
-                    cloneDictionary[key].dictionaryExamples = clone.dictionaryExamples.concat(newExample);
-                }
-            });
-
-            mutateExample(example.originalText, 'translatedText', newExample.translatedText);
-            setDictionary(cloneDictionary);
-        }
-    }
+    const {translate, showTranslte, translateExampleLang, examples} = useDictionaryExample(props);
 
     return (
         <Modal
@@ -149,7 +59,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 {languageOriginal}&#8594;
                 {languageTranslation}
             </div>
-            <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />
+            <Divider />
             <div className="text-left">
                 <div className="font-bold">Примеры</div>
                 <DictionaryExamples

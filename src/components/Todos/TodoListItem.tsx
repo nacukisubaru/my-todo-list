@@ -8,6 +8,7 @@ import { FC } from "react";
 import { IToolTaskSettings } from "../../types/ui.types";
 import TodosList from "./TodosList";
 import { DragDropContext } from "react-beautiful-dnd";
+import Divider from "../../ui/Dividers/Divider";
 
 interface ITodoListItem {
     item: ITodoItem;
@@ -86,7 +87,7 @@ const TodoListItem: FC<ITodoListItem> = ({
                         }}
                         showSubtasks={showChildrens}
                     />
-                    <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />
+                    <Divider />
                 </>
             )}
 
@@ -99,7 +100,7 @@ const TodoListItem: FC<ITodoListItem> = ({
                         }}
                         showSubtasks={showChildrens}
                     />
-                    <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />
+                  <Divider />
                 </>
             )}
 

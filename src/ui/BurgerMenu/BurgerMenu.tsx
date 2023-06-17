@@ -5,6 +5,7 @@ import { IMenuItem } from "../../types/ui.types";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useActions";
 import { Link } from "react-router-dom";
+import Divider from "../Dividers/Divider";
 
 interface IMyApp {
     name: string,
@@ -39,7 +40,7 @@ const BurgerMenu: FC<IBurgerMenu> = ({ items, menu, myapps, setItem, toggleArrow
                         toggleArrow={toggleArrow}
                     />
 
-                    <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mb-[10px] mt-[10px]" />
+                    <Divider />
                     <div>Мои приложения</div>
                     <>
                         {myapps && myapps.map((app) => {
