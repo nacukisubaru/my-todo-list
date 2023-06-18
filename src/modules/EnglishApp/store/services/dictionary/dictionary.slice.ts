@@ -12,6 +12,7 @@ interface IState {
     dictionarySettings: IDictionarySettings,
     translateResult: ITranslateResult,
     languages: ILanguage[],
+    filterDictionary: IFilterDictionary,
     page: number,
     status: string,
     error: IError
@@ -26,6 +27,11 @@ const initialState:IState = {
         textLang: ""
     },
     languages: [],
+    filterDictionary: {
+        page: 0,
+        languageOriginal: [],
+        languageTranslation: [],
+    },
     page: 0,
     status: "",
     error: {statusCode: 0, message: ""}
@@ -76,7 +82,10 @@ export const dictionarySlice = createSlice({
         },
         resetDictionary: (state) => {
             state.dictionary = [];
-        }
+        },
+        setDictionaryFilter: (state, action: PayloadAction<IFilterDictionary>) => {
+            state.filterDictionary = action.payload;
+        } 
     },
     extraReducers: {
         [getDictionaryByUser.pending]: (state) => {

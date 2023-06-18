@@ -11,15 +11,21 @@ import SpeedDialButton from "../../../../ui/Buttons/SpeedDialButton";
 import DictionaryAddWord from "./DictionaryAddWord";
 import { useObserverScroll } from "../../../../hooks/useObserverScroll";
 import DictionaryCard from "./DictionaryCard";
+import FilterButton from "../../../../ui/Buttons/FilterButton";
+import SpeedDialButton2 from "../../../../ui/Buttons/SpeedDialButton";
+import Filter from "../Filter/Filter";
+import { useFilter } from "../../hooks/useFilter";
 
 const DictionaryWords = () => {
-    const dictionary = useAppSelector(
-        (state) => state.dictionaryReducer.dictionary
+    const {dictionary, status, filterDictionary} = useAppSelector(
+        (state) => state.dictionaryReducer
     );
+    const {filtrate} = useFilter();
 
     const page = useAppSelector((state) => state.dictionaryReducer.page);
 
     const [isVisibleAddWord, setVisibleAddWord] = useState(false);
+    const [filterIsVisible, setVisibleFilter] = useState(false);
 
     const [dictionaryCard, setDictionaryCard] = useState<IDictionary>({
         id: "",
@@ -27,15 +33,15 @@ const DictionaryWords = () => {
         translatedWord: "",
         languageOriginal: "",
         languageTranslation: "",
-        dictionaryExamples: [], 
-        isStudy: false
+        dictionaryExamples: [],
+        isStudy: false,
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getDictionaryByUser({page: 0}));
+        dispatch(getDictionaryByUser({ page: 0 }));
     }, []);
 
     useEffect(() => {
@@ -44,7 +50,9 @@ const DictionaryWords = () => {
     }, []);
 
     const fetchData = () => {
-        dispatch(getDictionaryByUser({page}));
+        if (status !== "loading") {
+            filtrate(page, false);
+        }
     };
 
     const openAddWord = () => {
@@ -63,14 +71,35 @@ const DictionaryWords = () => {
         });
         if (words.length) {
             const word = words[0];
-            setDictionaryCard({...word});
+            setDictionaryCard({ ...word });
         }
         setVisibleCard(true);
     };
 
+    const closeFilter = () => {
+        setVisibleFilter(false);
+    }
+
     const targetRef: any = useObserverScroll(fetchData, page, true);
     return (
         <>
+            <div className="display flex justify-center mt-[10px]">
+                <div className="mr-[7px] w-[30vh] ml-[20px]">
+                    <input
+                        id="trainerInput"
+                        name="trainerInput"
+                        type="text"
+                        onChange={(e) => {}}
+                        className="col-sm block w-full px-[11px] rounded-md border-0 py-1.5 
+                    text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300
+                    placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
+                    focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
+                    />
+                </div>
+                <div>
+                    <FilterButton onClick={() => {setVisibleFilter(true)}}></FilterButton>
+                </div>
+            </div>
             <div className="display flex justify-center">
                 <div>
                     {dictionary &&
@@ -116,6 +145,7 @@ const DictionaryWords = () => {
                 />
             )}
 
+            <Filter isVisible={filterIsVisible} close={closeFilter}></Filter>
             <SpeedDialButton onClick={openAddWord} />
         </>
     );

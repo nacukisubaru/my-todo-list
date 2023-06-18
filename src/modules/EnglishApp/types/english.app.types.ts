@@ -70,3 +70,9 @@ interface IGetDictionaryListParams {
     languageOriginal?: string | string[], 
     languageTranslation?: string | string[]
 }
+
+interface IFilterDictionary {
+    page: number,
+    languageOriginal?: ILanguage[], 
+    languageTranslation?: ILanguage[]
+}

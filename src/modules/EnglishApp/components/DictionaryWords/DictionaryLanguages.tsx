@@ -1,16 +1,21 @@
 import { AutoComplete } from "@progress/kendo-react-dropdowns";
 import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { MultiSelect } from "@progress/kendo-react-dropdowns";
 
 interface IDictionaryLanguages {
-    selectLang: (value: string) => void;
+    selectLang: (value: string | ILanguage[]) => void;
     defaultLang?: string;
     placeholder?: string;
+    multi?: boolean;
+    defaultValue?: any[] | any;
 }
 
 const DictionaryLanguages: FC<IDictionaryLanguages> = ({
     selectLang,
     defaultLang,
+    defaultValue = '',
+    multi = false,
     placeholder = "Выберите язык",
 }) => {
     const languages = useAppSelector(
@@ -32,27 +37,54 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
 
     const setLanguage = (e: any) => {
         if (e.value) {
-            const selectedLang = languages.filter((lang) => {
-                if (lang.isoName === e.value) {
-                    return lang;
-                }
-            });
+            if (Array.isArray(e.value)) {
+                let values: string[] = e.value;
+                const languagesCodesList: ILanguage[] = [];
+                
+                values.map((value) => {
+                    languages.filter((lang) => {
+                        if (lang.isoName === value) {
+                            languagesCodesList.push(lang);
+                        }
+                    });
+                });
+                selectLang(languagesCodesList);
+            } else {
+                const selectedLang = languages.filter((lang) => {
+                    if (lang.isoName === e.value) {
+                        return lang;
+                    }
+                });
 
-            if (selectedLang.length) {
-                selectLang(selectedLang[0].code);
+                if (selectedLang.length) {
+                    selectLang(selectedLang[0].code);
+                }
             }
         }
     };
 
     return (
-        <AutoComplete
-            data={languages.map((lang) => {
-                return lang.isoName;
-            })}
-            placeholder={placeholder}
-            onChange={setLanguage}
-            defaultValue={defaultTargetLang}
-        />
+        <>
+            {multi ? (
+                <MultiSelect
+                    data={languages.map((lang) => {
+                        return lang.isoName;
+                    })}
+                    onChange={setLanguage}
+                    defaultValue={defaultValue}
+                    placeholder={placeholder}
+                />
+            ) : (
+                <AutoComplete
+                    data={languages.map((lang) => {
+                        return lang.isoName;
+                    })}
+                    placeholder={placeholder}
+                    onChange={setLanguage}
+                    defaultValue={defaultTargetLang}
+                />
+            )}
+        </>
     );
 };
 
