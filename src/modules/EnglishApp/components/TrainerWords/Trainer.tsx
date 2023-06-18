@@ -35,6 +35,7 @@ const Trainer = () => {
 
     useEffect(() => {
         dispatch(getLanguages());
+        setTrainingEnd(false);
     }, []);
 
     const switchWord = () => {
@@ -56,6 +57,7 @@ const Trainer = () => {
                     page: page + 1,
                     languageOriginal: trainingFirstLang,
                     languageTranslation: trainingSecoundLang,
+                    studyStage: ['BEING_STUDIED']
                 };
                 dispatch(getDictionaryByUser(params));
             }
@@ -73,6 +75,7 @@ const Trainer = () => {
             page: 0,
             languageOriginal: trainingFirstLang,
             languageTranslation: trainingSecoundLang,
+            studyStage: ['BEING_STUDIED']
         };
         await resetDictionary();
         setTrainingEnd(false);
@@ -141,6 +144,7 @@ const Trainer = () => {
                 page,
                 languageOriginal: trainingFirstLang,
                 languageTranslation: trainingSecoundLang,
+                studyStage: ['BEING_STUDIED']
             };
             await resetDictionary();
             dispatch(getDictionaryByUser(params));

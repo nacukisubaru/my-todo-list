@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Card from "../../../../ui/Cards/Card";
 import {
-    getDictionaryByUser,
     getDictionarySettings,
     getLanguages,
 } from "../../store/services/dictionary/dictionary.slice";
@@ -12,12 +11,11 @@ import DictionaryAddWord from "./DictionaryAddWord";
 import { useObserverScroll } from "../../../../hooks/useObserverScroll";
 import DictionaryCard from "./DictionaryCard";
 import FilterButton from "../../../../ui/Buttons/FilterButton";
-import SpeedDialButton2 from "../../../../ui/Buttons/SpeedDialButton";
 import Filter from "../Filter/Filter";
 import { useFilter } from "../../hooks/useFilter";
 
 const DictionaryWords = () => {
-    const {dictionary, status, filterDictionary} = useAppSelector(
+    const {dictionary, status} = useAppSelector(
         (state) => state.dictionaryReducer
     );
     const {filtrate} = useFilter();
@@ -34,14 +32,14 @@ const DictionaryWords = () => {
         languageOriginal: "",
         languageTranslation: "",
         dictionaryExamples: [],
-        isStudy: false,
+        studyStage: "NOT_STUDIED"
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getDictionaryByUser({ page: 0 }));
+        filtrate();
     }, []);
 
     useEffect(() => {
