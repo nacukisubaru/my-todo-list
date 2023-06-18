@@ -43,7 +43,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 translatedWord: translateResult.translatedWord,
                 languageOriginal: translateResult.textLang,
                 languageTranslation: targetLang,
-                isStudy: true,
+                studyStage: 'NOT_STUDIED',
                 id: "",
                 dictionaryExamples: []
             };

@@ -11,7 +11,57 @@ interface IFilterProps {
 }
 
 const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
-    const {selectOriginalLang, selectTranslationLang, filtrate, filterDictionary} = useFilter();
+    const {
+        selectOriginalLang,
+        selectTranslationLang,
+        filtrate,
+        setDictionaryFilter,
+        filterDictionary,
+    } = useFilter();
+
+    const checkNotStudied = (isChecked: boolean) => {
+        let studyStage: studyStageType = "NOT_STUDIED";
+        changeStudyStage(studyStage, isChecked);
+    };
+
+    const checkBeingStudied = (isChecked: boolean) => {
+        let studyStage: studyStageType = "BEING_STUDIED";
+        changeStudyStage(studyStage, isChecked);
+    };
+
+    const checkStudied = (isChecked: boolean) => {
+        let studyStage: studyStageType = "STUDIED";
+        changeStudyStage(studyStage, isChecked);
+    };
+
+    const changeStudyStage = (
+        studyStage: studyStageType,
+        isChecked: boolean
+    ) => {
+        if (filterDictionary.studyStage) {
+            const cloneFilter = Object.assign({}, filterDictionary);
+            if (cloneFilter.studyStage) {
+                let studyStages: studyStageType[] = cloneFilter.studyStage.map(
+                    (stage: studyStageType) => stage
+                );
+                if (isChecked) {
+                    studyStages.push(studyStage);
+                } else {
+                    studyStages = studyStages.filter((stage) => {
+                        if (stage !== studyStage) {
+                            return stage;
+                        }
+                    });
+                }
+
+                console.log({ studyStages });
+                setDictionaryFilter({
+                    ...filterDictionary,
+                    studyStage: studyStages,
+                });
+            }
+        }
+    };
 
     return (
         <>
@@ -37,7 +87,12 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                                 selectLang={selectOriginalLang}
                                 placeholder="Выберите язык оригинала"
                                 multi={true}
-                                defaultValue={filterDictionary.languageOriginal && filterDictionary.languageOriginal.map(lang => lang.isoName)}
+                                defaultValue={
+                                    filterDictionary.languageOriginal &&
+                                    filterDictionary.languageOriginal.map(
+                                        (lang: ILanguage) => lang.isoName
+                                    )
+                                }
                             ></DictionaryLanguages>
                         </div>
                         <div className="w-[20vh]">
@@ -45,18 +100,33 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                                 selectLang={selectTranslationLang}
                                 placeholder="Выберите язык перевода"
                                 multi={true}
-                                defaultValue={filterDictionary.languageTranslation && filterDictionary.languageTranslation.map(lang => lang.isoName)}
+                                defaultValue={
+                                    filterDictionary.languageTranslation &&
+                                    filterDictionary.languageTranslation.map(
+                                        (lang: ILanguage) => lang.isoName
+                                    )
+                                }
                             ></DictionaryLanguages>
                         </div>
                     </div>
-                    <CheckBoxDefault label="Не изучается"/>
-                    <CheckBoxDefault label="На изучении"/>
-                    <CheckBoxDefault label="Изучено"/>
+                    <CheckBoxDefault
+                        label="Не изучается"
+                        onChange={checkNotStudied}
+                        checked={filterDictionary.studyStage?.includes('NOT_STUDIED')}
+                    />
+                    <CheckBoxDefault
+                        label="На изучении"
+                        onChange={checkBeingStudied}
+                        checked={ filterDictionary.studyStage.includes("BEING_STUDIED")}
+                    />
+                    <CheckBoxDefault label="Изучено" onChange={checkStudied} checked={filterDictionary.studyStage?.includes('STUDIED')} />
                     <div className="display flex justify-end">
                         <BasicButton
                             name="Применить"
                             color="primary"
-                            onClick={() => {filtrate()}}
+                            onClick={() => {
+                                filtrate();
+                            }}
                         />
                     </div>
                 </Modal>

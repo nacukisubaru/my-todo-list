@@ -5,7 +5,7 @@ interface IDictionary {
     languageOriginal: string;
     languageTranslation: string;
     dictionaryExamples: IDictionaryExample[]; 
-    isStudy: boolean;
+    studyStage: studyStageType;
 }
 
 interface IDictionaryExample {
@@ -75,11 +75,13 @@ interface ICreateDictionaryExample {
 interface IGetDictionaryListParams {
     page: number,
     languageOriginal?: string | string[], 
-    languageTranslation?: string | string[]
+    languageTranslation?: string | string[],
+    studyStage?: studyStageType[] | []
 }
 
 interface IFilterDictionary {
     page: number,
     languageOriginal?: ILanguage[], 
-    languageTranslation?: ILanguage[]
+    languageTranslation?: ILanguage[],
+    studyStage?: studyStageType[] | []
 }

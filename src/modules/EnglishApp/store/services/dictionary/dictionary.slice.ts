@@ -31,6 +31,7 @@ const initialState:IState = {
         page: 0,
         languageOriginal: [],
         languageTranslation: [],
+        studyStage: []
     },
     page: 0,
     status: "",
