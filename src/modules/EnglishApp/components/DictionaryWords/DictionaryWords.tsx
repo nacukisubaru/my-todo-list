@@ -21,7 +21,7 @@ const DictionaryWords = () => {
     const {dictionary, status} = useAppSelector(
         (state) => state.dictionaryReducer
     );
-    const {filtrate, setDictionaryFilter, filterDictionary} = useFilter();
+    const {filtrate, setDictionaryFilter} = useFilter();
     const page = useAppSelector((state) => state.dictionaryReducer.page);
 
     const [isVisibleAddWord, setVisibleAddWord] = useState(false);
