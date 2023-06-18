@@ -22,6 +22,7 @@ interface IModalProps {
     callbacks: IButtonsCallbacks;
     children: any;
     icon?: any;
+    maxWidth?: string;
 }
 
 const Modal: FC<IModalProps> = ({
@@ -30,9 +31,11 @@ const Modal: FC<IModalProps> = ({
     callbacks,
     children,
     icon,
+    maxWidth
 }) => {
     const {
         title,
+        oppositeTitle,
         primaryBtnName,
         secondaryBtnName,
         isVisible,
@@ -66,14 +69,14 @@ const Modal: FC<IModalProps> = ({
                     <div className="fixed inset-0 z-10 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                             <div
-                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-[50rem] overflow-auto min-w-[326px] ${
+                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full ${maxWidth ? maxWidth : 'max-w-[50rem]'} overflow-auto min-w-[326px] ${
                                     heightBody && heightBody
                                 }`}
                             >
                                 {showUpperButtons && (
                                     <>
                                         <div className="display flex justify-end px-[7px] py-[7px]">
-                                            {toolPanel && (
+                                            {toolPanel.menu.length > 0 && (
                                                 <span className="z-50">
                                                     <ToolTaskPanel
                                                         settings={{
@@ -117,12 +120,15 @@ const Modal: FC<IModalProps> = ({
                                         <div className="sm:items-start">
                                             {icon}
                                             <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                                <h3
-                                                    className="text-base font-semibold leading-6 text-gray-900"
-                                                    id="modal-title"
-                                                >
-                                                    {title}
-                                                </h3>
+                                                <div className="display flex justify-between">
+                                                    <h3
+                                                        className="text-base font-semibold leading-6 text-gray-900"
+                                                        id="modal-title"
+                                                    >
+                                                        {title}
+                                                    </h3>
+                                                    {oppositeTitle && (<div>{oppositeTitle}</div>)}
+                                                </div>
                                                 <div className="mt-2">
                                                     {children}
                                                 </div>
