@@ -9,6 +9,7 @@ import { generateCryptId } from "../../../../helpers/stringHelper";
 import DictionaryLanguages from "./DictionaryLanguages";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
+import { useFilter } from "../../hooks/useFilter";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -23,6 +24,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
     const [word, setWord] = useState("");
     const [targetLang, setTargetLang] = useState("");
+    const {filtrate} = useFilter();
 
     const dispatch = useDispatch();
     const { resetTranslateResult, addWord } = useActions();
@@ -34,7 +36,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
     const {speak} = useSpeechSynthesis();
 
-    const translateOrAddWord = () => {
+    const translateOrAddWord = async () => {
         if (translateResult.translatedWord) {
             const wordObj: IDictionary = {
                 originalWord: translateResult.originalWord,
@@ -48,7 +50,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
             wordObj.id = generateCryptId(wordObj);
             createWord(wordObj);
-            addWord(wordObj);
+            await addWord(wordObj);
+            filtrate();
         } else {
             translate(word, targetLang);
         }
@@ -78,13 +81,14 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         }
     }, [dictionarySettings.targetLanguage])
 
-    const selectTargetLang = async (lang: string) => {
-        if (targetLang !== lang) {
-            setTargetLang(lang);
+    const selectTargetLang = async (lang: ILanguage[]) => {
+        const langCode: string = lang[0].code; 
+        if (targetLang !== lang[0].code) {
+            setTargetLang(langCode);
         }
 
         if(targetLang !== "") {
-            translate(translateResult.originalWord, lang);
+            translate(translateResult.originalWord, langCode);
         }      
     }
 

@@ -19,9 +19,9 @@ export const dictionaryApi = createApi({
                 body
             }),
         }),
-        update: build.mutation({
-            query: (body) => ({
-                url: '/dictionary/update',
+        updateSudyStage: build.mutation({
+            query: (body: IUpdateStudyStage) => ({
+                url: '/dictionary/update-study-stage',
                 method: 'POST',
                 body
             }),

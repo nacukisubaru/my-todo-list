@@ -4,7 +4,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { MultiSelect } from "@progress/kendo-react-dropdowns";
 
 interface IDictionaryLanguages {
-    selectLang: (value: string | ILanguage[]) => void;
+    selectLang: (value: ILanguage[]) => void;
     defaultLang?: string;
     placeholder?: string;
     multi?: boolean;
@@ -40,7 +40,6 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
             if (Array.isArray(e.value)) {
                 let values: string[] = e.value;
                 const languagesCodesList: ILanguage[] = [];
-                
                 values.map((value) => {
                     languages.filter((lang) => {
                         if (lang.isoName === value) {
@@ -57,7 +56,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
                 });
 
                 if (selectedLang.length) {
-                    selectLang(selectedLang[0].code);
+                    selectLang(selectedLang);
                 }
             }
         }

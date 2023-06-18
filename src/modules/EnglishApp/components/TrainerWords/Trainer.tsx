@@ -124,11 +124,13 @@ const Trainer = () => {
         }
     };
 
-    const selectFirstLang = (langCode: string) => {
+    const selectFirstLang = (lang: ILanguage[]) => {
+        const langCode: string = lang[0].code;
         setTrainingFirstLang(langCode);
     };
 
-    const selectSecoundLang = (langCode: string) => {
+    const selectSecoundLang = (lang: ILanguage[]) => {
+        const langCode: string = lang[0].code;
         setTrainingSecoundLang(langCode);
     };
 

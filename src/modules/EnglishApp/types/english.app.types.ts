@@ -38,6 +38,13 @@ interface ICreateDictionary {
     languageTranslation: string;
 }
 
+type studyStageType = "NOT_STUDIED" | "BEING_STUDIED" | "STUDIED";
+
+interface IUpdateStudyStage {
+    id: string,
+    studyStage: studyStageType
+}
+
 interface ILanguage {
     code: string,
     name: string,

@@ -1,13 +1,9 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 import CheckBoxDefault from "../../../../ui/CheckBox/CheckBoxDefault";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import { useFilter } from "../../hooks/useFilter";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { useDispatch } from "react-redux";
-import { useActions } from "../../hooks/useAction";
-import { getDictionaryByUser } from "../../store/services/dictionary/dictionary.slice";
 
 interface IFilterProps {
     isVisible: boolean;
