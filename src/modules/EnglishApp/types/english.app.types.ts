@@ -76,12 +76,16 @@ interface IGetDictionaryListParams {
     page: number,
     languageOriginal?: string | string[], 
     languageTranslation?: string | string[],
-    studyStage?: studyStageType[] | []
+    studyStage?: studyStageType[] | [],
+    searchByOriginal?: string,
+    searchByTranslate?: string
 }
 
 interface IFilterDictionary {
     page: number,
     languageOriginal?: ILanguage[], 
     languageTranslation?: ILanguage[],
-    studyStage?: studyStageType[] | []
+    studyStage?: studyStageType[] | [],
+    searchByOriginal?: string,
+    searchByTranslate?: string
 }

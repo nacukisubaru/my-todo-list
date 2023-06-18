@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Card from "../../../../ui/Cards/Card";
 import {
+    getDictionaryByUser,
     getDictionarySettings,
     getLanguages,
 } from "../../store/services/dictionary/dictionary.slice";
@@ -13,18 +14,18 @@ import DictionaryCard from "./DictionaryCard";
 import FilterButton from "../../../../ui/Buttons/FilterButton";
 import Filter from "../Filter/Filter";
 import { useFilter } from "../../hooks/useFilter";
+import SearchInput from "../../../../ui/Inputs/SearchInput";
+import { useActions } from "../../hooks/useAction";
 
 const DictionaryWords = () => {
     const {dictionary, status} = useAppSelector(
         (state) => state.dictionaryReducer
     );
-    const {filtrate} = useFilter();
-
+    const {filtrate, setDictionaryFilter, filterDictionary} = useFilter();
     const page = useAppSelector((state) => state.dictionaryReducer.page);
 
     const [isVisibleAddWord, setVisibleAddWord] = useState(false);
     const [filterIsVisible, setVisibleFilter] = useState(false);
-
     const [dictionaryCard, setDictionaryCard] = useState<IDictionary>({
         id: "",
         originalWord: "",
@@ -37,6 +38,7 @@ const DictionaryWords = () => {
     const [isVisibleCard, setVisibleCard] = useState(false);
 
     const dispatch = useDispatch();
+    const {resetDictionary} = useActions();
 
     useEffect(() => {
         filtrate();
@@ -78,23 +80,38 @@ const DictionaryWords = () => {
         setVisibleFilter(false);
     }
 
+    const filterBySearchString = async (text: string) => {
+        await resetDictionary();
+        const res = await dispatch(getDictionaryByUser({ 
+            page: 0,
+            searchByOriginal: text,
+        }));
+        if (res.payload && res.payload.statusCode && res.payload.statusCode === 404) {
+            await resetDictionary();
+            dispatch(getDictionaryByUser({ 
+                page: 0,
+                searchByTranslate: text
+            }));
+        }
+        setDictionaryFilter({
+            page: 0,
+            languageOriginal: [],
+            languageTranslation: [],
+            studyStage: [],
+            searchByOriginal: '',
+            searchByTranslate: ''
+        });
+    }
+
     const targetRef: any = useObserverScroll(fetchData, page, true);
     return (
         <>
+        
             <div className="display flex justify-center mt-[10px]">
-                <div className="mr-[7px] w-[30vh] ml-[20px]">
-                    <input
-                        id="trainerInput"
-                        name="trainerInput"
-                        type="text"
-                        onChange={(e) => {}}
-                        className="col-sm block w-full px-[11px] rounded-md border-0 py-1.5 
-                    text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300
-                    placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
-                    focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
-                    />
+                <div className="mr-[7px]">
+                    <SearchInput search={filterBySearchString}></SearchInput>
                 </div>
-                <div>
+                <div className="mt-[13px]">
                     <FilterButton onClick={() => {setVisibleFilter(true)}}></FilterButton>
                 </div>
             </div>

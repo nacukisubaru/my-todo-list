@@ -31,7 +31,9 @@ const initialState:IState = {
         page: 0,
         languageOriginal: [],
         languageTranslation: [],
-        studyStage: []
+        studyStage: [],
+        searchByOriginal: '',
+        searchByTranslate: ''
     },
     page: 0,
     status: "",
