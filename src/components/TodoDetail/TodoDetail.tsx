@@ -174,7 +174,7 @@ const TodoDetail: FC<ITodoDetailProps> = () => {
                         />
 
                         <div className="text-start -mt-[4px] ml-[10px]">
-                            <div className="display flex">
+                            <div className="display flex" style={{overflowWrap: 'anywhere'}}>
                                 <span
                                     className={`${
                                         currentTodo.isComplete && "line-through"

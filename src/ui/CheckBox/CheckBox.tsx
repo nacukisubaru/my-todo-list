@@ -66,11 +66,12 @@ const CheckBox: FC<ICheckBox> = ({
                     type="checkbox"
                 />
                 {label && (
-                    <div className="-mt-[21px] ml-[24px]">
+                    <div className="-mt-[21px] ml-[24px] w-[25vh] lg:w-[60vh] md:w-[40vh] overflow-hidden max-h-[45px] text-left">
                         <label
                             className={` cursor-pointer ${
                                 checked && strikethrough && "line-through"
                             }`}
+                            style={{overflowWrap: 'anywhere'}}
                             onClick={clickLabel}
                         >
                             {label}
