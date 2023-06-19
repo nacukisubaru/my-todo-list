@@ -14,9 +14,9 @@ const EnglishApp: FC<EnglishAppProps> = ({
 }) => {
     const {speak} = useSpeechSynthesis();
     useEffect(() => {
-        speak('test', 'en-GB');
+        speak('test', 'en-GB', true);
     }, []);
-
+   
     return (<>
         <Provider store={store}>
             {includeTrainer ? (

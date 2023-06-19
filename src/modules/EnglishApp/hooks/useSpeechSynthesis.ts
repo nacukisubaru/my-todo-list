@@ -4,7 +4,7 @@ export const useSpeechSynthesis = () => {
        return window.speechSynthesis.getVoices().find(voice => voice.lang.includes(voiceValue));
     }
 
-    const speak = (text: string, lang: string) => {
+    const speak = (text: string, lang: string, voiceOff: boolean = false) => {
         const utterance = new SpeechSynthesisUtterance(text);
         const voice = findVoiceByLang(lang);
         if (voice) {
@@ -12,6 +12,11 @@ export const useSpeechSynthesis = () => {
             utterance.pitch = 1;
             utterance.rate = 1;
             utterance.volume = 1;
+            if (voiceOff) {
+                utterance.volume = 0;
+                utterance.rate = 0;
+                utterance.pitch = 0;
+            }
             window.speechSynthesis.speak(utterance);
         }
     }
