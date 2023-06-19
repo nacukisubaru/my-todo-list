@@ -48,9 +48,6 @@ const TodoItem: FC<ITodoItemProps> = ({
         showUpperOrLowerForm("creatableLower", "creatableUpper");
     };
 
-    const closeLowerAddForm = async () => {
-        closeUpperOrLowerForm("creatableLower");
-    };
 
     const showUpperAddForm = () => {
         showUpperOrLowerForm("creatableUpper", "creatableLower");

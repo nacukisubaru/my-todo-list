@@ -9,7 +9,6 @@ import { generateCryptId } from "../../../../helpers/stringHelper";
 import DictionaryLanguages from "./DictionaryLanguages";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
-import { useFilter } from "../../hooks/useFilter";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -24,7 +23,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
     const [word, setWord] = useState("");
     const [targetLang, setTargetLang] = useState("");
-    const {filtrate} = useFilter();
 
     const dispatch = useDispatch();
     const { resetTranslateResult, addWord, resetDictionaryFilter, resetDictionary } = useActions();
