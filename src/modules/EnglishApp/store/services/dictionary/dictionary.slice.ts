@@ -88,7 +88,17 @@ export const dictionarySlice = createSlice({
         },
         setDictionaryFilter: (state, action: PayloadAction<IFilterDictionary>) => {
             state.filterDictionary = action.payload;
-        } 
+        },
+        resetDictionaryFilter: (state) => {
+            state.filterDictionary = {
+                page: 0,
+                languageOriginal: [],
+                languageTranslation: [],
+                studyStage: [],
+                searchByOriginal: '',
+                searchByTranslate: ''
+            };
+        }
     },
     extraReducers: {
         [getDictionaryByUser.pending]: (state) => {

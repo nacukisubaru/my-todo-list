@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import { useDispatch } from "react-redux";
-import { translateWord } from "../../store/services/dictionary/dictionary.slice";
+import { getDictionaryByUser, translateWord } from "../../store/services/dictionary/dictionary.slice";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
@@ -27,7 +27,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     const {filtrate} = useFilter();
 
     const dispatch = useDispatch();
-    const { resetTranslateResult, addWord } = useActions();
+    const { resetTranslateResult, addWord, resetDictionaryFilter, resetDictionary } = useActions();
     const [createWord] = dictionaryApi.useAddMutation();
 
     const { translateResult } = useAppSelector(
@@ -47,11 +47,13 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 id: "",
                 dictionaryExamples: []
             };
-
+            await resetDictionary();
+            await resetDictionaryFilter();
+            await dispatch(getDictionaryByUser({page: 0}));
+            
             wordObj.id = generateCryptId(wordObj);
             createWord(wordObj);
-            await addWord(wordObj);
-            filtrate();
+            addWord(wordObj);
         } else {
             translate(word, targetLang);
         }
