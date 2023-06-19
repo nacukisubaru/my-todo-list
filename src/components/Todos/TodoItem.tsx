@@ -175,23 +175,6 @@ const TodoItem: FC<ITodoItemProps> = ({
                     )}
                 </div>
             )}
-
-            <TodoChange
-                id={todo.id}
-                buttonsSettings={{
-                    primaryButtonName: "Добавить задачу",
-                    secondaryButtonName: "Отмена",
-                }}
-                inputsSettings={{
-                    inputPlaceHolder: "Название задачи",
-                    textPlaceHolder: "Описание",
-                }}
-                isVisible={todo.creatableLower}
-                sortByPosition={{ position: "lower" }}
-                callback={closeLowerAddForm}
-                action="create"
-                editorHeight="150px"
-            />
         </>
     );
 };

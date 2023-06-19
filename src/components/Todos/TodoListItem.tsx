@@ -9,6 +9,7 @@ import { IToolTaskSettings } from "../../types/ui.types";
 import TodosList from "./TodosList";
 import { DragDropContext } from "react-beautiful-dnd";
 import Divider from "../../ui/Dividers/Divider";
+import TodoChange from "../TodoChange/TodoChange";
 
 interface ITodoListItem {
     item: ITodoItem;
@@ -23,6 +24,7 @@ const TodoListItem: FC<ITodoListItem> = ({
     isDragAndDropList,
 }) => {
     const { mutateAllTasks, mutateTask, findTaskInTree } = useTaskTree();
+    const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
     const { setVisibleDetailTodo, setCurrentTodo } = useActions();
     const { todos } = useAppSelector(
         (state) => state.todosReducer
@@ -72,6 +74,19 @@ const TodoListItem: FC<ITodoListItem> = ({
         }
     }
 
+    const closeUpperOrLowerForm = (field: string) => {
+        mutateTask(
+            item.id,
+            [{ field, value: false }],
+            false,
+            isVisibleDetailTodo
+        );
+    };
+
+    const closeLowerAddForm = async () => {
+        closeUpperOrLowerForm("creatableLower");
+    };
+
     return (
         <div
             className="ml-5"
@@ -116,6 +131,23 @@ const TodoListItem: FC<ITodoListItem> = ({
                     />
                 </DragDropContext>
             )}
+
+            <TodoChange
+                id={item.id}
+                buttonsSettings={{
+                    primaryButtonName: "Добавить задачу",
+                    secondaryButtonName: "Отмена",
+                }}
+                inputsSettings={{
+                    inputPlaceHolder: "Название задачи",
+                    textPlaceHolder: "Описание",
+                }}
+                isVisible={item.creatableLower}
+                sortByPosition={{ position: "lower" }}
+                callback={closeLowerAddForm}
+                action="create"
+                editorHeight="150px"
+            />
         </div>
     );
 };
