@@ -46,7 +46,7 @@ const ToolTaskPanel: FC<IToolTaskPanelProps> = ({
     }
 
     return (
-        <div className="display flex absolute">
+        <div className="display flex">
             {showEditBtn && (
                 <EditButton onClick={editBtnAction} />
             )}
