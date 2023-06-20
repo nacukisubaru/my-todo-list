@@ -75,7 +75,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
             id: "",
             dictionaryExamples: [],
         };
-        
+
         const filterIsApply = checkApplyFilter();
         if (filterIsApply) {
             await resetDictionary();
@@ -83,9 +83,13 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
             await dispatch(getDictionaryByUser({ page: 0 }));
         }
 
-        wordObj.id = generateCryptId(wordObj);
-        createWord(wordObj);
-        addWord(wordObj);
+        const {originalWord, translatedWord, languageOriginal, languageTranslation} = wordObj;
+
+        if (originalWord && translatedWord && languageOriginal && languageTranslation) {
+            wordObj.id = generateCryptId(wordObj);
+            createWord(wordObj);
+            addWord(wordObj);
+        }
     };
 
     const translate = (word: string, targetLang: string) => {
