@@ -81,24 +81,28 @@ const TodoSectionsList: FC = () => {
                                 {currentSection.name}
                             </div>
                             {toolPanelIsVisible && (
-                                <ToolTaskPanel
-                                    callbacks={{
-                                        clickEditBtn: () => {},
-                                    }}
-                                    settings={{
-                                        menuItems: [
-                                            {
-                                                name: !isVisibleCompleteTasks
-                                                    ? "Показать выполненные"
-                                                    : "Скрыть выполненные",
-                                                onClick: showCompleteTasks,
-                                            },
-                                        ],
-                                        showEditBtn: false,
-                                        translateY: "-translate-y-[40px]",
-                                        translateX: "-translate-x-[150px]",
-                                    }}
-                                />
+                                <div className="display flex justify-end">
+                                    <div className="absolute">
+                                        <ToolTaskPanel
+                                            callbacks={{
+                                                clickEditBtn: () => {},
+                                            }}
+                                            settings={{
+                                                menuItems: [
+                                                    {
+                                                        name: !isVisibleCompleteTasks
+                                                            ? "Показать выполненные"
+                                                            : "Скрыть выполненные",
+                                                        onClick: showCompleteTasks,
+                                                    },
+                                                ],
+                                                showEditBtn: false,
+                                                translateY: "-translate-y-[40px]",
+                                                translateX: "-translate-x-[150px]",
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}
