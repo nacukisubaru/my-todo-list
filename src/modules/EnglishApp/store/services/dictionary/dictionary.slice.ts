@@ -18,11 +18,11 @@ interface IState {
     error: IError
 }
 
-const initialState:IState = {
+const initialState: IState = {
     dictionary: [],
-    dictionarySettings: {targetLanguage: ""},
+    dictionarySettings: { targetLanguage: "" },
     translateResult: {
-        translatedWord: "", 
+        translatedWord: "",
         originalWord: "",
         textLang: ""
     },
@@ -37,13 +37,13 @@ const initialState:IState = {
     },
     page: 0,
     status: "",
-    error: {statusCode: 0, message: ""}
+    error: { statusCode: 0, message: "" }
 };
 
 export const getDictionaryByUser: any = createAsyncThunk(
     'dictionary/fetch',
     async (params: IGetDictionaryListParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/dictionary/get-list-by-user/', {...params}, rejectWithValue);
+        return thunkAxiosGet('/dictionary/get-list-by-user/', { ...params }, rejectWithValue);
     }
 );
 
@@ -73,12 +73,18 @@ export const dictionarySlice = createSlice({
     initialState,
     reducers: {
         addWord: (state, action: PayloadAction<IDictionary>) => {
+            const dictionary: IDictionary = action.payload;
             const dictionaryArray = [...state.dictionary];
-            dictionaryArray.unshift(action.payload);
-            state.dictionary = dictionaryArray;
+            const isExistWord = dictionaryArray.some((word) => word.originalWord === dictionary.originalWord
+                && word.translatedWord === dictionary.translatedWord
+            );
+            if (!isExistWord) {
+                dictionaryArray.unshift(dictionary);
+                state.dictionary = dictionaryArray;
+            }
         },
         resetTranslateResult: (state) => {
-            state.translateResult = {translatedWord: "", originalWord: "", textLang: ""};
+            state.translateResult = { translatedWord: "", originalWord: "", textLang: "" };
         },
         setDictionary: (state, action: PayloadAction<IDictionary[]>) => {
             state.dictionary = action.payload;
@@ -103,53 +109,53 @@ export const dictionarySlice = createSlice({
     extraReducers: {
         [getDictionaryByUser.pending]: (state) => {
             state.status = 'loading';
-            state.error = {statusCode: 0, message: ""};
+            state.error = { statusCode: 0, message: "" };
         },
-        [getDictionaryByUser.fulfilled]: (state, action: PayloadAction<{rows: IDictionary[], nextPage: number}>) => {
+        [getDictionaryByUser.fulfilled]: (state, action: PayloadAction<{ rows: IDictionary[], nextPage: number }>) => {
             state.status = 'resolved';
             state.dictionary = arrayUniqueByKey(state.dictionary.concat(action.payload.rows));
             state.page = action.payload.nextPage;
         },
-        [getDictionaryByUser.rejected]: (state,action) => {
+        [getDictionaryByUser.rejected]: (state, action) => {
             state.status = 'rejected';
             state.error = action.payload;
         },
 
         [translateWord.pending]: (state) => {
             state.status = 'loading';
-            state.error = {statusCode: 0, message: ""};
+            state.error = { statusCode: 0, message: "" };
         },
         [translateWord.fulfilled]: (state, action: PayloadAction<ITranslateResult>) => {
             state.status = 'resolved';
             state.translateResult = action.payload;
         },
-        [translateWord.rejected]: (state,action) => {
+        [translateWord.rejected]: (state, action) => {
             state.status = 'rejected';
             state.error = action.payload;
         },
 
         [getLanguages.pending]: (state) => {
             state.status = 'loading';
-            state.error = {statusCode: 0, message: ""};
+            state.error = { statusCode: 0, message: "" };
         },
         [getLanguages.fulfilled]: (state, action: PayloadAction<ILanguage[]>) => {
             state.status = 'resolved';
             state.languages = action.payload;
         },
-        [getLanguages.rejected]: (state,action) => {
+        [getLanguages.rejected]: (state, action) => {
             state.status = 'rejected';
             state.error = action.payload;
         },
 
         [getDictionarySettings.pending]: (state) => {
             state.status = 'loading';
-            state.error = {statusCode: 0, message: ""};
+            state.error = { statusCode: 0, message: "" };
         },
         [getDictionarySettings.fulfilled]: (state, action: PayloadAction<IDictionarySettings>) => {
             state.status = 'resolved';
-            state.dictionarySettings = {targetLanguage: action.payload.targetLanguage};
+            state.dictionarySettings = { targetLanguage: action.payload.targetLanguage };
         },
-        [getDictionarySettings.rejected]: (state,action) => {
+        [getDictionarySettings.rejected]: (state, action) => {
             state.status = 'rejected';
             state.error = action.payload;
         },

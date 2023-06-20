@@ -8,6 +8,7 @@ interface IDictionaryLanguages {
     defaultLang?: string;
     placeholder?: string;
     multi?: boolean;
+    style?: any,
     defaultValue?: any[] | any;
 }
 
@@ -16,6 +17,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
     defaultLang,
     defaultValue = '',
     multi = false,
+    style = {},
     placeholder = "Выберите язык",
 }) => {
     const languages = useAppSelector(
@@ -72,6 +74,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
                     onChange={setLanguage}
                     defaultValue={defaultValue}
                     placeholder={placeholder}
+                    style={{...style}}
                 />
             ) : (
                 <AutoComplete
@@ -81,6 +84,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
                     placeholder={placeholder}
                     onChange={setLanguage}
                     defaultValue={defaultTargetLang}
+                    style={{...style}}
                 />
             )}
         </>
