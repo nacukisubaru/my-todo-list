@@ -138,6 +138,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                             checked={todo.isComplete}
                         />
                     </div>
+                    <div className="display flex justify-end -mt-[5px]">
                     {toolPanelIsVisible && (
                         <ToolTaskPanel
                             callbacks={{
@@ -170,6 +171,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                             }}
                         />
                     )}
+                    </div>
                 </div>
             )}
         </>
