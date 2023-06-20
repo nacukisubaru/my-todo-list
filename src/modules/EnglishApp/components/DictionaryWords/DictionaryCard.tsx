@@ -12,6 +12,8 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
+import SwapButton from "../../../../ui/Buttons/SwapButton";
+import { useDictionary } from "../../hooks/useDictionary";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -28,6 +30,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         studyStage,
     } = props;
     
+
     const {dictionary} = useAppSelector(state => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
     const { translate, showTranslte, translateExampleLang, examples } =
@@ -36,6 +39,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const [studyStageState, setStudyStage] = useState(studyStage);
     const {setDictionary} = useActions();
     const {filtrate} = useFilter();
+    const {addNewWord} = useDictionary();
 
     const changeStudyStage = async (studyStage: studyStageType) => {
         setStudyStage(studyStage);
@@ -57,6 +61,18 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         });
 
         setDictionary(cloneDictionary);
+    }
+
+    const createReverseWord = () => {
+        addNewWord({
+            originalWord: translatedWord,
+            translatedWord: originalWord,
+            languageOriginal: languageTranslation,
+            languageTranslation: languageOriginal,
+            id: "",
+            studyStage: "NOT_STUDIED",
+            dictionaryExamples: []
+        });
     }
 
     return (
@@ -92,9 +108,10 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     }}
                 />
             </div>
-            <div className="display flex">
+            <div className="display flex justify-between mt-[5px]">
                 {languageOriginal}&#8594;
                 {languageTranslation}
+                <SwapButton onClick={createReverseWord}></SwapButton>
             </div>
             <Divider />
             <div className="text-left mb-[15px]">

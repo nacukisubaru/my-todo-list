@@ -1,20 +1,14 @@
-import { FC, useEffect, useState } from "react";
-import Modal from "../../../../ui/Modal/Modal";
-import { useDispatch } from "react-redux";
-import {
-    getDictionaryByUser,
-    translateWord,
-} from "../../store/services/dictionary/dictionary.slice";
+import { FC } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
-import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
-import { generateCryptId } from "../../../../helpers/stringHelper";
-import DictionaryLanguages from "./DictionaryLanguages";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
+import DictionaryLanguages from "./DictionaryLanguages";
+import Modal from "../../../../ui/Modal/Modal";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import SmallOutlineButton from "../../../../ui/Buttons/SmallOutlineButton";
 import InputField from "../../../../ui/Inputs/InputField";
-import { useFilter } from "../../hooks/useFilter";
+
+import { useDictionary } from "../../hooks/useDictionary";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -25,78 +19,41 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     isVisible,
     closeAddWord,
 }) => {
+
+    const {
+        addNewWord,
+        translateOrAddWord,
+        setAddWordWithoutTranslate,
+        selectOriginalLang,
+        selectTargetLang,
+        selectTranslateLang,
+        setInputOriginal,
+        setInputTranslation,
+        setWord,
+        setAddWord,
+        setOriginalLang,
+        setTranslatelLang,
+        inputOriginal,
+        inputTranslation,
+        word,
+        targetLang,
+        isAddWord,
+    } = useDictionary();
+    
     const { dictionarySettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
-
-    const [word, setWord] = useState("");
-    const [targetLang, setTargetLang] = useState("");
-    const [isAddWord, setAddWord] = useState(false);
-    const [inputTranslation, setInputTranslation] = useState("");
-    const [inputOriginal, setInputOriginal] = useState("");
-    const [originalLang, setOriginalLang] =  useState("");
-    const [translateLang, setTranslatelLang] =  useState("");
-
-    const dispatch = useDispatch();
-    const {
-        resetTranslateResult,
-        addWord,
-        resetDictionaryFilter,
-        resetDictionary,
-    } = useActions();
-    const [createWord] = dictionaryApi.useAddMutation();
 
     const { translateResult } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
+
+    const {
+        resetTranslateResult,
+    } = useActions();
     const { speak } = useSpeechSynthesis();
-    const {checkApplyFilter} = useFilter();
 
-    const translateOrAddWord = async () => {
-        if (translateResult.translatedWord) {
-            addNewWord();
-        } else {
-            translate(word, targetLang);
-        }
-    };
-
-    const addNewWord = async () => {
-        const wordObj: IDictionary = {
-            originalWord: isAddWord
-                ? inputOriginal
-                : translateResult.originalWord,
-            translatedWord: isAddWord
-                ? inputTranslation
-                : translateResult.translatedWord,
-            languageOriginal: isAddWord ? originalLang : translateResult.textLang,
-            languageTranslation: isAddWord ? translateLang : targetLang,
-            studyStage: "NOT_STUDIED",
-            id: "",
-            dictionaryExamples: [],
-        };
-
-        const filterIsApply = checkApplyFilter();
-        if (filterIsApply) {
-            await resetDictionary();
-            await resetDictionaryFilter();
-            await dispatch(getDictionaryByUser({ page: 0 }));
-        }
-
-        const {originalWord, translatedWord, languageOriginal, languageTranslation} = wordObj;
-
-        if (originalWord && translatedWord && languageOriginal && languageTranslation) {
-            wordObj.id = generateCryptId(wordObj);
-            createWord(wordObj);
-            addWord(wordObj);
-        }
-    };
-
-    const translate = (word: string, targetLang: string) => {
-        if (word && targetLang) {
-            dispatch(translateWord({ word, targetLang }));
-        }
-    };
 
     const closeModalAddWord = () => {
         resetTranslateResult();
@@ -107,57 +64,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setInputTranslation("");
         setOriginalLang("");
         setTranslatelLang("");
-    };
-
-    useEffect(() => {
-        if (translateResult.translatedWord) {
-            setWord(translateResult.translatedWord);
-        }
-    }, [translateResult.translatedWord]);
-
-    useEffect(() => {
-        if (dictionarySettings.targetLanguage !== "") {
-            setTargetLang(dictionarySettings.targetLanguage);
-        }
-    }, [dictionarySettings.targetLanguage]);
-
-    const selectTargetLang = async (lang: ILanguage[]) => {
-        if (lang.length) {
-            const langCode: string = lang[0].code;
-            if (langCode && targetLang !== langCode) {
-                setTargetLang(langCode);
-            }
-
-            if (targetLang !== "") {
-                translate(translateResult.originalWord, langCode);
-            }
-        }
-    };
-
-    const selectOriginalLang = (lang: ILanguage[]) => {
-        if (lang.length) {
-            const langCode: string = lang[0].code;
-            if (langCode) {
-                setOriginalLang(langCode);
-            }
-        }
-    }
-
-    const selectTranslateLang = (lang: ILanguage[]) => {
-        if (lang.length) {
-            const langCode: string = lang[0].code;
-            if (langCode) {
-                setTranslatelLang(langCode);
-            }
-        }
-    }
-
-    const setAddWordWithoutTranslate = () => {
-        if (isAddWord) {
-            setAddWord(false);
-        } else {
-            setAddWord(true);
-        }
     };
 
     return (
