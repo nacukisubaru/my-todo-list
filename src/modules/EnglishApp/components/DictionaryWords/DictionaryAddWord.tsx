@@ -1,14 +1,14 @@
-import { FC, useEffect, useState } from "react";
-import Modal from "../../../../ui/Modal/Modal";
-import { useDispatch } from "react-redux";
-import { getDictionaryByUser, translateWord } from "../../store/services/dictionary/dictionary.slice";
+import { FC, useEffect } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
-import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
-import { generateCryptId } from "../../../../helpers/stringHelper";
-import DictionaryLanguages from "./DictionaryLanguages";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
+import DictionaryLanguages from "./DictionaryLanguages";
+import Modal from "../../../../ui/Modal/Modal";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
+import SmallOutlineButton from "../../../../ui/Buttons/SmallOutlineButton";
+import InputField from "../../../../ui/Inputs/InputField";
+
+import { useDictionary } from "../../hooks/useDictionary";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -19,124 +19,175 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     isVisible,
     closeAddWord,
 }) => {
-    const {dictionarySettings} = useAppSelector(state=>state.dictionaryReducer);
 
-    const [word, setWord] = useState("");
-    const [targetLang, setTargetLang] = useState("");
-
-    const dispatch = useDispatch();
-    const { resetTranslateResult, addWord, resetDictionaryFilter, resetDictionary } = useActions();
-    const [createWord] = dictionaryApi.useAddMutation();
+    const {
+        addNewWord,
+        translateOrAddWord,
+        setAddWordWithoutTranslate,
+        selectOriginalLang,
+        selectTargetLang,
+        selectTranslateLang,
+        setInputOriginal,
+        setInputTranslation,
+        setWord,
+        setAddWord,
+        setOriginalLang,
+        setTranslatelLang,
+        inputOriginal,
+        inputTranslation,
+        word,
+        languageForTranslate,
+        isAddWord,
+    } = useDictionary();
+    
+    const { dictionarySettings } = useAppSelector(
+        (state) => state.dictionaryReducer
+    );
 
     const { translateResult } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
-    const {speak} = useSpeechSynthesis();
 
-    const translateOrAddWord = async () => {
-        if (translateResult.translatedWord) {
-            const wordObj: IDictionary = {
-                originalWord: translateResult.originalWord,
-                translatedWord: translateResult.translatedWord,
-                languageOriginal: translateResult.textLang,
-                languageTranslation: targetLang,
-                studyStage: 'NOT_STUDIED',
-                id: "",
-                dictionaryExamples: []
-            };
-            await resetDictionary();
-            await resetDictionaryFilter();
-            await dispatch(getDictionaryByUser({page: 0}));
-            
-            wordObj.id = generateCryptId(wordObj);
-            createWord(wordObj);
-            addWord(wordObj);
-        } else {
-            translate(word, targetLang);
-        }
-    };
+    const {
+        resetTranslateResult,
+        setTranslateLanguage
+    } = useActions();
+    const { speak } = useSpeechSynthesis();
 
-    const translate = (word: string, targetLang: string) => {
-        if (word && targetLang) {
-            dispatch(translateWord({ word, targetLang }));
-        }
-    }
-    
+
     const closeModalAddWord = () => {
         resetTranslateResult();
         setWord("");
         closeAddWord();
+        setAddWord(false);
+        setInputOriginal("");
+        setInputTranslation("");
+        setOriginalLang("");
+        setTranslatelLang("");
     };
 
     useEffect(() => {
-        if (translateResult.translatedWord) {
-            setWord(translateResult.translatedWord);
+        if (dictionarySettings.targetLanguage !== "") {
+            setTranslateLanguage(dictionarySettings.targetLanguage);
         }
-    }, [translateResult.translatedWord]);
-
-    useEffect(() => {
-        if (dictionarySettings.targetLanguage !== '') {
-            setTargetLang(dictionarySettings.targetLanguage);
-        }
-    }, [dictionarySettings.targetLanguage])
-
-    const selectTargetLang = async (lang: ILanguage[]) => {
-        const langCode: string = lang[0].code; 
-        if (targetLang !== lang[0].code) {
-            setTargetLang(langCode);
-        }
-
-        if(targetLang !== "") {
-            translate(translateResult.originalWord, langCode);
-        }      
-    }
+    }, [dictionarySettings.targetLanguage]);
 
     return (
         <Modal
             modalSettings={{
-                title: translateResult.originalWord ? translateResult.originalWord : "Новое слово",
-                primaryBtnName: translateResult.translatedWord ? "Выучить" : "Перевести",
+                title: isAddWord ? 'Добавить новое слово' : translateResult.originalWord
+                    ? translateResult.originalWord
+                    : "Новое слово",
+                primaryBtnName: isAddWord
+                    ? "Добавить"
+                    : translateResult.translatedWord
+                    ? "Выучить"
+                    : "Перевести",
                 secondaryBtnName: "Отмена",
                 isVisible,
             }}
             callbacks={{
-                primaryBtnClick: translateOrAddWord,
+                primaryBtnClick: isAddWord ? addNewWord : translateOrAddWord,
                 secondaryBtnClick: closeModalAddWord,
             }}
             maxWidth="sm:max-w-[32rem]"
         >
             <div className="display flex">
-                <input
-                    id="addWord"
-                    name="addWord"
-                    type="text"
-                    value={word}
-                    onChange={(e) => {
-                        setWord(e.target.value);
-                    }}
-                    className="col-sm block w-full px-[11px] rounded-md border-0 py-1.5 
-                    text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 
-                    focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mb-[12px]"
-                    disabled={translateResult.translatedWord ? true : false}
-                />
+                {isAddWord ? (
+                    <>
+                        <InputField
+                            id="addWordOriginal"
+                            onChange={(e) => {
+                                setInputOriginal(e.target.value);
+                            }}
+                            value={inputOriginal}
+                            placeholder="Введите слово в оригинале"
+                        />
+                        <div className="w-[125px] ml-[5px]">
+                            <DictionaryLanguages
+                                selectLang={selectOriginalLang}
+                                placeholder="Оригинал"
+                                style={{ height: "36px" }}
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <InputField
+                        id="addWord"
+                        onChange={(e) => {
+                            setWord(e.target.value);
+                        }}
+                        value={word}
+                        placeholder="Введите слово в оригинале"
+                    />
+                )}
+
                 <>
-                    {targetLang === "en" ? (
-                        <div className="display flex ml-[11px]">
-                            <span>uk</span>
-                            <PlayButton onClick={() => {speak(word, 'en-GB')}}/>
-                            <span>us</span>
-                            <PlayButton onClick={() => {speak(word, 'en-US')}}/>
-                        </div>
-                    ) : (
-                        <div className="ml-[11px]">
-                            <PlayButton onClick={() => {speak(word, targetLang)}}/>
-                        </div>
+                    {!isAddWord && (
+                        <>
+                            {languageForTranslate === "en" ? (
+                                <div className="display flex ml-[11px]">
+                                    <span>uk</span>
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(word, "en-GB");
+                                        }}
+                                    />
+                                    <span>us</span>
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(word, "en-US");
+                                        }}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="ml-[11px]">
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(word, languageForTranslate);
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </>
                     )}
                 </>
             </div>
-          
-            <DictionaryLanguages selectLang={selectTargetLang} defaultLang={dictionarySettings.targetLanguage}/>
+            {isAddWord && (
+                <>
+                    <div className="display flex">
+                        <InputField
+                            id="addSelfWord"
+                            onChange={(e) => {
+                                setInputTranslation(e.target.value);
+                            }}
+                            value={inputTranslation}
+                            placeholder="Введите слово перевода"
+                        />
+                        <div className="w-[125px] ml-[5px]">
+                            <DictionaryLanguages
+                                selectLang={selectTranslateLang}
+                                placeholder="Перевод"
+                                style={{ height: "36px" }}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {!isAddWord && (
+                <DictionaryLanguages
+                    selectLang={selectTargetLang}
+                    defaultLang={languageForTranslate}
+                />
+            )}
+
+            <div className="mt-[11px] text-left">
+                <SmallOutlineButton onClick={setAddWordWithoutTranslate}>
+                    {isAddWord ? "Вернутся к переводу" : "Добавить слово"}
+                </SmallOutlineButton>
+            </div>
         </Modal>
     );
 };

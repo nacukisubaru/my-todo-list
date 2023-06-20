@@ -55,25 +55,29 @@ const TodoSection: FC<ITodoSectionProps> = ({ section }) => {
                         <span className="font-bold ml-3">{section.name}</span>
                     </div>
                     {toolPanelIsVisible && (
-                        <ToolTaskPanel
-                            callbacks={{
-                                clickEditBtn: () => {},
-                            }}
-                            settings={{
-                                menuItems: [
-                                    {
-                                        name: "Изменить раздел",
-                                        onClick: openTodoChangePanel,
-                                    },
-                                    {
-                                        name: "Удалить раздел",
-                                        onClick: removeSection,
-                                    },
-                                ],
-                                showEditBtn: false,
-                                translateX: "-translate-x-[150px]",
-                            }}
-                        />
+                        <div className="display flex justify-end">
+                            <div className="absolute">
+                                <ToolTaskPanel
+                                    callbacks={{
+                                        clickEditBtn: () => {},
+                                    }}
+                                    settings={{
+                                        menuItems: [
+                                            {
+                                                name: "Изменить раздел",
+                                                onClick: openTodoChangePanel,
+                                            },
+                                            {
+                                                name: "Удалить раздел",
+                                                onClick: removeSection,
+                                            },
+                                        ],
+                                        showEditBtn: false,
+                                        translateX: "-translate-x-[150px]",
+                                    }}
+                                />
+                            </div>
+                        </div>
                     )}
                 </div>
             )}

@@ -20,7 +20,8 @@ const TodoItem: FC<ITodoItemProps> = ({
     showSubtasks = true,
     onClick,
 }) => {
-    const { mutateTask, completeTasks, removeTask, findTaskInTree } = useTaskTree();
+    const { mutateTask, completeTasks, removeTask, findTaskInTree } =
+        useTaskTree();
     const {
         toggleTaskList,
         showUpperOrLowerForm,
@@ -33,7 +34,7 @@ const TodoItem: FC<ITodoItemProps> = ({
     } = useToolTodo(todo.id, "todo");
 
     const { isVisibleDetailTodo } = useAppSelector((state) => state.uiReducer);
-    const {setCurrentTodo} = useActions();
+    const { setCurrentTodo } = useActions();
 
     const closeUpperOrLowerForm = (field: string) => {
         mutateTask(
@@ -47,7 +48,6 @@ const TodoItem: FC<ITodoItemProps> = ({
     const showLowerAddForm = async () => {
         showUpperOrLowerForm("creatableLower", "creatableUpper");
     };
-
 
     const showUpperAddForm = () => {
         showUpperOrLowerForm("creatableUpper", "creatableLower");
@@ -69,7 +69,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                 if (parent) {
                     const task = findTaskInTree(tasks, parent.id);
                     if (task) {
-                        setCurrentTodo({todo: task});
+                        setCurrentTodo({ todo: task });
                     }
                 }
             }
@@ -106,7 +106,7 @@ const TodoItem: FC<ITodoItemProps> = ({
                     textPlaceHolder: "Описание",
                     inputValue: todoEditInputs.name,
                     textValue: todoEditInputs.text,
-                    textTwoValue: todoEditInputs.textTwo
+                    textTwoValue: todoEditInputs.textTwo,
                 }}
                 isVisible={todo.editable}
                 callback={closeTodoChangePanel}
@@ -138,38 +138,42 @@ const TodoItem: FC<ITodoItemProps> = ({
                             checked={todo.isComplete}
                         />
                     </div>
-                    {toolPanelIsVisible && (
-                        <ToolTaskPanel
-                            callbacks={{
-                                clickEditBtn: openTodoChangePanel,
-                            }}
-                            settings={{
-                                menuItems: [
-                                    {
-                                        name: "Добавить задачу выше",
-                                        onClick: showUpperAddForm,
-                                        isDeactive: todo.isComplete
-                                    },
-                                    {
-                                        name: "Добавить задачу ниже",
-                                        onClick: showLowerAddForm,
-                                        isDeactive: todo.isComplete
-                                    },
-                                    {
-                                        name: "Изменить задачу",
-                                        onClick: openTodoChangePanel,
-                                    },
-                                    {
-                                        name: "Удалить задачу",
-                                        onClick: removeTodo,
-                                    },
-                                ],
-                                showEditBtn: true,
-                                translateX: "-translate-x-[151px]",
-                                translateY: '-translate-y-[80px]'
-                            }}
-                        />
-                    )}
+                    <div className="display flex justify-end -mt-[5px]">
+                        {toolPanelIsVisible && (
+                            <div className="absolute">
+                                <ToolTaskPanel
+                                    callbacks={{
+                                        clickEditBtn: openTodoChangePanel,
+                                    }}
+                                    settings={{
+                                        menuItems: [
+                                            {
+                                                name: "Добавить задачу выше",
+                                                onClick: showUpperAddForm,
+                                                isDeactive: todo.isComplete,
+                                            },
+                                            {
+                                                name: "Добавить задачу ниже",
+                                                onClick: showLowerAddForm,
+                                                isDeactive: todo.isComplete,
+                                            },
+                                            {
+                                                name: "Изменить задачу",
+                                                onClick: openTodoChangePanel,
+                                            },
+                                            {
+                                                name: "Удалить задачу",
+                                                onClick: removeTodo,
+                                            },
+                                        ],
+                                        showEditBtn: true,
+                                        translateX: "-translate-x-[151px]",
+                                        translateY: "-translate-y-[80px]",
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </>

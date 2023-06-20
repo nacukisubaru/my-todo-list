@@ -50,6 +50,18 @@ export const useFilter = () => {
         }));
     }
 
+    const checkApplyFilter = (): boolean => {
+        for (const [key, value] of Object.entries(filterDictionary)) {
+            if (key !== 'page') {
+                if (value) {
+                    return true;
+                }
+            }
+          }
+
+          return false;
+    }
+
     const selectOriginalLang = (langs: ILanguage[]) => {
         setDictionaryFilter({ ...filterDictionary, languageOriginal: langs });
     };
@@ -58,5 +70,7 @@ export const useFilter = () => {
         setDictionaryFilter({ ...filterDictionary, languageTranslation: langs });
     };
 
-    return { filtrate, selectOriginalLang, selectTranslationLang, setDictionaryFilter, filterDictionary };
+    
+
+    return { filtrate, checkApplyFilter, selectOriginalLang, selectTranslationLang, setDictionaryFilter, filterDictionary };
 }
