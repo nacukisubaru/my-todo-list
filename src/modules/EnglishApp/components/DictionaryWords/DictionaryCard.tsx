@@ -29,28 +29,27 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         languageTranslation,
         studyStage,
     } = props;
-    
 
-    const {dictionary} = useAppSelector(state => state.dictionaryReducer);
+    const { dictionary } = useAppSelector((state) => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
     const { translate, showTranslte, translateExampleLang, examples } =
         useDictionaryExample(props);
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
-    const {setDictionary} = useActions();
-    const {filtrate} = useFilter();
-    const {addNewWord} = useDictionary();
+    const { setDictionary } = useActions();
+    const { filtrate } = useFilter();
+    const { addNewWord } = useDictionary();
 
     const changeStudyStage = async (studyStage: studyStageType) => {
         setStudyStage(studyStage);
-        changeDictionaryWord('studyStage', studyStage);
-        await updStudyStage({id, studyStage});
+        changeDictionaryWord("studyStage", studyStage);
+        await updStudyStage({ id, studyStage });
         filtrate();
-    }
+    };
 
     const changeDictionaryWord = (field: string, value: string) => {
         const cloneDictionary = dictionary.map((word) => {
-            return {...word};
+            return { ...word };
         });
 
         cloneDictionary.map((clone, key) => {
@@ -61,7 +60,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         });
 
         setDictionary(cloneDictionary);
-    }
+    };
 
     const createReverseWord = () => {
         addNewWord({
@@ -71,20 +70,45 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             languageTranslation: languageOriginal,
             id: "",
             studyStage: "NOT_STUDIED",
-            dictionaryExamples: []
+            dictionaryExamples: [],
         });
-    }
+    };
 
     return (
         <Modal
             modalSettings={{
                 title: originalWord,
                 oppositeTitle: (
-                    <PlayButton
-                        onClick={() => {
-                            speak(originalWord, languageOriginal);
-                        }}
-                    />
+                    <>
+                        {languageOriginal === "en" ? (
+                            <>
+                                <div className="display flex">
+                                    <div className="display flex">
+                                        <div className="font-bold">uk</div>
+                                        <PlayButton
+                                            onClick={() => {
+                                                speak(originalWord, "en-GB");
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="display flex">
+                                        <span className="font-bold">us</span>
+                                        <PlayButton
+                                            onClick={() => {
+                                                speak(originalWord, "en-US");
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <PlayButton
+                                onClick={() => {
+                                    speak(originalWord, languageOriginal);
+                                }}
+                            />
+                        )}
+                    </>
                 ),
                 primaryBtnName: "",
                 secondaryBtnName: "",
@@ -102,11 +126,37 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         >
             <div className="display flex justify-between">
                 <div className="font-bold">{translatedWord}</div>
-                <PlayButton
-                    onClick={() => {
-                        speak(translatedWord, languageTranslation);
-                    }}
-                />
+
+                <>
+                    {languageTranslation === "en" ? (
+                        <>
+                            <div className="display flex">
+                                <div className="display flex">
+                                    <div className="font-bold">uk</div>
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(translatedWord, "en-GB");
+                                        }}
+                                    />
+                                </div>
+                                <div className="display flex">
+                                    <span className="font-bold">us</span>
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(translatedWord, "en-US");
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <PlayButton
+                            onClick={() => {
+                                speak(translatedWord, languageTranslation);
+                            }}
+                        />
+                    )}
+                </>
             </div>
             <div className="display flex justify-between mt-[5px]">
                 {languageOriginal}&#8594;
@@ -153,13 +203,25 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             </div>
             <div className="display flex justify-end">
                 {studyStageState === "BEING_STUDIED" && (
-                    <StudyButton onClick={() => {changeStudyStage("STUDIED")}}></StudyButton>
+                    <StudyButton
+                        onClick={() => {
+                            changeStudyStage("STUDIED");
+                        }}
+                    ></StudyButton>
                 )}
                 {studyStageState === "NOT_STUDIED" && (
-                    <BookButton onClick={() => {changeStudyStage("BEING_STUDIED")}}></BookButton>
+                    <BookButton
+                        onClick={() => {
+                            changeStudyStage("BEING_STUDIED");
+                        }}
+                    ></BookButton>
                 )}
                 {studyStageState === "STUDIED" && (
-                   <RetryButton onClick={() => {changeStudyStage("NOT_STUDIED")}}></RetryButton>
+                    <RetryButton
+                        onClick={() => {
+                            changeStudyStage("NOT_STUDIED");
+                        }}
+                    ></RetryButton>
                 )}
             </div>
         </Modal>
