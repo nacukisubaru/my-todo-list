@@ -13,6 +13,7 @@ interface IState {
     translateResult: ITranslateResult,
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
+    languageForTranslate: string,
     page: number,
     status: string,
     error: IError
@@ -35,6 +36,7 @@ const initialState: IState = {
         searchByOriginal: '',
         searchByTranslate: ''
     },
+    languageForTranslate: '',
     page: 0,
     status: "",
     error: { statusCode: 0, message: "" }
@@ -104,6 +106,9 @@ export const dictionarySlice = createSlice({
                 searchByOriginal: '',
                 searchByTranslate: ''
             };
+        },
+        setTranslateLanguage: (state, action: PayloadAction<string>) => {
+            state.languageForTranslate = action.payload;
         }
     },
     extraReducers: {

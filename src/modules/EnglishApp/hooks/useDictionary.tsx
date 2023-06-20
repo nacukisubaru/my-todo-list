@@ -11,7 +11,7 @@ import { dictionaryApi } from "../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../helpers/stringHelper";
 
 export const useDictionary = () => {
-    const { translateResult, dictionarySettings } = useAppSelector(
+    const { translateResult, languageForTranslate } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
@@ -19,14 +19,14 @@ export const useDictionary = () => {
         addWord,
         resetDictionaryFilter,
         resetDictionary,
+        setTranslateLanguage
     } = useActions();
-    
+
     const dispatch = useDispatch();
     const { checkApplyFilter } = useFilter();
     const [createWord] = dictionaryApi.useAddMutation();
 
     const [word, setWord] = useState("");
-    const [targetLang, setTargetLang] = useState("");
     const [isAddWord, setAddWord] = useState(false);
     const [inputTranslation, setInputTranslation] = useState("");
     const [inputOriginal, setInputOriginal] = useState("");
@@ -45,7 +45,7 @@ export const useDictionary = () => {
                 languageOriginal: isAddWord
                     ? originalLang
                     : translateResult.textLang,
-                languageTranslation: isAddWord ? translateLang : targetLang,
+                languageTranslation: isAddWord ? translateLang : languageForTranslate,
                 studyStage: "NOT_STUDIED",
                 id: "",
                 dictionaryExamples: [],
@@ -82,7 +82,7 @@ export const useDictionary = () => {
         if (translateResult.translatedWord) {
             addNewWord();
         } else {
-            translate(word, targetLang);
+            translate(word, languageForTranslate);
         }
     };
 
@@ -95,11 +95,11 @@ export const useDictionary = () => {
     const selectTargetLang = async (lang: ILanguage[]) => {
         if (lang.length) {
             const langCode: string = lang[0].code;
-            if (langCode && targetLang !== langCode) {
-                setTargetLang(langCode);
+            if (langCode && languageForTranslate !== langCode) {
+                setTranslateLanguage(langCode);
             }
 
-            if (targetLang !== "") {
+            if (languageForTranslate !== "") {
                 translate(translateResult.originalWord, langCode);
             }
         }
@@ -137,12 +137,6 @@ export const useDictionary = () => {
         }
     }, [translateResult.translatedWord]);
 
-    useEffect(() => {
-        if (dictionarySettings.targetLanguage !== "") {
-            setTargetLang(dictionarySettings.targetLanguage);
-        }
-    }, [dictionarySettings.targetLanguage]);
-
     return {
         addNewWord,
         translateOrAddWord,
@@ -160,7 +154,7 @@ export const useDictionary = () => {
         inputOriginal,
         inputTranslation,
         word,
-        targetLang,
+        languageForTranslate,
         isAddWord,
         originalLang,
         translateLang

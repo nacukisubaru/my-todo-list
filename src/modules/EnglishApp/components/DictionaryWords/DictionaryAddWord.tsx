@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
@@ -36,7 +36,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         inputOriginal,
         inputTranslation,
         word,
-        targetLang,
+        languageForTranslate,
         isAddWord,
     } = useDictionary();
     
@@ -51,6 +51,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
     const {
         resetTranslateResult,
+        setTranslateLanguage
     } = useActions();
     const { speak } = useSpeechSynthesis();
 
@@ -65,6 +66,12 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setOriginalLang("");
         setTranslatelLang("");
     };
+
+    useEffect(() => {
+        if (dictionarySettings.targetLanguage !== "") {
+            setTranslateLanguage(dictionarySettings.targetLanguage);
+        }
+    }, [dictionarySettings.targetLanguage]);
 
     return (
         <Modal
@@ -119,7 +126,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 <>
                     {!isAddWord && (
                         <>
-                            {targetLang === "en" ? (
+                            {languageForTranslate === "en" ? (
                                 <div className="display flex ml-[11px]">
                                     <span>uk</span>
                                     <PlayButton
@@ -138,7 +145,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 <div className="ml-[11px]">
                                     <PlayButton
                                         onClick={() => {
-                                            speak(word, targetLang);
+                                            speak(word, languageForTranslate);
                                         }}
                                     />
                                 </div>
@@ -172,7 +179,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
             {!isAddWord && (
                 <DictionaryLanguages
                     selectLang={selectTargetLang}
-                    defaultLang={dictionarySettings.targetLanguage}
+                    defaultLang={languageForTranslate}
                 />
             )}
 
