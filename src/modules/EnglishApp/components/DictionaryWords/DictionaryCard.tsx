@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
@@ -32,13 +32,22 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
 
     const { dictionary } = useAppSelector((state) => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
-    const { translate, showTranslte, translateExampleLang, examples } =
-        useDictionaryExample(props);
+    const { 
+        translate, 
+        showTranslte, 
+        getExamples, 
+        translateExampleLang, 
+        examples
+    } = useDictionaryExample(props);
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
     const { setDictionary } = useActions();
     const { filtrate } = useFilter();
     const { addNewWord } = useDictionary();
+    
+    useEffect(() => {
+        getExamples();
+    }, []);
 
     const changeStudyStage = async (studyStage: studyStageType) => {
         setStudyStage(studyStage);

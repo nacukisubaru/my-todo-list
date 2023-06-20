@@ -30,6 +30,7 @@ const TrainerWords: FC<ITrainerWordsProps> = ({
     switchWord,
     isVisible = false
 }) => {
+
     return (
         <>
             {isVisible && words.slice(start, limit).map((word) => {

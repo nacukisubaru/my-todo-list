@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getExamplesByWord } from "../api/dictionaryapi";
 import { dictionaryApi } from "../store/services/dictionary/dictionary.api";
 import { useActions } from "./useAction";
@@ -12,25 +12,24 @@ export const useDictionaryExample = (dictionary: IDictionary) => {
     const [examples, setExamples] = useState<IDictionaryExample[]>([]);
     const [translateExampleLang, setLanguageTranslateExample] = useState("");
 
-    useEffect(() => {
-        const getExamples = async () => {
-            let result = await getExamplesByWord(originalWord);
-            if (!result.length) {
-                result = await getExamplesByWord(translatedWord);
-            }
+    const getExamples = async () => {
+        let result = await getExamplesByWord(originalWord);
+        if (!result.length) {
+            result = await getExamplesByWord(translatedWord);
+        }
 
-            const examplesList = dictionaryExamples.map((example) => {
-                return example.originalText;
-            });
-           
-            const resultList = result.filter((res) => {
-                if (!examplesList.includes(res.originalText)) {
-                    return res;
-                }
-            });
-            
-            setExamples(dictionaryExamples.concat(resultList));
-        };
+        const examplesList = dictionaryExamples.map((example) => {
+            return example.originalText;
+        });
+       
+        const resultList = result.filter((res) => {
+            if (!examplesList.includes(res.originalText)) {
+                return res;
+            }
+        });
+        
+        setExamples(dictionaryExamples.concat(resultList));
+
         let targetLanguageCode = '';
         if (languageTranslation !== 'en') {
             targetLanguageCode = languageTranslation;
@@ -39,9 +38,7 @@ export const useDictionaryExample = (dictionary: IDictionary) => {
         }
 
         setLanguageTranslateExample(targetLanguageCode);
-        getExamples();
-    }, []);
-
+    };
 
     const mutateExample = (originalText: string, field: string, value: any) => {
         const cloneExamples = examples.map((example) => {
@@ -95,5 +92,5 @@ export const useDictionaryExample = (dictionary: IDictionary) => {
         }
     }
 
-    return {mutateExample, translate, showTranslte, translateExampleLang, examples}
+    return {mutateExample, translate, showTranslte, getExamples, translateExampleLang, examples}
 }

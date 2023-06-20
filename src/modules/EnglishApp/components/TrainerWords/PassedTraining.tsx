@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import HTMLReactParser from "html-react-parser";
 import { useDictionaryExample } from "../../hooks/useDictionaryExample";
 import DictionaryExamples from "../DictionaryWords/DictionaryExamples";
@@ -19,8 +19,14 @@ const PassedTraining: FC<IPassedTrainingProps> = ({
     word,
     isPassed,
 }) => {
-    const {translate, showTranslte, translateExampleLang, examples} = useDictionaryExample(word);
+    const {translate, showTranslte, getExamples, translateExampleLang, examples} = useDictionaryExample(word);
     const { speak } = useSpeechSynthesis();
+
+    useEffect(() => {
+        if (isPassed) {
+            getExamples();
+        }
+    }, [isPassed]);
 
     return (
         <>
