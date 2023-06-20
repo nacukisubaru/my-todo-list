@@ -88,7 +88,9 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 isVisible,
             }}
             callbacks={{
-                primaryBtnClick: isAddWord ? addNewWord : translateOrAddWord,
+                primaryBtnClick: () => {
+                    isAddWord ? addNewWord() : translateOrAddWord()
+                },
                 secondaryBtnClick: closeModalAddWord,
             }}
             maxWidth="sm:max-w-[32rem]"

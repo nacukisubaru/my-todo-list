@@ -53,7 +53,8 @@ export const useFilter = () => {
     const checkApplyFilter = (): boolean => {
         for (const [key, value] of Object.entries(filterDictionary)) {
             if (key !== 'page') {
-                if (value) {
+                const val: any = value;
+                if (val.lenght) {
                     return true;
                 }
             }
