@@ -7,7 +7,9 @@ import { useAppSelector } from "./useAppSelector";
 import { sectionsApi } from "../store/services/sections/sections.api";
 import { IMutateList } from "../types/ui.types";
 import { DraggableLocation } from "react-beautiful-dnd";
+import { updPositions } from "../store/services/todo/todo.slice";
 import bcrypt from 'bcryptjs';
+import { useDispatch } from "react-redux";
 
 interface ICreateTaskSectionParams {
     name: string,
@@ -46,6 +48,7 @@ export const useTaskTree = () => {
     const [removeSection] = todoSectionsApi.useRemoveMutation();
     const [addSection] = sectionsApi.useAddMutation();
     const { setCurrentTodo } = useActions();
+    const dispatch = useDispatch();
 
     const generateTaskId = (params?: any) => {
         const salt = bcrypt.genSaltSync(10) + Date.now();
@@ -515,6 +518,7 @@ export const useTaskTree = () => {
                 todoRemoveList = getFieldRecursive(foundTask.items, "id");
                 todoRemoveList.push(foundTask.id);
                 tasksclones = filter(tasksclones);
+                await dispatch(updPositions());
                 await removeTodo(todoRemoveList);
                 await removeSection({ id: foundTask.id });
             } else {
