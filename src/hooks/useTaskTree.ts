@@ -577,20 +577,20 @@ export const useTaskTree = () => {
                     tree[inc].items.map((item) => {
                         if (item.parentId === tree[inc].id && !item.isComplete) {
                             item.isComplete = isComplete;
-                            arrayJsonItems.push(item);
+                            arrayJsonItems.push({...item, items: []});
                         }
                         recursiveComplete(tree[inc].items, true);
                     });
                 } else {
                     if (tree[inc].id === taskId) {
                         tree[inc].isComplete = isComplete;
-                        arrayJsonItems.push(tree[inc]);
+                        arrayJsonItems.push({...tree[inc], items: []});
                     }
                     if (tree[inc].parentId === taskId && !tree[inc].isComplete) {
                         tree[inc].items.map((item) => {
                             if (item.parentId === tree[inc].id) {
                                 item.isComplete = isComplete;
-                                arrayJsonItems.push(item);
+                                arrayJsonItems.push({...item, items: []});
                             }
                             recursiveComplete(tree[inc].items, true);
                         });
@@ -610,7 +610,7 @@ export const useTaskTree = () => {
                     const taskParent = findTaskInTree(tasks, task.parentId);
                     if (taskParent) {
                         taskParent.isComplete = false;
-                        arrayJsonItems.push(taskParent);
+                        arrayJsonItems.push({...taskParent, items: []});
                         setUncompleteRecursive(tasks, taskParent.id);
                     }
                 }
