@@ -25,7 +25,8 @@ const initialState: IState = {
     translateResult: {
         translatedWord: "",
         originalWord: "",
-        textLang: ""
+        translateLang: "",
+        originalLang: ""
     },
     languages: [],
     filterDictionary: {
@@ -66,7 +67,7 @@ export const getLanguages: any = createAsyncThunk(
 export const translateWord: any = createAsyncThunk(
     'translate/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/yandex-cloud/translate/', params, rejectWithValue);
+        return thunkAxiosGet('/lingvo-api/translate/', params, rejectWithValue);
     }
 );
 
@@ -86,7 +87,7 @@ export const dictionarySlice = createSlice({
             }
         },
         resetTranslateResult: (state) => {
-            state.translateResult = { translatedWord: "", originalWord: "", textLang: "" };
+            state.translateResult = { translatedWord: "", originalWord: "", originalLang: "", translateLang: "" };
         },
         setDictionary: (state, action: PayloadAction<IDictionary[]>) => {
             state.dictionary = action.payload;

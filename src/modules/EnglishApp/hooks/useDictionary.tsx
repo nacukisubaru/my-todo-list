@@ -44,7 +44,7 @@ export const useDictionary = () => {
                     : translateResult.translatedWord,
                 languageOriginal: isAddWord
                     ? originalLang
-                    : translateResult.textLang,
+                    : translateResult.originalLang,
                 languageTranslation: isAddWord ? translateLang : languageForTranslate,
                 studyStage: "NOT_STUDIED",
                 id: "",
@@ -82,26 +82,13 @@ export const useDictionary = () => {
         if (translateResult.translatedWord) {
             addNewWord();
         } else {
-            translate(word, languageForTranslate);
+            translate(word);
         }
     };
 
-    const translate = (word: string, targetLang: string) => {
-        if (word && targetLang) {
-            dispatch(translateWord({ word, targetLang }));
-        }
-    };
-
-    const selectTargetLang = async (lang: ILanguage[]) => {
-        if (lang.length) {
-            const langCode: string = lang[0].code;
-            if (langCode && languageForTranslate !== langCode) {
-                setTranslateLanguage(langCode);
-            }
-
-            if (languageForTranslate !== "") {
-                translate(translateResult.originalWord, langCode);
-            }
+    const translate = (word: string) => {
+        if (word) {
+            dispatch(translateWord({ word }));
         }
     };
 
@@ -143,7 +130,6 @@ export const useDictionary = () => {
         translate,
         setAddWordWithoutTranslate,
         selectOriginalLang,
-        selectTargetLang,
         selectTranslateLang,
         setInputOriginal,
         setInputTranslation,

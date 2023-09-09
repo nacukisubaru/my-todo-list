@@ -25,7 +25,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         translateOrAddWord,
         setAddWordWithoutTranslate,
         selectOriginalLang,
-        selectTargetLang,
         selectTranslateLang,
         setInputOriginal,
         setInputTranslation,
@@ -128,7 +127,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 <>
                     {!isAddWord && (
                         <>
-                            {languageForTranslate === "en" ? (
+                            {translateResult.translateLang === "en" ? (
                                 <div className="display flex ml-[11px]">
                                     <span>uk</span>
                                     <PlayButton
@@ -147,7 +146,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 <div className="ml-[11px]">
                                     <PlayButton
                                         onClick={() => {
-                                            speak(word, languageForTranslate);
+                                            speak(word, translateResult.translateLang);
                                         }}
                                     />
                                 </div>
@@ -176,13 +175,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                         </div>
                     </div>
                 </>
-            )}
-
-            {!isAddWord && (
-                <DictionaryLanguages
-                    selectLang={selectTargetLang}
-                    defaultLang={languageForTranslate}
-                />
             )}
 
             <div className="mt-[11px] text-left">

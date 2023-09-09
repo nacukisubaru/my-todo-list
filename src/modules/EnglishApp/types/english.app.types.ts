@@ -22,12 +22,12 @@ interface IDictionarySettings {
 interface ITranslateResult {
     originalWord: string,
     translatedWord: string,
-    textLang: string
+    originalLang: string,
+    translateLang: string
 }
 
 interface ITranslateParams {
-    word: string,
-    targetLang: string
+    word: string
 }
 
 interface ICreateDictionary {
