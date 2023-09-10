@@ -1,7 +1,12 @@
 export const useSpeechSynthesis = () => {
     
     const findVoiceByLang = (voiceValue: string) => {
-       return window.speechSynthesis.getVoices().find(voice => voice.lang.includes(voiceValue));
+        return window.speechSynthesis.getVoices().find(voice => {
+            if (!voiceValue.includes('-')) {
+                return voice.lang.includes(voiceValue+'-'+voiceValue.toUpperCase())
+            }
+            return voice.lang.includes(voiceValue);
+        });
     }
 
     const speak = (text: string, lang: string, voiceOff: boolean = false) => {

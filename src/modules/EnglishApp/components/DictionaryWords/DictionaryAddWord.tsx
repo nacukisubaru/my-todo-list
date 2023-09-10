@@ -35,25 +35,18 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         inputOriginal,
         inputTranslation,
         word,
-        languageForTranslate,
+        translateSettings,
         isAddWord,
     } = useDictionary();
-    
-    const { dictionarySettings } = useAppSelector(
-        (state) => state.dictionaryReducer
-    );
+
 
     const { translateResult } = useAppSelector(
         (state) => state.dictionaryReducer
     );
-
-
     const {
-        resetTranslateResult,
-        setTranslateLanguage
+        resetTranslateResult
     } = useActions();
     const { speak } = useSpeechSynthesis();
-
 
     const closeModalAddWord = () => {
         resetTranslateResult();
@@ -65,12 +58,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setOriginalLang("");
         setTranslatelLang("");
     };
-
-    useEffect(() => {
-        if (dictionarySettings.targetLanguage !== "") {
-            setTranslateLanguage(dictionarySettings.targetLanguage);
-        }
-    }, [dictionarySettings.targetLanguage]);
 
     return (
         <Modal
@@ -125,20 +112,20 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 )}
 
                 <>
-                    {!isAddWord && (
+                    {!isAddWord && translateSettings.targetLang && (
                         <>
-                            {translateResult.translateLang === "en" ? (
+                            {translateSettings.targetLang === "en" ? (
                                 <div className="display flex ml-[11px]">
                                     <span>uk</span>
                                     <PlayButton
                                         onClick={() => {
-                                            speak(word, "en-GB");
+                                            speak(translateSettings.targetWord, "en-GB");
                                         }}
                                     />
                                     <span>us</span>
                                     <PlayButton
                                         onClick={() => {
-                                            speak(word, "en-US");
+                                            speak(translateSettings.targetWord, "en-US");
                                         }}
                                     />
                                 </div>
@@ -146,7 +133,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 <div className="ml-[11px]">
                                     <PlayButton
                                         onClick={() => {
-                                            speak(word, translateResult.translateLang);
+                                            speak(translateSettings.targetWord, translateSettings.targetLang);
                                         }}
                                     />
                                 </div>

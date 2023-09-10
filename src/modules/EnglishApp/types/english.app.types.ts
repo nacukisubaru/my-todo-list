@@ -16,6 +16,7 @@ interface IDictionaryExample {
 }
 
 interface IDictionarySettings {
+    sourceLanguage: string,
     targetLanguage: string
 }
 

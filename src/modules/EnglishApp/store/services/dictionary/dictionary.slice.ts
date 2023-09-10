@@ -13,7 +13,6 @@ interface IState {
     translateResult: ITranslateResult,
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
-    languageForTranslate: string,
     page: number,
     status: string,
     error: IError
@@ -21,7 +20,7 @@ interface IState {
 
 const initialState: IState = {
     dictionary: [],
-    dictionarySettings: { targetLanguage: "" },
+    dictionarySettings: { sourceLanguage: "", targetLanguage: "" },
     translateResult: {
         translatedWord: "",
         originalWord: "",
@@ -37,7 +36,6 @@ const initialState: IState = {
         searchByOriginal: '',
         searchByTranslate: ''
     },
-    languageForTranslate: '',
     page: 0,
     status: "",
     error: { statusCode: 0, message: "" }
@@ -159,7 +157,10 @@ export const dictionarySlice = createSlice({
         },
         [getDictionarySettings.fulfilled]: (state, action: PayloadAction<IDictionarySettings>) => {
             state.status = 'resolved';
-            state.dictionarySettings = { targetLanguage: action.payload.targetLanguage };
+            state.dictionarySettings = {
+                sourceLanguage: action.payload.sourceLanguage, 
+                targetLanguage: action.payload.targetLanguage 
+            };
         },
         [getDictionarySettings.rejected]: (state, action) => {
             state.status = 'rejected';
