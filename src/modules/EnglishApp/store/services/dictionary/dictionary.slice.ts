@@ -2,11 +2,6 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { thunkAxiosGet } from "../../../../../helpers/queryHelper";
 import { arrayUniqueByKey } from "../../../../../helpers/arrayHelper";
 
-interface IError {
-    statusCode: number,
-    message: string
-}
-
 interface IState {
     dictionary: IDictionary[],
     dictionarySettings: IDictionarySettings,
@@ -38,7 +33,7 @@ const initialState: IState = {
     },
     page: 0,
     status: "",
-    error: { statusCode: 0, message: "" }
+    error: { statusCode: 0, message: "", errorCode: "" }
 };
 
 export const getDictionaryByUser: any = createAsyncThunk(
@@ -105,15 +100,12 @@ export const dictionarySlice = createSlice({
                 searchByOriginal: '',
                 searchByTranslate: ''
             };
-        },
-        setTranslateLanguage: (state, action: PayloadAction<string>) => {
-            state.languageForTranslate = action.payload;
         }
     },
     extraReducers: {
         [getDictionaryByUser.pending]: (state) => {
             state.status = 'loading';
-            state.error = { statusCode: 0, message: "" };
+            state.error = { statusCode: 0, message: "", errorCode: "" };
         },
         [getDictionaryByUser.fulfilled]: (state, action: PayloadAction<{ rows: IDictionary[], nextPage: number }>) => {
             state.status = 'resolved';
@@ -127,7 +119,7 @@ export const dictionarySlice = createSlice({
 
         [translateWord.pending]: (state) => {
             state.status = 'loading';
-            state.error = { statusCode: 0, message: "" };
+            state.error = { statusCode: 0, message: "", errorCode: "" };
         },
         [translateWord.fulfilled]: (state, action: PayloadAction<ITranslateResult>) => {
             state.status = 'resolved';
@@ -140,7 +132,7 @@ export const dictionarySlice = createSlice({
 
         [getLanguages.pending]: (state) => {
             state.status = 'loading';
-            state.error = { statusCode: 0, message: "" };
+            state.error = { statusCode: 0, message: "", errorCode: "" };
         },
         [getLanguages.fulfilled]: (state, action: PayloadAction<ILanguage[]>) => {
             state.status = 'resolved';
@@ -153,7 +145,7 @@ export const dictionarySlice = createSlice({
 
         [getDictionarySettings.pending]: (state) => {
             state.status = 'loading';
-            state.error = { statusCode: 0, message: "" };
+            state.error = { statusCode: 0, message: "", errorCode: "" };
         },
         [getDictionarySettings.fulfilled]: (state, action: PayloadAction<IDictionarySettings>) => {
             state.status = 'resolved';

@@ -90,3 +90,9 @@ interface IFilterDictionary {
     searchByOriginal?: string,
     searchByTranslate?: string
 }
+
+interface IError {
+    statusCode: number,
+    errorCode: string,
+    message: string
+}

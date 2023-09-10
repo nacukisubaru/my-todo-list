@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
@@ -7,8 +7,8 @@ import Modal from "../../../../ui/Modal/Modal";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import SmallOutlineButton from "../../../../ui/Buttons/SmallOutlineButton";
 import InputField from "../../../../ui/Inputs/InputField";
-
 import { useDictionary } from "../../hooks/useDictionary";
+import SnackErrorBar from "../../../../ui/SnackBars/SnackErrorBar";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -40,7 +40,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     } = useDictionary();
 
 
-    const { translateResult } = useAppSelector(
+    const { translateResult, error } = useAppSelector(
         (state) => state.dictionaryReducer
     );
     const {
@@ -60,6 +60,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     };
 
     return (
+        <>
+        <SnackErrorBar error={error}></SnackErrorBar>
         <Modal
             modalSettings={{
                 title: isAddWord ? 'Добавить новое слово' : translateResult.originalWord
@@ -170,6 +172,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 </SmallOutlineButton>
             </div>
         </Modal>
+        </>
     );
 };
 
