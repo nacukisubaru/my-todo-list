@@ -8,7 +8,9 @@ import PlayButton from "../../../../ui/Buttons/PlayButton";
 import SmallOutlineButton from "../../../../ui/Buttons/SmallOutlineButton";
 import InputField from "../../../../ui/Inputs/InputField";
 import { useDictionary } from "../../hooks/useDictionary";
-import SnackErrorBar from "../../../../ui/SnackBars/SnackErrorBar";
+import SnackErrorBar from "../../../../ui/SnackBars/SnackBar";
+import SnackBar from "../../../../ui/SnackBars/SnackBar";
+import { Button } from "@mui/material";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -61,7 +63,10 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
     return (
         <>
-        <SnackErrorBar error={error}></SnackErrorBar>
+        <SnackBar isOpen={error.message ? true: false} type={"error"}>
+            {error.message} 
+            {error.errorCode && error.errorCode === 'settingsNotSupportLang' ? <Button variant="outlined" color="error">Перейти к настройкам</Button> : ''}
+        </SnackBar>
         <Modal
             modalSettings={{
                 title: isAddWord ? 'Добавить новое слово' : translateResult.originalWord
