@@ -71,18 +71,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         setDictionary(cloneDictionary);
     };
 
-    const createReverseWord = () => {
-        addNewWord({
-            originalWord: translatedWord,
-            translatedWord: originalWord,
-            languageOriginal: languageTranslation,
-            languageTranslation: languageOriginal,
-            id: "",
-            studyStage: "NOT_STUDIED",
-            dictionaryExamples: [],
-        });
-    };
-
     return (
         <Modal
             modalSettings={{
@@ -170,7 +158,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             <div className="display flex justify-between mt-[5px]">
                 {languageOriginal}&#8594;
                 {languageTranslation}
-                <SwapButton onClick={createReverseWord}></SwapButton>
             </div>
             <Divider />
             <div className="text-left mb-[15px]">

@@ -8,7 +8,6 @@ import PlayButton from "../../../../ui/Buttons/PlayButton";
 import SmallOutlineButton from "../../../../ui/Buttons/SmallOutlineButton";
 import InputField from "../../../../ui/Inputs/InputField";
 import { useDictionary } from "../../hooks/useDictionary";
-import SnackErrorBar from "../../../../ui/SnackBars/SnackBar";
 import SnackBar from "../../../../ui/SnackBars/SnackBar";
 import { Button } from "@mui/material";
 
@@ -37,8 +36,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         inputOriginal,
         inputTranslation,
         word,
-        translateSettings,
         isAddWord,
+        voiceWordSettings
     } = useDictionary();
 
 
@@ -119,20 +118,20 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 )}
 
                 <>
-                    {!isAddWord && translateSettings.targetLang && (
+                    {!isAddWord && voiceWordSettings.voiceLang && (
                         <>
-                            {translateSettings.targetLang === "en" ? (
+                            {voiceWordSettings.voiceLang === "en" ? (
                                 <div className="display flex ml-[11px]">
                                     <span>uk</span>
                                     <PlayButton
                                         onClick={() => {
-                                            speak(translateSettings.targetWord, "en-GB");
+                                            speak(voiceWordSettings.voiceWord, "en-GB");
                                         }}
                                     />
                                     <span>us</span>
                                     <PlayButton
                                         onClick={() => {
-                                            speak(translateSettings.targetWord, "en-US");
+                                            speak(voiceWordSettings.voiceWord, "en-US");
                                         }}
                                     />
                                 </div>
@@ -140,7 +139,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 <div className="ml-[11px]">
                                     <PlayButton
                                         onClick={() => {
-                                            speak(translateSettings.targetWord, translateSettings.targetLang);
+                                            speak(voiceWordSettings.voiceWord, voiceWordSettings.voiceLang);
                                         }}
                                     />
                                 </div>

@@ -31,49 +31,48 @@ export const useDictionary = () => {
     const [inputOriginal, setInputOriginal] = useState("");
     const [originalLang, setOriginalLang] = useState("");
     const [translateLang, setTranslatelLang] = useState("");
-    const [translateSettings, setTranslateSettings] = useState({sourceWord: '', targetWord: '', sourceLang: '', targetLang: ''});
+    const [voiceWordSettings, setVoiceWordSettings] = useState({voiceWord: '', voiceLang: ''});
     const { dictionarySettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
     useEffect(() => {
-        let sourceWord = translateResult.originalWord;
-        let targetWord = translateResult.translatedWord;
-
-        let targetLang = translateResult.translateLang;
-        let sourceLang = translateResult.originalLang;
-
+        let voiceWord = translateResult.translatedWord;
+        let voiceLang = translateResult.translateLang;
+      
         if (dictionarySettings.sourceLanguage !== translateResult.originalLang) {
-          sourceWord = translateResult.translatedWord;
-          targetWord = translateResult.originalWord;
-
-          sourceLang = translateResult.translateLang;  
-          targetLang = translateResult.originalLang;
+            voiceWord = translateResult.originalWord;       
+            voiceLang = translateResult.originalLang;
         }
         
-        setTranslateSettings({sourceWord, targetWord, sourceLang, targetLang});
+        setVoiceWordSettings({voiceWord, voiceLang});
     }, [translateResult]);
 
-    const addNewWord = async (wordObj?: IDictionary) => {
+    const addNewWord = async () => {
+        let sourceWord = translateResult.originalWord;
+        let targetWord = word;
 
-        if (!wordObj) {
-            wordObj = {
-                originalWord: isAddWord
-                    ? inputOriginal
-                    : translateSettings.sourceWord,
-                translatedWord: isAddWord
-                    ? inputTranslation
-                    : translateSettings.targetWord,
-                languageOriginal: isAddWord
-                    ? originalLang
-                    : dictionarySettings.sourceLanguage,
-                languageTranslation: isAddWord ? translateLang : dictionarySettings.targetLanguage,
-                studyStage: "BEING_STUDIED",
-                id: "",
-                dictionaryExamples: [],
-            };
-        } 
+        if (dictionarySettings.sourceLanguage !== translateResult.originalLang) {
+            sourceWord = word;
+            targetWord = translateResult.originalWord;
+        }
 
+        const wordObj: IDictionary = {
+            originalWord: isAddWord
+                ? inputOriginal
+                : sourceWord,
+            translatedWord: isAddWord
+                ? inputTranslation
+                : targetWord,
+            languageOriginal: isAddWord
+                ? originalLang
+                : dictionarySettings.sourceLanguage,
+            languageTranslation: isAddWord ? translateLang : dictionarySettings.targetLanguage,
+            studyStage: "BEING_STUDIED",
+            id: "",
+            dictionaryExamples: [],
+        };
+        
         const filterIsApply = checkApplyFilter();
         if (filterIsApply) {
             await resetDictionary();
@@ -159,10 +158,11 @@ export const useDictionary = () => {
         setAddWord,
         setOriginalLang,
         setTranslatelLang,
+        setVoiceWordSettings,
         inputOriginal,
         inputTranslation,
         word,
-        translateSettings,
+        voiceWordSettings,
         isAddWord,
         originalLang,
         translateLang
