@@ -12,8 +12,6 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
-import SwapButton from "../../../../ui/Buttons/SwapButton";
-import { useDictionary } from "../../hooks/useDictionary";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -43,7 +41,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const [studyStageState, setStudyStage] = useState(studyStage);
     const { setDictionary } = useActions();
     const { filtrate } = useFilter();
-    const { addNewWord } = useDictionary();
     
     useEffect(() => {
         getExamples();

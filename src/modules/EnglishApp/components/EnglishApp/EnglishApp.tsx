@@ -4,13 +4,18 @@ import { Provider } from "react-redux";
 import { store } from "../../store/store";
 import Trainer from "../TrainerWords/Trainer";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
+import Settings from "../Settings/Settings";
 
 interface EnglishAppProps {
-    includeTrainer?: boolean
+    includeTrainer?: boolean,
+    openSettings: boolean,
+    closeSettings: () => void
 }
 
 const EnglishApp: FC<EnglishAppProps> = ({
-    includeTrainer = false
+    includeTrainer = false,
+    openSettings,
+    closeSettings
 }) => {
     const {speak} = useSpeechSynthesis();
     useEffect(() => {
@@ -22,7 +27,12 @@ const EnglishApp: FC<EnglishAppProps> = ({
             {includeTrainer ? (
                 <Trainer></Trainer>
             ): (
-                <DictionaryWords></DictionaryWords>
+                <>
+                    <DictionaryWords></DictionaryWords>
+                    {openSettings && (
+                        <Settings close={closeSettings}></Settings>
+                    )}
+                </>
             )}
         </Provider>
     </>);

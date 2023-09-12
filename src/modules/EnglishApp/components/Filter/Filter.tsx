@@ -81,8 +81,8 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                     }}
                     maxWidth="sm:max-w-[32rem]"
                 >
-                    <div className="display flex justify-between mb-[20px]">
-                        <div className="w-[20vh]">
+                    <div className="mt-[15px] mb-[15px]">
+                        <div className=" mb-[20px]">
                             <DictionaryLanguages
                                 selectLang={selectOriginalLang}
                                 placeholder="Выберите язык оригинала"
@@ -112,14 +112,24 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                     <CheckBoxDefault
                         label="Не изучается"
                         onChange={checkNotStudied}
-                        checked={filterDictionary.studyStage?.includes('NOT_STUDIED')}
+                        checked={filterDictionary.studyStage?.includes(
+                            "NOT_STUDIED"
+                        )}
                     />
                     <CheckBoxDefault
                         label="На изучении"
                         onChange={checkBeingStudied}
-                        checked={ filterDictionary.studyStage.includes("BEING_STUDIED")}
+                        checked={filterDictionary.studyStage.includes(
+                            "BEING_STUDIED"
+                        )}
                     />
-                    <CheckBoxDefault label="Изучено" onChange={checkStudied} checked={filterDictionary.studyStage?.includes('STUDIED')} />
+                    <CheckBoxDefault
+                        label="Изучено"
+                        onChange={checkStudied}
+                        checked={filterDictionary.studyStage?.includes(
+                            "STUDIED"
+                        )}
+                    />
                     <div className="display flex justify-end">
                         <BasicButton
                             name="Применить"

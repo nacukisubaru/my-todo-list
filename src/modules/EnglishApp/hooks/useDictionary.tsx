@@ -32,7 +32,7 @@ export const useDictionary = () => {
     const [originalLang, setOriginalLang] = useState("");
     const [translateLang, setTranslatelLang] = useState("");
     const [voiceWordSettings, setVoiceWordSettings] = useState({voiceWord: '', voiceLang: ''});
-    const { dictionarySettings } = useAppSelector(
+    const { dictionaryActiveSettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
@@ -40,7 +40,7 @@ export const useDictionary = () => {
         let voiceWord = translateResult.translatedWord;
         let voiceLang = translateResult.translateLang;
       
-        if (dictionarySettings.sourceLanguage !== translateResult.originalLang) {
+        if (dictionaryActiveSettings.sourceLanguage !== translateResult.originalLang) {
             voiceWord = translateResult.originalWord;       
             voiceLang = translateResult.originalLang;
         }
@@ -52,7 +52,7 @@ export const useDictionary = () => {
         let sourceWord = translateResult.originalWord;
         let targetWord = word;
 
-        if (dictionarySettings.sourceLanguage !== translateResult.originalLang) {
+        if (dictionaryActiveSettings.sourceLanguage !== translateResult.originalLang) {
             sourceWord = word;
             targetWord = translateResult.originalWord;
         }
@@ -66,8 +66,8 @@ export const useDictionary = () => {
                 : targetWord,
             languageOriginal: isAddWord
                 ? originalLang
-                : dictionarySettings.sourceLanguage,
-            languageTranslation: isAddWord ? translateLang : dictionarySettings.targetLanguage,
+                : dictionaryActiveSettings.sourceLanguage,
+            languageTranslation: isAddWord ? translateLang : dictionaryActiveSettings.targetLanguage,
             studyStage: "BEING_STUDIED",
             id: "",
             dictionaryExamples: [],

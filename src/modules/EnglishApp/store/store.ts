@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { dictionaryApi } from "./services/dictionary/dictionary.api";
 import { dictionaryReducer } from "./services/dictionary/dictionary.slice";
+import { settingsReducer } from "./services/settings/settings.slice";
 
 const arrayMiddlewares: any[] = [
     dictionaryApi.middleware
@@ -8,7 +9,8 @@ const arrayMiddlewares: any[] = [
 
 export const makeStore = () => configureStore({
     reducer: {
-        dictionaryReducer
+        dictionaryReducer,
+        settingsReducer
     },
 
     middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }).concat(arrayMiddlewares),

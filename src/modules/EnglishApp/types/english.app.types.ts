@@ -15,7 +15,23 @@ interface IDictionaryExample {
     showTranslate: boolean
 }
 
+interface ILanguageSettings {
+    code: string,
+    isoName: string
+}
+
+interface IDictionaryMainSettings {
+    sourceLanguage: string,
+    targetLanguage: string,    
+}
+
 interface IDictionarySettings {
+    settings:IDictionaryMainSettings[],
+    langsForStudy: ILanguageSettings[],
+    studyLangs: ILanguageSettings[]
+}
+
+interface IDictionaryActiveSettings {
     sourceLanguage: string,
     targetLanguage: string
 }

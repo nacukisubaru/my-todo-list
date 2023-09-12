@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Card from "../../../../ui/Cards/Card";
 import {
+    getDictionaryActiveSettings,
     getDictionaryByUser,
     getDictionarySettings,
     getLanguages,
@@ -45,8 +46,9 @@ const DictionaryWords = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(getDictionarySettings());
+        dispatch(getDictionaryActiveSettings());
         dispatch(getLanguages());
+        dispatch(getDictionarySettings());
     }, []);
 
     const fetchData = () => {

@@ -2,23 +2,28 @@ import { AutoComplete } from "@progress/kendo-react-dropdowns";
 import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { MultiSelect } from "@progress/kendo-react-dropdowns";
+import { Autocomplete, Checkbox, TextField } from "@mui/material";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 interface IDictionaryLanguages {
     selectLang: (value: ILanguage[]) => void;
     defaultLang?: string;
     placeholder?: string;
+    label?: string;
     multi?: boolean;
-    style?: any,
+    style?: any;
     defaultValue?: any[] | any;
 }
 
 const DictionaryLanguages: FC<IDictionaryLanguages> = ({
     selectLang,
     defaultLang,
-    defaultValue = '',
+    defaultValue = "",
     multi = false,
     style = {},
     placeholder = "Выберите язык",
+    label
 }) => {
     const languages = useAppSelector(
         (state) => state.dictionaryReducer.languages
@@ -63,18 +68,49 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
             }
         }
     };
-
+ 
+    
+    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+    const checkedIcon = <CheckBoxIcon fontSize="small" />;
     return (
         <>
             {multi ? (
-                <MultiSelect
-                    data={languages.map((lang) => {
-                        return lang.isoName;
-                    })}
-                    onChange={setLanguage}
+            //     <MultiSelect
+            //     data={languages.map((lang) => {
+            //         return lang.isoName;
+            //     })}
+            //     onChange={setLanguage}
+            //    // defaultValue={defaultValue}
+            //     placeholder={placeholder}
+            //     style={{...style}}
+            // />
+                <Autocomplete
+                    multiple
+                    id="languages-tags"
+                    options={languages}
+                    disableCloseOnSelect
+                    getOptionLabel={(option) => option.isoName}
+                    renderOption={(props, option, { selected }) => (
+                        <li {...props}>
+                            <Checkbox
+                                icon={icon}
+                                checkedIcon={checkedIcon}
+                                style={{ marginRight: 8 }}
+                                checked={selected}
+                            />
+                            {option.isoName}
+                        </li>
+                    )}
+                    style={{ width: 300 }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={label}
+                            placeholder={placeholder}
+                        />
+                    )}
                     defaultValue={defaultValue}
-                    placeholder={placeholder}
-                    style={{...style}}
+                    onChange={setLanguage}
                 />
             ) : (
                 <AutoComplete
@@ -84,7 +120,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
                     placeholder={placeholder}
                     onChange={setLanguage}
                     defaultValue={defaultTargetLang}
-                    style={{...style}}
+                    style={{ ...style }}
                 />
             )}
         </>
