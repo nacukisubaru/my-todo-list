@@ -36,6 +36,11 @@ interface IDictionaryActiveSettings {
     targetLanguage: string
 }
 
+interface IAddDictionarySettings {
+    sourceLangCodes: string[],
+    targetLangCodes: string []
+}
+
 interface ITranslateResult {
     originalWord: string,
     translatedWord: string,

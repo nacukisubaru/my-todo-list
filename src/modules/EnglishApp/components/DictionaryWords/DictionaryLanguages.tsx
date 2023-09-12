@@ -42,31 +42,33 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
         }
     }, []);
 
-    const setLanguage = (e: any) => {
-        if (e.value) {
-            if (Array.isArray(e.value)) {
-                let values: string[] = e.value;
-                const languagesCodesList: ILanguage[] = [];
-                values.map((value) => {
-                    languages.filter((lang) => {
-                        if (lang.isoName === value) {
-                            languagesCodesList.push(lang);
-                        }
-                    });
-                });
-                selectLang(languagesCodesList);
-            } else {
-                const selectedLang = languages.filter((lang) => {
-                    if (lang.isoName === e.value) {
-                        return lang;
-                    }
-                });
+    const setLanguage = (e: any, values: any) => {
+        selectLang(values);
+        // if (value) {
+        //     if (Array.isArray(value)) {
+        //         let values: string[] = value;
+        //         const languagesCodesList: ILanguage[] = [];
+        //         values.map((value) => {
+        //             languages.filter((lang) => {
+        //                 if (lang.isoName === value) {
+        //                     languagesCodesList.push(lang);
+        //                 }
+        //             });
+        //         });
+        //         console.log('fdf');
+        //         selectLang(values);
+        //     } else {
+        //         const selectedLang = languages.filter((lang) => {
+        //             if (lang.isoName === value) {
+        //                 return lang;
+        //             }
+        //         });
 
-                if (selectedLang.length) {
-                    selectLang(selectedLang);
-                }
-            }
-        }
+        //         if (selectedLang.length) {
+        //             selectLang(selectedLang);
+        //         }
+        //     }
+        // }
     };
  
     
@@ -75,15 +77,6 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
     return (
         <>
             {multi ? (
-            //     <MultiSelect
-            //     data={languages.map((lang) => {
-            //         return lang.isoName;
-            //     })}
-            //     onChange={setLanguage}
-            //    // defaultValue={defaultValue}
-            //     placeholder={placeholder}
-            //     style={{...style}}
-            // />
                 <Autocomplete
                     multiple
                     id="languages-tags"
@@ -112,16 +105,25 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
                     defaultValue={defaultValue}
                     onChange={setLanguage}
                 />
+                //     <MultiSelect
+                //     data={languages.map((lang) => {
+                //         return lang.isoName;
+                //     })}
+                //     onChange={setLanguage}
+                //    // defaultValue={defaultValue}
+                //     placeholder={placeholder}
+                //     style={{...style}}
+                // />
             ) : (
-                <AutoComplete
-                    data={languages.map((lang) => {
-                        return lang.isoName;
-                    })}
-                    placeholder={placeholder}
-                    onChange={setLanguage}
-                    defaultValue={defaultTargetLang}
-                    style={{ ...style }}
-                />
+                // <AutoComplete
+                //     data={languages.map((lang) => {
+                //         return lang.isoName;
+                //     })}
+                //     placeholder={placeholder}
+                //     onChange={setLanguage}
+                //     defaultValue={defaultTargetLang}
+                //     style={{ ...style }}
+                // />
             )}
         </>
     );

@@ -2,9 +2,11 @@ import { configureStore } from "@reduxjs/toolkit";
 import { dictionaryApi } from "./services/dictionary/dictionary.api";
 import { dictionaryReducer } from "./services/dictionary/dictionary.slice";
 import { settingsReducer } from "./services/settings/settings.slice";
+import { settingsApi } from "./services/settings/settings.api";
 
 const arrayMiddlewares: any[] = [
-    dictionaryApi.middleware
+    dictionaryApi.middleware,
+    settingsApi.middleware
 ];
 
 export const makeStore = () => configureStore({

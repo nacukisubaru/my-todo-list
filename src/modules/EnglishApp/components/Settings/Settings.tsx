@@ -1,7 +1,8 @@
-import { FC, useEffect } from "react";
+import { FC, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { settingsApi } from "../../store/services/settings/settings.api";
 
 interface ISettings {
     close: () => void;
@@ -12,7 +13,12 @@ const Settings: FC<ISettings> = ({ close }) => {
         (state) => state.dictionaryReducer
     );
 
-    const saveSettings = () => {   
+    const [addLanguageSettings] = settingsApi.useAddLanguageSettingsMutation();
+    const [studyLanguages, setStudyLanguages] = useState<string[]>([]);
+    const [languagesForStudy, setLanguagesForStudy] = useState<string[]>([]);
+
+    const saveSettings = () => {
+        addLanguageSettings({sourceLangCodes: languagesForStudy, targetLangCodes: studyLanguages});
     }
 
     return (
@@ -37,7 +43,7 @@ const Settings: FC<ISettings> = ({ close }) => {
                 <div className="mt-[15px]">
                     <div className=" mb-[20px]">
                         <DictionaryLanguages
-                            selectLang={() => {}}
+                            selectLang={(langs: ILanguage[]) => {setLanguagesForStudy(langs.map(lang => lang.code))}}
                             placeholder="Выберите язык на котором изучаете"
                             multi={true}
                             label="Языки на которых изучается"
@@ -52,7 +58,7 @@ const Settings: FC<ISettings> = ({ close }) => {
                     </div>
                     <div className=" mb-[20px]">
                         <DictionaryLanguages
-                            selectLang={() => {}}
+                            selectLang={(langs: ILanguage[]) => {setStudyLanguages(langs.map(lang => lang.code))}}
                             placeholder="Выберете изучаемый язык"
                             label="Изучаемые языки"
                             multi={true}
