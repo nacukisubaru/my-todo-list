@@ -21,17 +21,22 @@ interface ILanguageSettings {
 }
 
 interface IDictionaryMainSettings {
+    id: number,
     sourceLanguage: string,
-    targetLanguage: string,    
+    targetLanguage: string,
+    sourceISO: string,
+    targetISO: string
 }
 
 interface IDictionarySettings {
     settings:IDictionaryMainSettings[],
     langsForStudy: ILanguageSettings[],
-    studyLangs: ILanguageSettings[]
+    studyLangs: ILanguageSettings[],
+    settingsForSelector: IOption[]
 }
 
 interface IDictionaryActiveSettings {
+    id: number,
     sourceLanguage: string,
     targetLanguage: string
 }

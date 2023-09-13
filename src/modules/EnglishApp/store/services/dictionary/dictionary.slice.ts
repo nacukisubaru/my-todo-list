@@ -16,11 +16,12 @@ interface IState {
 
 const initialState: IState = {
     dictionary: [],
-    dictionaryActiveSettings: { sourceLanguage: "", targetLanguage: "" },
+    dictionaryActiveSettings: { id: 0, sourceLanguage: "", targetLanguage: "" },
     dictionarySettings: {
         settings: [],
-        langsForStudy:[],
-        studyLangs: []
+        langsForStudy: [],
+        studyLangs: [],
+        settingsForSelector: []
     },
     translateResult: {
         translatedWord: "",
@@ -163,8 +164,9 @@ export const dictionarySlice = createSlice({
         [getDictionaryActiveSettings.fulfilled]: (state, action: PayloadAction<IDictionaryActiveSettings>) => {
             state.status = 'resolved';
             state.dictionaryActiveSettings = {
-                sourceLanguage: action.payload.sourceLanguage, 
-                targetLanguage: action.payload.targetLanguage 
+                id: action.payload.id,
+                sourceLanguage: action.payload.sourceLanguage,
+                targetLanguage: action.payload.targetLanguage
             };
         },
         [getDictionaryActiveSettings.rejected]: (state, action) => {
@@ -178,6 +180,12 @@ export const dictionarySlice = createSlice({
         [getDictionarySettings.fulfilled]: (state, action: PayloadAction<IDictionarySettings>) => {
             state.status = 'resolved';
             state.dictionarySettings = action.payload;
+            state.dictionarySettings.settingsForSelector = state.dictionarySettings.settings.map(setting => {
+                return {
+                    id: setting.id,
+                    name: setting.sourceISO + '-' + setting.targetISO
+                }
+            });
         },
         [getDictionarySettings.rejected]: (state, action) => {
             state.status = 'rejected';

@@ -16,7 +16,7 @@ const EnglishApp: FC<EnglishAppProps> = ({
     includeTrainer = false,
     openSettings,
     closeSettings
-}) => {
+}) => {  
     const {speak} = useSpeechSynthesis();
     useEffect(() => {
         speak('test', 'en-GB', true);

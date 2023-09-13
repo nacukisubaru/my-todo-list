@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
@@ -10,6 +10,8 @@ import InputField from "../../../../ui/Inputs/InputField";
 import { useDictionary } from "../../hooks/useDictionary";
 import SnackBar from "../../../../ui/SnackBars/SnackBar";
 import { Button } from "@mui/material";
+import Settings from "../Settings/Settings";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -49,6 +51,11 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     } = useActions();
     const { speak } = useSpeechSynthesis();
 
+    const [openModalSettings, setOpenModalSettings] = useState(false);
+    const openSettings = () => {
+        setOpenModalSettings(true);
+    };
+
     const closeModalAddWord = () => {
         resetTranslateResult();
         setWord("");
@@ -60,122 +67,133 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setTranslatelLang("");
     };
 
+    const closeSettings = () => {
+        setOpenModalSettings(false);
+    }
+
     return (
         <>
-        <SnackBar isOpen={error.message ? true: false} type={"error"}>
-            {error.message} 
-            {error.errorCode && error.errorCode === 'settingsNotSupportLang' ? <Button variant="outlined" color="error">Перейти к настройкам</Button> : ''}
-        </SnackBar>
-        <Modal
-            modalSettings={{
-                title: isAddWord ? 'Добавить новое слово' : translateResult.originalWord
-                    ? translateResult.originalWord
-                    : "Новое слово",
-                primaryBtnName: isAddWord
-                    ? "Добавить"
-                    : translateResult.translatedWord
-                    ? "Выучить"
-                    : "Перевести",
-                secondaryBtnName: "Отмена",
-                isVisible,
-            }}
-            callbacks={{
-                primaryBtnClick: () => {
-                    isAddWord ? addNewWord() : translateOrAddWord()
-                },
-                secondaryBtnClick: closeModalAddWord,
-            }}
-            maxWidth="sm:max-w-[32rem]"
-        >
-            <div className="display flex">
-                {isAddWord ? (
-                    <>
+            <SnackBar isOpen={error.message ? true: false} type={"error"}>
+                {error.message} 
+                {error.errorCode && error.errorCode === 'settingsNotSupportLang' ? <Button variant="outlined" color="error">Перейти к настройкам</Button> : ''}
+            </SnackBar>
+            <Modal
+                modalSettings={{
+                    title: isAddWord ? 'Добавить новое слово' : translateResult.originalWord
+                        ? translateResult.originalWord
+                        : "Новое слово",
+                    primaryBtnName: isAddWord
+                        ? "Добавить"
+                        : translateResult.translatedWord
+                        ? "Выучить"
+                        : "Перевести",
+                    secondaryBtnName: "Отмена",
+                    isVisible,
+                }}
+                callbacks={{
+                    primaryBtnClick: () => {
+                        isAddWord ? addNewWord() : translateOrAddWord()
+                    },
+                    secondaryBtnClick: closeModalAddWord,
+                }}
+                maxWidth="sm:max-w-[32rem]"
+            >
+                <div className="display flex">
+                    {isAddWord ? (
+                        <>
+                            <InputField
+                                id="addWordOriginal"
+                                onChange={(e) => {
+                                    setInputOriginal(e.target.value);
+                                }}
+                                value={inputOriginal}
+                                placeholder="Введите слово в оригинале"
+                            />
+                            <div className="w-[125px] ml-[5px]">
+                                <DictionaryLanguages
+                                    selectLang={selectOriginalLang}
+                                    placeholder="Оригинал"
+                                    style={{ height: "36px" }}
+                                />
+                            </div>
+                        </>
+                    ) : (
                         <InputField
-                            id="addWordOriginal"
+                            id="addWord"
                             onChange={(e) => {
-                                setInputOriginal(e.target.value);
+                                setWord(e.target.value);
                             }}
-                            value={inputOriginal}
+                            value={word}
                             placeholder="Введите слово в оригинале"
                         />
-                        <div className="w-[125px] ml-[5px]">
-                            <DictionaryLanguages
-                                selectLang={selectOriginalLang}
-                                placeholder="Оригинал"
-                                style={{ height: "36px" }}
+                    )}
+
+                    <>
+                        {!isAddWord && voiceWordSettings.voiceLang && (
+                            <>
+                                {voiceWordSettings.voiceLang === "en" ? (
+                                    <div className="display flex ml-[11px]">
+                                        <span>uk</span>
+                                        <PlayButton
+                                            onClick={() => {
+                                                speak(voiceWordSettings.voiceWord, "en-GB");
+                                            }}
+                                        />
+                                        <span>us</span>
+                                        <PlayButton
+                                            onClick={() => {
+                                                speak(voiceWordSettings.voiceWord, "en-US");
+                                            }}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="ml-[11px]">
+                                        <PlayButton
+                                            onClick={() => {
+                                                speak(voiceWordSettings.voiceWord, voiceWordSettings.voiceLang);
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </>
+                </div>
+                {isAddWord && (
+                    <>
+                        <div className="display flex">
+                            <InputField
+                                id="addSelfWord"
+                                onChange={(e) => {
+                                    setInputTranslation(e.target.value);
+                                }}
+                                value={inputTranslation}
+                                placeholder="Введите слово перевода"
                             />
+                            <div className="w-[125px] ml-[5px]">
+                                <DictionaryLanguages
+                                    selectLang={selectTranslateLang}
+                                    placeholder="Перевод"
+                                    style={{ height: "36px" }}
+                                />
+                            </div>
                         </div>
                     </>
-                ) : (
-                    <InputField
-                        id="addWord"
-                        onChange={(e) => {
-                            setWord(e.target.value);
-                        }}
-                        value={word}
-                        placeholder="Введите слово в оригинале"
-                    />
                 )}
 
-                <>
-                    {!isAddWord && voiceWordSettings.voiceLang && (
-                        <>
-                            {voiceWordSettings.voiceLang === "en" ? (
-                                <div className="display flex ml-[11px]">
-                                    <span>uk</span>
-                                    <PlayButton
-                                        onClick={() => {
-                                            speak(voiceWordSettings.voiceWord, "en-GB");
-                                        }}
-                                    />
-                                    <span>us</span>
-                                    <PlayButton
-                                        onClick={() => {
-                                            speak(voiceWordSettings.voiceWord, "en-US");
-                                        }}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="ml-[11px]">
-                                    <PlayButton
-                                        onClick={() => {
-                                            speak(voiceWordSettings.voiceWord, voiceWordSettings.voiceLang);
-                                        }}
-                                    />
-                                </div>
-                            )}
-                        </>
-                    )}
-                </>
-            </div>
-            {isAddWord && (
-                <>
-                    <div className="display flex">
-                        <InputField
-                            id="addSelfWord"
-                            onChange={(e) => {
-                                setInputTranslation(e.target.value);
-                            }}
-                            value={inputTranslation}
-                            placeholder="Введите слово перевода"
-                        />
-                        <div className="w-[125px] ml-[5px]">
-                            <DictionaryLanguages
-                                selectLang={selectTranslateLang}
-                                placeholder="Перевод"
-                                style={{ height: "36px" }}
-                            />
-                        </div>
-                    </div>
-                </>
+                <div className="mt-[11px] text-left display flex justify-between">
+                    <SmallOutlineButton onClick={setAddWordWithoutTranslate}>
+                        {isAddWord ? "Вернутся к переводу" : "Добавить слово"}
+                    </SmallOutlineButton>
+                    <div className="-mt-[5px] cursor-pointer" onClick={openSettings}>    
+                        <SettingsIcon style={{ color: "grey" }} />
+                    </div>  
+                </div>
+            
+            </Modal>
+            {openModalSettings && (
+                <Settings close={closeSettings}></Settings>
             )}
-
-            <div className="mt-[11px] text-left">
-                <SmallOutlineButton onClick={setAddWordWithoutTranslate}>
-                    {isAddWord ? "Вернутся к переводу" : "Добавить слово"}
-                </SmallOutlineButton>
-            </div>
-        </Modal>
         </>
     );
 };
