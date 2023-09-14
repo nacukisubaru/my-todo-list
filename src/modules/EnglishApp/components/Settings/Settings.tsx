@@ -63,7 +63,7 @@ const Settings: FC<ISettings> = ({ close }) => {
         setIsChangeLangsForStudy(false);
     };
 
-    const addLanguageSettingId = (id: any) => {
+    const addLanguageSetting = (id: any) => {
         const setting = dictionarySettings.settings.find(setting => setting.id === id);
         if (setting) {
             setLanguageSetting({
@@ -105,7 +105,7 @@ const Settings: FC<ISettings> = ({ close }) => {
                         <BasicSelect
                             options={dictionarySettings.settingsForSelector}
                             label="Установить языковой профиль"
-                            onChange={addLanguageSettingId}
+                            onChange={addLanguageSetting}
                             selectedOption={dictionaryActiveSettings.id}
                         />
                     </div>
