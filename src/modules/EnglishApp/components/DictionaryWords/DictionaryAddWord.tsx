@@ -21,7 +21,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     isVisible,
     closeAddWord,
 }) => {
-
     const {
         addNewWord,
         translateOrAddWord,
@@ -32,20 +31,18 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setAddWord,
         setOriginalLang,
         setTranslatelLang,
+        setVoiceWordSettings,
         inputOriginal,
         inputTranslation,
         word,
         isAddWord,
-        voiceWordSettings
+        voiceWordSettings,
     } = useDictionary();
-
 
     const { translateResult, error } = useAppSelector(
         (state) => state.dictionaryReducer
     );
-    const {
-        resetTranslateResult
-    } = useActions();
+    const { resetTranslateResult } = useActions();
     const { speak } = useSpeechSynthesis();
 
     const [openModalSettings, setOpenModalSettings] = useState(false);
@@ -62,21 +59,42 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setInputTranslation("");
         setOriginalLang("");
         setTranslatelLang("");
+        setVoiceWordSettings({voiceLang: "", voiceWord: ""});
     };
 
     const closeSettings = () => {
         setOpenModalSettings(false);
-    }
+    };
+
+    const backToTranslate = () => {
+        resetTranslateResult();
+        setWord("");
+        setAddWord(false);
+        setInputOriginal("");
+        setInputTranslation("");
+        setOriginalLang("");
+        setTranslatelLang("");
+        setVoiceWordSettings({voiceLang: "", voiceWord: ""});
+    };
 
     return (
         <>
-            <SnackBar isOpen={error.message ? true: false} type={"error"}>
-                {error.message} 
-                {error.errorCode && error.errorCode === 'settingsNotSupportLang' ? <Button variant="outlined" color="error">Перейти к настройкам</Button> : ''}
+            <SnackBar isOpen={error.message ? true : false} type={"error"}>
+                {error.message}
+                {error.errorCode &&
+                error.errorCode === "settingsNotSupportLang" ? (
+                    <Button variant="outlined" color="error">
+                        Перейти к настройкам
+                    </Button>
+                ) : (
+                    ""
+                )}
             </SnackBar>
             <Modal
                 modalSettings={{
-                    title: isAddWord ? 'Добавить новое слово' : translateResult.originalWord
+                    title: isAddWord
+                        ? "Добавить новое слово"
+                        : translateResult.originalWord
                         ? translateResult.originalWord
                         : "Новое слово",
                     primaryBtnName: isAddWord
@@ -89,7 +107,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 }}
                 callbacks={{
                     primaryBtnClick: () => {
-                        isAddWord ? addNewWord() : translateOrAddWord()
+                        isAddWord ? addNewWord() : translateOrAddWord();
                     },
                     secondaryBtnClick: closeModalAddWord,
                 }}
@@ -126,13 +144,19 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                         <span>uk</span>
                                         <PlayButton
                                             onClick={() => {
-                                                speak(voiceWordSettings.voiceWord, "en-GB");
+                                                speak(
+                                                    voiceWordSettings.voiceWord,
+                                                    "en-GB"
+                                                );
                                             }}
                                         />
                                         <span>us</span>
                                         <PlayButton
                                             onClick={() => {
-                                                speak(voiceWordSettings.voiceWord, "en-US");
+                                                speak(
+                                                    voiceWordSettings.voiceWord,
+                                                    "en-US"
+                                                );
                                             }}
                                         />
                                     </div>
@@ -140,7 +164,10 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                     <div className="ml-[11px]">
                                         <PlayButton
                                             onClick={() => {
-                                                speak(voiceWordSettings.voiceWord, voiceWordSettings.voiceLang);
+                                                speak(
+                                                    voiceWordSettings.voiceWord,
+                                                    voiceWordSettings.voiceLang
+                                                );
                                             }}
                                         />
                                     </div>
@@ -165,18 +192,33 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 )}
 
                 <div className="mt-[11px] text-left display flex justify-between">
-                    <SmallOutlineButton onClick={setAddWordWithoutTranslate}>
-                        {isAddWord ? "Вернутся к переводу" : "Добавить слово"}
-                    </SmallOutlineButton>
-                    <div className="-mt-[5px] cursor-pointer" onClick={openSettings}>    
+                    <div className="display flex">
+                        {translateResult.translatedWord && !isAddWord && (
+                            <div className="mr-[14px]">
+                                <SmallOutlineButton onClick={backToTranslate}>
+                                    Назад
+                                </SmallOutlineButton>
+                            </div>
+                        )}
+                        <div>
+                            <SmallOutlineButton
+                                onClick={setAddWordWithoutTranslate}
+                            >
+                                {isAddWord
+                                    ? "Вернутся к переводу"
+                                    : "Добавить слово"}
+                            </SmallOutlineButton>
+                        </div>
+                    </div>
+                    <div
+                        className="-mt-[5px] cursor-pointer"
+                        onClick={openSettings}
+                    >
                         <SettingsIcon style={{ color: "grey" }} />
-                    </div>  
+                    </div>
                 </div>
-            
             </Modal>
-            {openModalSettings && (
-                <Settings close={closeSettings}></Settings>
-            )}
+            {openModalSettings && <Settings close={closeSettings}></Settings>}
         </>
     );
 };
