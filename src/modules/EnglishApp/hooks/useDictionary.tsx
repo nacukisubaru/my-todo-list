@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "./useAppSelector";
 import { dictionaryApi } from "../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../helpers/stringHelper";
+import { LangCodesISO } from "../helpers/languageHelper";
 
 export const useDictionary = () => {
     const { translateResult } = useAppSelector(
@@ -37,15 +38,18 @@ export const useDictionary = () => {
     );
 
     useEffect(() => {
-        let voiceWord = translateResult.translatedWord;
-        let voiceLang = translateResult.translateLang;
-      
-        if (dictionaryActiveSettings.sourceLanguage !== translateResult.originalLang) {
-            voiceWord = translateResult.originalWord;       
-            voiceLang = translateResult.originalLang;
-        }
         
-        setVoiceWordSettings({voiceWord, voiceLang});
+        if (translateResult.translateLang && translateResult.originalLang) {
+            let voiceWord = translateResult.translatedWord;
+            let voiceLang = translateResult.translateLang;
+
+            if (dictionaryActiveSettings.sourceLanguage !== translateResult.originalLang) {
+                voiceWord = translateResult.originalWord;       
+                voiceLang = translateResult.originalLang;
+            }
+            
+            setVoiceWordSettings({voiceWord, voiceLang: LangCodesISO[voiceLang]});
+        }
     }, [translateResult]);
 
     const addNewWord = async () => {
@@ -64,10 +68,8 @@ export const useDictionary = () => {
             translatedWord: isAddWord
                 ? inputTranslation
                 : targetWord,
-            languageOriginal: isAddWord
-                ? originalLang
-                : dictionaryActiveSettings.sourceLanguage,
-            languageTranslation: isAddWord ? translateLang : dictionaryActiveSettings.targetLanguage,
+            languageOriginal: dictionaryActiveSettings.sourceLanguage,
+            languageTranslation: dictionaryActiveSettings.targetLanguage,
             studyStage: "BEING_STUDIED",
             id: "",
             dictionaryExamples: [],

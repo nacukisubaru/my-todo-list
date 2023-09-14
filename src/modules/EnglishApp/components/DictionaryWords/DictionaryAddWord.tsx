@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
-import DictionaryLanguages from "./DictionaryLanguages";
 import Modal from "../../../../ui/Modal/Modal";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import SmallOutlineButton from "../../../../ui/Buttons/SmallOutlineButton";
@@ -27,8 +26,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         addNewWord,
         translateOrAddWord,
         setAddWordWithoutTranslate,
-        selectOriginalLang,
-        selectTranslateLang,
         setInputOriginal,
         setInputTranslation,
         setWord,
@@ -109,13 +106,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 value={inputOriginal}
                                 placeholder="Введите слово в оригинале"
                             />
-                            <div className="w-[125px] ml-[5px]">
-                                <DictionaryLanguages
-                                    selectLang={selectOriginalLang}
-                                    placeholder="Оригинал"
-                                    style={{ height: "36px" }}
-                                />
-                            </div>
                         </>
                     ) : (
                         <InputField
@@ -170,13 +160,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 value={inputTranslation}
                                 placeholder="Введите слово перевода"
                             />
-                            <div className="w-[125px] ml-[5px]">
-                                <DictionaryLanguages
-                                    selectLang={selectTranslateLang}
-                                    placeholder="Перевод"
-                                    style={{ height: "36px" }}
-                                />
-                            </div>
                         </div>
                     </>
                 )}

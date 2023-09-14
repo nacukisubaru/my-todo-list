@@ -2,10 +2,7 @@ export const useSpeechSynthesis = () => {
     
     const findVoiceByLang = (voiceValue: string) => {
         return window.speechSynthesis.getVoices().find(voice => {
-            if (!voiceValue.includes('-')) {
-                return voice.lang.includes(voiceValue+'-'+voiceValue.toUpperCase())
-            }
-            return voice.lang.includes(voiceValue);
+            return voice.name.includes(voiceValue);
         });
     }
 
