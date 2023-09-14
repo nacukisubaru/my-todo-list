@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -18,29 +18,68 @@ const Settings: FC<ISettings> = ({ close }) => {
 
     const [addLanguageSettings] = settingsApi.useAddLanguageSettingsMutation();
     const [setActiveLanguageSetting] = settingsApi.useSetActiveLanguageSettingMutation();
+
+    const [languageSetting, setLanguageSetting] = useState<IDictionaryLangsCodes>({sourceLanguage: "", targetLanguage: ""});
+
     const [studyLanguages, setStudyLanguages] = useState<string[]>([]);
     const [languagesForStudy, setLanguagesForStudy] = useState<string[]>([]);
-    const [languageSettingId, setLanguageSettingId] = useState<string>("");
-   
+
+    const [isChangeLangsForStudy, setIsChangeLangsForStudy] = useState(false);
+    const [isChangeStudyLangs, setIsChangeStudyLangs] = useState(false);
+
     const dispatch = useDispatch();
     const saveSettings = async () => {
-       await addLanguageSettings({
-            sourceLangCodes: languagesForStudy,
-            targetLangCodes: studyLanguages,
-        });
+        let sourceLangCodes = languagesForStudy;
+        let targetLangCodes = studyLanguages;
 
-        if (languageSettingId) {
-           await setActiveLanguageSetting({id:languageSettingId});
+        if (!sourceLangCodes.length) {
+            sourceLangCodes = dictionarySettings.langsForStudy.map(lang => {
+                return lang.code;
+            });
+        }
+     
+        if (!targetLangCodes.length) {
+            targetLangCodes = dictionarySettings.studyLangs.map(lang => {
+                return lang.code;
+            });
+        }
+
+        if (isChangeLangsForStudy || isChangeStudyLangs) {
+            await addLanguageSettings({
+                sourceLangCodes,
+                targetLangCodes,
+            });
+        }
+        
+        if (languageSetting.sourceLanguage && languageSetting.targetLanguage) {
+           await setActiveLanguageSetting(languageSetting);
         }
 
         dispatch(getDictionaryActiveSettings());
         dispatch(getLanguages());
         dispatch(getDictionarySettings());
+
+        setIsChangeStudyLangs(false);
+        setIsChangeLangsForStudy(false);
     };
 
-    const addLanguageSettingId = (id: string) => {
-        setLanguageSettingId(id);
+    const addLanguageSettingId = (id: any) => {
+        const setting = dictionarySettings.settings.find(setting => setting.id === id);
+        if (setting) {
+            setLanguageSetting({
+                sourceLanguage: setting.sourceLanguage,
+                targetLanguage: setting.targetLanguage
+            });
+        }
     }
+
+    useEffect(() => {
+        setIsChangeStudyLangs(true);
+    }, [studyLanguages]);
+
+    useEffect(() => {
+        setIsChangeLangsForStudy(true);
+    }, [languagesForStudy]);
 
     return (
         <Modal

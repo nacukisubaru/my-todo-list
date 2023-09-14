@@ -41,9 +41,19 @@ interface IDictionaryActiveSettings {
     targetLanguage: string
 }
 
+interface IDictionaryLangsCodes {
+    sourceLanguage: string,
+    targetLanguage: string
+}
+
 interface IAddDictionarySettings {
     sourceLangCodes: string[],
     targetLangCodes: string []
+}
+
+interface IRemoveDictionarySettings {
+    sourceCodesList?: string[],
+    targetCodesList?: string[]
 }
 
 interface ITranslateResult {

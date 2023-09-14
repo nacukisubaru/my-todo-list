@@ -13,7 +13,7 @@ export const settingsApi = createApi({
             }),
         }),
         setActiveLanguageSetting: build.mutation({
-            query: (body: {id: string}) => ({
+            query: (body: IDictionaryLangsCodes) => ({
                 url: '/dictionary-settings/set-active-setting',
                 method: 'POST',
                 body
