@@ -120,12 +120,7 @@ const Settings: FC<ISettings> = ({ close }) => {
                             multi={true}
                             label="Языки на которых изучается"
                             defaultValue={dictionarySettings.langsForStudy}
-                            // defaultValue={
-                            //     filterDictionary.languageOriginal &&
-                            //     filterDictionary.languageOriginal.map(
-                            //         (lang: ILanguage) => lang.isoName
-                            //     )
-                            // }
+                            exclusionLangs={dictionarySettings.langsForStudy.map(lang => lang.code)}
                         />
                     </div>
                     <div className=" mb-[20px]">
@@ -139,12 +134,7 @@ const Settings: FC<ISettings> = ({ close }) => {
                             label="Изучаемые языки"
                             multi={true}
                             defaultValue={dictionarySettings.studyLangs}
-                            // defaultValue={
-                            //     filterDictionary.languageTranslation &&
-                            //     filterDictionary.languageTranslation.map(
-                            //         (lang: ILanguage) => lang.isoName
-                            //     )
-                            // }
+                            exclusionLangs={dictionarySettings.studyLangs.map(lang => lang.code)}
                         />
                     </div>
                 </div>
