@@ -38,7 +38,9 @@ interface IDictionarySettings {
 interface IDictionaryActiveSettings {
     id: number,
     sourceLanguage: string,
-    targetLanguage: string
+    targetLanguage: string,
+    sourceISO?: string,
+    targetISO?: string
 }
 
 interface IDictionaryLangsCodes {
@@ -122,7 +124,7 @@ interface IFilterDictionary {
     page: number,
     languageOriginal?: ILanguage[], 
     languageTranslation?: ILanguage[],
-    studyStage?: studyStageType[] | [],
+    studyStage?: studyStageType[],
     searchByOriginal?: string,
     searchByTranslate?: string
 }

@@ -22,6 +22,8 @@ const DictionaryWords = () => {
     const {dictionary, status} = useAppSelector(
         (state) => state.dictionaryReducer
     );
+    const {dictionaryActiveSettings} = useAppSelector(state => state.dictionaryReducer);
+
     const {filtrate, setDictionaryFilter} = useFilter();
     const page = useAppSelector((state) => state.dictionaryReducer.page);
 
@@ -42,14 +44,19 @@ const DictionaryWords = () => {
     const {resetDictionary} = useActions();
 
     useEffect(() => {
-        filtrate();
+        const actions = async () => {
+           await dispatch(getDictionaryActiveSettings());
+           await dispatch(getLanguages());
+           await dispatch(getDictionarySettings());
+        }
+        actions();
     }, []);
 
     useEffect(() => {
-        dispatch(getDictionaryActiveSettings());
-        dispatch(getLanguages());
-        dispatch(getDictionarySettings());
-    }, []);
+        if (dictionaryActiveSettings.sourceLanguage) {
+            filtrate();
+        }
+    }, [dictionaryActiveSettings]);
 
     const fetchData = () => {
         if (status !== "loading") {

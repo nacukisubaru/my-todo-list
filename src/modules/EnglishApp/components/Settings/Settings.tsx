@@ -120,7 +120,6 @@ const Settings: FC<ISettings> = ({ close }) => {
                             multi={true}
                             label="Языки на которых изучается"
                             defaultValue={dictionarySettings.langsForStudy}
-                            exclusionLangs={dictionarySettings.langsForStudy.map(lang => lang.code)}
                         />
                     </div>
                     <div className=" mb-[20px]">
@@ -134,7 +133,6 @@ const Settings: FC<ISettings> = ({ close }) => {
                             label="Изучаемые языки"
                             multi={true}
                             defaultValue={dictionarySettings.studyLangs}
-                            exclusionLangs={dictionarySettings.studyLangs.map(lang => lang.code)}
                         />
                     </div>
                 </div>

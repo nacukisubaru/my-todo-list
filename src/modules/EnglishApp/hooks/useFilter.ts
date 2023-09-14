@@ -4,7 +4,7 @@ import { useActions } from "./useAction";
 import { useAppSelector } from "./useAppSelector";
 
 export const useFilter = () => {
-    const filterDictionary: IFilterDictionary | any = useAppSelector(state => state.dictionaryReducer.filterDictionary);
+    const filterDictionary: IFilterDictionary = useAppSelector(state => state.dictionaryReducer.filterDictionary);
     const { resetDictionary, setDictionaryFilter } = useActions();
     const dispatch = useDispatch();
 
@@ -21,11 +21,15 @@ export const useFilter = () => {
         }
 
         if (filter.languageTranslation) {
-            languageTranslationCodes = filterDictionary.languageTranslation.map((lang: ILanguage) => lang.code);
+            if (filterDictionary.languageTranslation) {
+                languageTranslationCodes = filterDictionary.languageTranslation.map((lang: ILanguage) => lang.code);
+            }
         }
 
         if (filter.studyStage) {
-            studyStage = filterDictionary.studyStage;
+            if (filterDictionary.studyStage) {
+                studyStage = filterDictionary.studyStage;
+            }
         }
 
         if (filter.searchByOriginal) {

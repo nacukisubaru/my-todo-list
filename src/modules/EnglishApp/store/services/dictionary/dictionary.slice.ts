@@ -166,7 +166,26 @@ export const dictionarySlice = createSlice({
             state.dictionaryActiveSettings = {
                 id: action.payload.id,
                 sourceLanguage: action.payload.sourceLanguage,
-                targetLanguage: action.payload.targetLanguage
+                targetLanguage: action.payload.targetLanguage,
+            };
+
+            const langOriginalObj: any = {
+                code: action.payload.sourceLanguage,
+                isoName: action.payload.sourceISO
+            };
+
+            const langTranslationObj: any = {
+                code: action.payload.targetLanguage,
+                isoName: action.payload.targetISO
+            };
+
+            state.filterDictionary = {
+                page: 0,
+                languageOriginal: [langOriginalObj],
+                languageTranslation: [langTranslationObj],
+                studyStage: [],
+                searchByOriginal: '',
+                searchByTranslate: ''
             };
         },
         [getDictionaryActiveSettings.rejected]: (state, action) => {

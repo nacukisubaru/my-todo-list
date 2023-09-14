@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { Autocomplete, Checkbox, TextField } from "@mui/material";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -6,7 +6,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 interface IDictionaryLanguages {
     selectLang: (value: ILanguage[]) => void;
-    exclusionLangs?: string[];
+    options?: ILanguageSettings[];
     defaultLang?: string;
     placeholder?: string;
     label?: string;
@@ -17,7 +17,7 @@ interface IDictionaryLanguages {
 
 const DictionaryLanguages: FC<IDictionaryLanguages> = ({
     selectLang,
-    exclusionLangs = [],
+    options,
     defaultValue = "",
     placeholder = "Выберите язык",
     label
@@ -26,15 +26,25 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
         (state) => state.dictionaryReducer.languages
     );
   
+    const [langOptions, setLangOptions] = useState<ILanguageSettings[]>([]);
+
     const setLanguage = (e: any, values: any) => {
         selectLang(values);
     };
+
+    useEffect(() => {
+        if (options) {
+            setLangOptions(options.filter(lang => !defaultValue.map((value:any) => value.code).includes(lang.code)));
+        } else if (languages) {
+            setLangOptions(languages.filter(lang => !defaultValue.map((value:any) => value.code).includes(lang.code)));
+        }
+    }, [options, languages]);
 
     return (
         <Autocomplete
             multiple
             id="languages-tags"
-            options={languages.filter(lang => !exclusionLangs.includes(lang.code))}
+            options={langOptions}
             disableCloseOnSelect
             getOptionLabel={(option) => option.isoName}
             renderOption={(props, option, { selected }) => (

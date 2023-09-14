@@ -4,6 +4,7 @@ import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 import CheckBoxDefault from "../../../../ui/CheckBox/CheckBoxDefault";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import { useFilter } from "../../hooks/useFilter";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 interface IFilterProps {
     isVisible: boolean;
@@ -18,6 +19,10 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
         setDictionaryFilter,
         filterDictionary,
     } = useFilter();
+
+    const { dictionarySettings } = useAppSelector(
+        (state) => state.dictionaryReducer
+    );
 
     const checkNotStudied = (isChecked: boolean) => {
         let studyStage: studyStageType = "NOT_STUDIED";
@@ -87,12 +92,8 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                                 selectLang={selectOriginalLang}
                                 placeholder="Выберите язык оригинала"
                                 multi={true}
-                                defaultValue={
-                                    filterDictionary.languageOriginal &&
-                                    filterDictionary.languageOriginal.map(
-                                        (lang: ILanguage) => lang.isoName
-                                    )
-                                }
+                                defaultValue={filterDictionary.languageOriginal}
+                                options={dictionarySettings.langsForStudy}
                             ></DictionaryLanguages>
                         </div>
                         <div className="w-[20vh]">
@@ -100,12 +101,8 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                                 selectLang={selectTranslationLang}
                                 placeholder="Выберите язык перевода"
                                 multi={true}
-                                defaultValue={
-                                    filterDictionary.languageTranslation &&
-                                    filterDictionary.languageTranslation.map(
-                                        (lang: ILanguage) => lang.isoName
-                                    )
-                                }
+                                defaultValue={filterDictionary.languageTranslation}
+                                options={dictionarySettings.studyLangs}
                             ></DictionaryLanguages>
                         </div>
                     </div>
@@ -119,7 +116,7 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                     <CheckBoxDefault
                         label="На изучении"
                         onChange={checkBeingStudied}
-                        checked={filterDictionary.studyStage.includes(
+                        checked={filterDictionary.studyStage?.includes(
                             "BEING_STUDIED"
                         )}
                     />
