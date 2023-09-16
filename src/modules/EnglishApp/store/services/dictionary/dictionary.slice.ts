@@ -222,9 +222,14 @@ export const dictionarySlice = createSlice({
                     }
                 }
 
-                languageOriginal = [...languageOriginal, langOriginalObj];
-                languageTranslation = [...languageTranslation, langTranslationObj];
-   
+                if (!languageOriginal.find(lang => lang.code === langOriginalObj.code)) {
+                    languageOriginal.push(langOriginalObj);
+                }
+              
+                if (!languageTranslation.find(lang => lang.code === langTranslationObj.code)){
+                    languageTranslation.push(langTranslationObj);
+                }
+
                 state.filterDictionary = {
                     ...state.filterDictionary,
                     languageOriginal,

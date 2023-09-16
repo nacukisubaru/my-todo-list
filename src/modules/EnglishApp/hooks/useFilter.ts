@@ -1,3 +1,4 @@
+import useLocalStorageState from "use-local-storage-state";
 import { getDictionaryByUser } from "../store/services/dictionary/dictionary.slice"
 import { useActions } from "./useAction";
 import { useAppDispatch, useAppSelector } from "./useAppSelector";
@@ -6,6 +7,9 @@ export const useFilter = () => {
     const filterDictionary: IFilterDictionary = useAppSelector(state => state.dictionaryReducer.filterDictionary);
     const { resetDictionary, setDictionaryFilter } = useActions();
     const dispatch = useAppDispatch();
+    const [filterStorage, setFilterToStorage] = useLocalStorageState('filter', {
+        defaultValue: [filterDictionary]
+    })
 
     const filtrate = async (page: number = 0, resetState: boolean = true) => {
         const filter: IFilterDictionary = filterDictionary;
@@ -14,6 +18,8 @@ export const useFilter = () => {
         let studyStage: studyStageType[] = [];
         let searchByOriginal: string = '';
         let searchByTranslate: string = '';
+
+        setFilterToStorage([filter]);
 
         if (filter.languageOriginal) {
             languageOriginalCodes = filter.languageOriginal.map((lang: ILanguage) => lang.code);

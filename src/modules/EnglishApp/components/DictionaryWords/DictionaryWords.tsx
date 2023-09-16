@@ -16,13 +16,13 @@ import Filter from "../Filter/Filter";
 import { useFilter } from "../../hooks/useFilter";
 import SearchInput from "../../../../ui/Inputs/SearchInput";
 import { useActions } from "../../hooks/useAction";
+import useLocalStorageState from "use-local-storage-state";
 
 const DictionaryWords = () => {
     const {dictionary, status} = useAppSelector(
         (state) => state.dictionaryReducer
     );
-    const {dictionaryActiveSettings} = useAppSelector(state => state.dictionaryReducer);
-
+    const {dictionaryActiveSettings, filterDictionary} = useAppSelector(state => state.dictionaryReducer);
     const {filtrate, setDictionaryFilter} = useFilter();
     const page = useAppSelector((state) => state.dictionaryReducer.page);
 
@@ -41,6 +41,9 @@ const DictionaryWords = () => {
 
     const dispatch = useAppDispatch();
     const {resetDictionary} = useActions();
+    const [filterStorage] = useLocalStorageState('filter',{
+        defaultValue: [filterDictionary]
+    })
 
     useEffect(() => {
         const actions = async () => {
@@ -49,6 +52,7 @@ const DictionaryWords = () => {
            await dispatch(getDictionarySettings());
         }
         actions();
+        setDictionaryFilter(filterStorage[0]);
     }, []);
 
     useEffect(() => {
