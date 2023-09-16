@@ -187,14 +187,10 @@ export const dictionarySlice = createSlice({
           })
           .addCase(getDictionaryActiveSettings.fulfilled, (state, action) => {
                 state.status = 'resolved';
-                state.dictionaryActiveSettings = {
-                    id: action.payload.id,
-                    sourceLanguage: action.payload.sourceLanguage,
-                    targetLanguage: action.payload.targetLanguage,
-                };
 
-                state.translateLanguages = [action.payload.sourceLanguage, action.payload.targetLanguage];
-            
+                const sourceLanguage = action.payload.sourceLanguage;
+                const targetLanguage = action.payload.targetLanguage;
+
                 const langOriginalObj: any = {
                     code: action.payload.sourceLanguage,
                     isoName: action.payload.sourceISO
@@ -205,14 +201,43 @@ export const dictionarySlice = createSlice({
                     isoName: action.payload.targetISO
                 };
 
+                const langOriginal = state.filterDictionary.languageOriginal;
+                const langTranslation = state.filterDictionary.languageTranslation;
+                
+                let languageOriginal:ILanguage[]  = [];
+                let languageTranslation: ILanguage[] = [];
+                if (langOriginal) {
+                    if (langOriginal.length === 1) {
+                        languageOriginal = langOriginal.filter(lang => lang.code !== state.dictionaryActiveSettings.sourceLanguage);
+                    } else {
+                        languageOriginal = langOriginal.filter(lang => lang.code !== sourceLanguage);
+                    }
+                }
+
+                if (langTranslation) {
+                    if (langTranslation.length === 1) {
+                        languageTranslation = langTranslation.filter(lang => lang.code !== state.dictionaryActiveSettings.targetLanguage);
+                    } else {
+                        languageTranslation = langTranslation.filter(lang => lang.code !== targetLanguage);
+                    }
+                }
+
+                languageOriginal = [...languageOriginal, langOriginalObj];
+                languageTranslation = [...languageTranslation, langTranslationObj];
+   
                 state.filterDictionary = {
-                    page: 0,
-                    languageOriginal: [langOriginalObj],
-                    languageTranslation: [langTranslationObj],
-                    studyStage: [],
-                    searchByOriginal: '',
-                    searchByTranslate: ''
+                    ...state.filterDictionary,
+                    languageOriginal,
+                    languageTranslation,
                 };
+                
+                state.dictionaryActiveSettings = {
+                    id: action.payload.id,
+                    sourceLanguage: action.payload.sourceLanguage,
+                    targetLanguage: action.payload.targetLanguage,
+                };
+
+                state.translateLanguages = [action.payload.sourceLanguage, action.payload.targetLanguage];
           })
           .addCase(getDictionaryActiveSettings.rejected, (state, action) => {
             const errorObj: any = action.payload;
