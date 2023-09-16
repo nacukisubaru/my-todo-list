@@ -1,11 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { settingsApi } from "../../store/services/settings/settings.api";
 import BasicSelect from "../../../../ui/Selects/BasicSelect";
 import { getDictionaryActiveSettings, getDictionarySettings, getLanguages } from "../../store/services/dictionary/dictionary.slice";
-import { useDispatch } from "react-redux";
 
 interface ISettings {
     close: () => void;
@@ -27,7 +26,7 @@ const Settings: FC<ISettings> = ({ close }) => {
     const [isChangeLangsForStudy, setIsChangeLangsForStudy] = useState(false);
     const [isChangeStudyLangs, setIsChangeStudyLangs] = useState(false);
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const saveSettings = async () => {
         let sourceLangCodes = languagesForStudy;
         let targetLangCodes = studyLanguages;

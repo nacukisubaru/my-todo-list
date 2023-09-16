@@ -39,10 +39,10 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         voiceWordSettings,
     } = useDictionary();
 
-    const { translateResult, error } = useAppSelector(
+    const { translateResult, translateLanguages, translateMethod, error } = useAppSelector(
         (state) => state.dictionaryReducer
-    );
-    const { resetTranslateResult } = useActions();
+    );    
+    const { resetTranslateResult, changeTranslateLanguages, changeTranslateMethod } = useActions();
     const { speak } = useSpeechSynthesis();
 
     const [openModalSettings, setOpenModalSettings] = useState(false);
@@ -76,6 +76,14 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setTranslatelLang("");
         setVoiceWordSettings({voiceLang: "", voiceWord: ""});
     };
+
+    const changeLanguage = () => {
+        changeTranslateLanguages();
+    }
+
+    const changeTranslate = () => {
+        changeTranslateMethod();
+    }
 
     return (
         <>
@@ -206,15 +214,41 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                             >
                                 {isAddWord
                                     ? "Вернутся к переводу"
-                                    : "Добавить слово"}
+                                    : "Добавить"}
                             </SmallOutlineButton>
                         </div>
                     </div>
-                    <div
-                        className="-mt-[5px] cursor-pointer"
-                        onClick={openSettings}
-                    >
-                        <SettingsIcon style={{ color: "grey" }} />
+                    <div className="display flex">
+                        <Button 
+                            variant="text"
+                            style={{
+                                marginTop: "-6px", color:"black", outline: "none",
+                                maxWidth: '30px', maxHeight: '30px', 
+                                minWidth: '30px', minHeight: '30px',
+                                marginRight: "8px"
+                            }}
+                            onClick={changeTranslate}
+                        >
+                            {translateMethod === "lingvo" ? "L": "Y"}
+                        </Button>
+                        <Button 
+                            variant="text"
+                            style={{
+                                marginTop: "-6px", color:"black", outline: "none",
+                                maxWidth: '30px', maxHeight: '30px', 
+                                minWidth: '30px', minHeight: '30px',
+                                marginRight: "8px"
+                            }}
+                            onClick={changeLanguage}
+                        >
+                            {translateLanguages[0]+' '+translateLanguages[1]}
+                        </Button>
+                        <div
+                            className="-mt-[5px] cursor-pointer"
+                            onClick={openSettings}
+                        >               
+                            <SettingsIcon style={{ color: "grey" }} />
+                        </div>
                     </div>
                 </div>
             </Modal>

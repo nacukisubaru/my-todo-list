@@ -1,3 +1,4 @@
+type translateMethod = "lingvo" | "yandex";
 interface IDictionary {
     id: string;
     originalWord: string;
@@ -66,7 +67,10 @@ interface ITranslateResult {
 }
 
 interface ITranslateParams {
-    word: string
+    word: string,
+    sourceLang: string,
+    targetLang: string,
+    translateMethod: translateMethod
 }
 
 interface ICreateDictionary {

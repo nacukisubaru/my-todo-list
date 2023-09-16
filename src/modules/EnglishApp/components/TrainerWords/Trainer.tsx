@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
     getDictionaryByUser,
     getLanguages,
 } from "../../store/services/dictionary/dictionary.slice";
 import { useActions } from "../../hooks/useAction";
 import Card from "../../../../ui/Cards/Card";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import TrainerWords from "./TrainerWords";
 import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 
 const Trainer = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const { resetDictionary } = useActions();
     const { dictionary, error } = useAppSelector(
         (state) => state.dictionaryReducer

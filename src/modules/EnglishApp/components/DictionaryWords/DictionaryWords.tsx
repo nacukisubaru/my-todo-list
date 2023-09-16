@@ -6,8 +6,7 @@ import {
     getDictionarySettings,
     getLanguages,
 } from "../../store/services/dictionary/dictionary.slice";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import SpeedDialButton from "../../../../ui/Buttons/SpeedDialButton";
 import DictionaryAddWord from "./DictionaryAddWord";
 import { useObserverScroll } from "../../../../hooks/useObserverScroll";
@@ -40,7 +39,7 @@ const DictionaryWords = () => {
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const {resetDictionary} = useActions();
 
     useEffect(() => {

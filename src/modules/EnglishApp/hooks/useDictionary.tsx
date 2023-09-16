@@ -1,4 +1,3 @@
-import { useDispatch } from "react-redux";
 import {
     getDictionaryByUser,
     translateWord,
@@ -6,13 +5,13 @@ import {
 import { useActions } from "./useAction";
 import { useFilter } from "./useFilter";
 import { useEffect, useState } from "react";
-import { useAppSelector } from "./useAppSelector";
+import { useAppDispatch, useAppSelector } from "./useAppSelector";
 import { dictionaryApi } from "../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../helpers/stringHelper";
 import { LangCodesISO } from "../helpers/languageHelper";
 
 export const useDictionary = () => {
-    const { translateResult } = useAppSelector(
+    const { translateResult, translateLanguages, translateMethod } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
@@ -21,8 +20,8 @@ export const useDictionary = () => {
         resetDictionaryFilter,
         resetDictionary
     } = useActions();
-
-    const dispatch = useDispatch();
+    
+    const dispatch = useAppDispatch();
     const { checkApplyFilter } = useFilter();
     const [createWord] = dictionaryApi.useAddMutation();
 
@@ -60,7 +59,7 @@ export const useDictionary = () => {
             sourceWord = word;
             targetWord = translateResult.originalWord;
         }
-
+        
         const wordObj: IDictionary = {
             originalWord: isAddWord
                 ? inputOriginal
@@ -68,8 +67,8 @@ export const useDictionary = () => {
             translatedWord: isAddWord
                 ? inputTranslation
                 : targetWord,
-            languageOriginal: dictionaryActiveSettings.sourceLanguage,
-            languageTranslation: dictionaryActiveSettings.targetLanguage,
+            languageOriginal: translateLanguages[0],
+            languageTranslation: translateLanguages[1],
             studyStage: "BEING_STUDIED",
             id: "",
             dictionaryExamples: [],
@@ -111,7 +110,12 @@ export const useDictionary = () => {
 
     const translate = (word: string) => {
         if (word) {
-            dispatch(translateWord({ word }));
+            dispatch(translateWord({ 
+                word, 
+                sourceLang: translateLanguages[0], 
+                targetLang: translateLanguages[1], 
+                translateMethod 
+            }));
         }
     };
 

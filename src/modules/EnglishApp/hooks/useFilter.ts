@@ -1,12 +1,11 @@
-import { useDispatch } from "react-redux"
 import { getDictionaryByUser } from "../store/services/dictionary/dictionary.slice"
 import { useActions } from "./useAction";
-import { useAppSelector } from "./useAppSelector";
+import { useAppDispatch, useAppSelector } from "./useAppSelector";
 
 export const useFilter = () => {
     const filterDictionary: IFilterDictionary = useAppSelector(state => state.dictionaryReducer.filterDictionary);
     const { resetDictionary, setDictionaryFilter } = useActions();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const filtrate = async (page: number = 0, resetState: boolean = true) => {
         const filter: IFilterDictionary = filterDictionary;
