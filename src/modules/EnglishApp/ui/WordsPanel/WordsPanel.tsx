@@ -9,7 +9,7 @@ interface IWordsPanel {
 
 const WordsPanel: FC<IWordsPanel> = ({wordsList}) => {
     const [value, setValue] = useState(0);
-    const [typeWord, setTypeWord] = useState("");
+    const [typeWord, setTypeWord] = useState(wordsList[0].type);
     const [words, setWords] = useState<string[]>([]);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -26,7 +26,7 @@ const WordsPanel: FC<IWordsPanel> = ({wordsList}) => {
             <div className="mb-[15px]">
                 <Tabs value={value} onChange={handleChange} centered>
                     {uniqueList(wordsList.map(word => word.type)).map(typeWord => {
-                        return <Tab label={typeWord} onClick={() => {setTypeWord(typeWord)}} style={{textTransform: 'lowercase'}}/>
+                        return <Tab label={typeWord} onClick={() => {setTypeWord(typeWord)}} style={{textTransform: 'lowercase', outline: "none"}}/>
                     })}
                 </Tabs>
             </div>
