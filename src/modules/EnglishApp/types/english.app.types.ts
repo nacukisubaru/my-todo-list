@@ -70,7 +70,12 @@ interface ITranslateParams {
     word: string,
     sourceLang: string,
     targetLang: string,
-    translateMethod: translateMethod
+    translateMethod?: translateMethod
+}
+
+interface IFullTranslateObject {
+    word: string,
+    type: string
 }
 
 interface ICreateDictionary {

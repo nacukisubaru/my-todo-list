@@ -9,6 +9,7 @@ interface IState {
     translateResult: ITranslateResult,
     translateLanguages: string[],
     translateMethod: translateMethod,
+    fullTranslateList: IFullTranslateObject[],
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
     page: number,
@@ -33,6 +34,7 @@ const initialState: IState = {
         translateLang: "",
         originalLang: ""
     },
+    fullTranslateList: [],
     languages: [],
     filterDictionary: {
         page: 0,
@@ -79,6 +81,13 @@ export const translateWord = createAsyncThunk(
     'translate/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
         return thunkAxiosGet('/lingvo-api/translate/', params, rejectWithValue);
+    }
+);
+
+export const fullTranslate = createAsyncThunk(
+    'full-translate/fetch',
+    async (params: ITranslateParams, { rejectWithValue }) => {
+        return thunkAxiosGet('/lingvo-api/full-translate/', params, rejectWithValue);
     }
 );
 
@@ -265,6 +274,20 @@ export const dictionarySlice = createSlice({
             });
           })
           .addCase(getDictionarySettings.rejected, (state, action) => {
+            const errorObj: any = action.payload;
+            state.status = 'rejected';
+            state.error = errorObj;
+          })
+
+          .addCase(fullTranslate.pending, (state, action) => {
+            state.status = 'loading';
+            state.error = { statusCode: 0, message: "", errorCode: "" };
+          })
+          .addCase(fullTranslate.fulfilled, (state, action) => {
+            state.status = 'resolved';
+            state.fullTranslateList = action.payload;
+          })
+          .addCase(fullTranslate.rejected, (state, action) => {
             const errorObj: any = action.payload;
             state.status = 'rejected';
             state.error = errorObj;

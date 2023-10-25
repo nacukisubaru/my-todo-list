@@ -8,10 +8,13 @@ import Divider from "../../../../ui/Dividers/Divider";
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 import BookButton from "../../ui/Buttons/BookButton";
 import RetryButton from "../../ui/Buttons/RetryButton";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
+import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
+import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
+import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -28,7 +31,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         studyStage,
     } = props;
 
-    const { dictionary } = useAppSelector((state) => state.dictionaryReducer);
+    const { dictionary, fullTranslateList } = useAppSelector((state) => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
     const { 
         translate, 
@@ -37,6 +40,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         translateExampleLang, 
         examples
     } = useDictionaryExample(props);
+
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
     const { setDictionary } = useActions();
@@ -45,7 +49,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     useEffect(() => {
         getExamples();
     }, []);
-
+    const dispatch = useAppDispatch();
+    
     const changeStudyStage = async (studyStage: studyStageType) => {
         setStudyStage(studyStage);
         changeDictionaryWord("studyStage", studyStage);
@@ -67,6 +72,15 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
 
         setDictionary(cloneDictionary);
     };
+
+    const getWordsFromLingvo = () => {
+        console.log('sdfs');
+        dispatch(fullTranslate({
+            word: originalWord,
+            sourceLang: languageOriginal,
+            targetLang: languageTranslation
+        }));
+    }
 
     return (
         <Modal
@@ -157,6 +171,11 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 {languageTranslation}
             </div>
             <Divider />
+            <ArrowWithText 
+                onClick={getWordsFromLingvo} 
+                content={fullTranslateList.length ? <WordsPanel wordsList={fullTranslateList}/> : false}>
+                Получить слова из lingvo
+            </ArrowWithText>
             <div className="text-left mb-[15px]">
                 <div className="font-bold">Примеры</div>
                 <DictionaryExamples
