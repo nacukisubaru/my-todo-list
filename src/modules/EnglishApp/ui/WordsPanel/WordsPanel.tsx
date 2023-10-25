@@ -24,7 +24,11 @@ const WordsPanel: FC<IWordsPanel> = ({wordsList}) => {
     return (
       <>
             <div className="mb-[15px]">
-                <Tabs value={value} onChange={handleChange} centered>
+                <Tabs 
+                    value={value} 
+                    variant="scrollable"
+                    scrollButtons="auto" 
+                    onChange={handleChange} centered>
                     {uniqueList(wordsList.map(word => word.type)).map(typeWord => {
                         return <Tab label={typeWord} onClick={() => {setTypeWord(typeWord)}} style={{textTransform: 'lowercase', outline: "none"}}/>
                     })}

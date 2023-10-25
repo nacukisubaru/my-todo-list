@@ -13,7 +13,7 @@ const WordTag: FC<IWordTag> = ({children}) => {
             disabled={false}
             size="small"
             variant="outlined"
-            style={{borderRadius:'27px', textTransform: 'lowercase'}}
+            style={{borderRadius:'27px', textTransform: 'lowercase', cursor: 'pointer'}}
         >
             {children}
         </Button>

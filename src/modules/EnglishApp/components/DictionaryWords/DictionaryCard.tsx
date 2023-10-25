@@ -43,7 +43,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
 
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
-    const { setDictionary } = useActions();
+    const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
     
     useEffect(() => {
@@ -128,6 +128,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 primaryBtnClick: () => {},
                 secondaryBtnClick: () => {
                     closeCard();
+                    resetFullTranslateList();
                 },
             }}
             maxWidth="sm:max-w-[32rem]"

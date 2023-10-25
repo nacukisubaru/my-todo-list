@@ -143,6 +143,9 @@ export const dictionarySlice = createSlice({
             } else {
                 state.translateMethod = "lingvo";
             }
+        },
+        resetFullTranslateList: (state) => {
+            state.fullTranslateList = [];
         }
     },
     extraReducers: (builder) => {

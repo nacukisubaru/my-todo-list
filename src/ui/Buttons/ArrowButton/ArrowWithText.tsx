@@ -17,7 +17,7 @@ const ArrowWithText: FC<IArrowWithTextProps> = ({onClick, children, content}) =>
         } else {
             setArrowUp(true);
         }
-        
+
         if (!content) {
             onClick(isArrowUp);
         }
@@ -25,7 +25,7 @@ const ArrowWithText: FC<IArrowWithTextProps> = ({onClick, children, content}) =>
 
     return (
         <>
-            <div className="font-bold" onClick={switchArrow}>{children}{isArrowUp ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon/>}</div>
+            <div className="font-bold cursor-pointer" onClick={switchArrow}>{children}{isArrowUp ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon/>}</div>
             <div>{isArrowUp && content}</div>
         </>
     );
