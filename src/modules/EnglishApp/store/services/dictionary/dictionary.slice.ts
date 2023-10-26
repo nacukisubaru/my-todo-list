@@ -93,6 +93,13 @@ export const fullTranslate = createAsyncThunk(
     }
 );
 
+export const getAnalogs = createAsyncThunk(
+    'full-translate-analogs/fetch',
+    async (params: ITranslateParams, { rejectWithValue }) => {
+        return thunkAxiosGet('/lingvo-api/full-translate/', params, rejectWithValue);
+    }
+);
+
 export const dictionarySlice = createSlice({
     name: 'dictionary',
     initialState,
@@ -291,13 +298,23 @@ export const dictionarySlice = createSlice({
           })
           .addCase(fullTranslate.fulfilled, (state, action) => {
             state.status = 'resolved';
-            if (action.payload.targetLang === state.dictionaryActiveSettings.targetLanguage) {
-                state.analogsWord = action.payload.words;
-            } else {
-                state.fullTranslateList = action.payload.words;
-            }
+            state.fullTranslateList = action.payload.words;
           })
           .addCase(fullTranslate.rejected, (state, action) => {
+            const errorObj: any = action.payload;
+            state.status = 'rejected';
+            state.error = errorObj;
+          })
+
+          .addCase(getAnalogs.pending, (state, action) => {
+            state.status = 'loading';
+            state.error = { statusCode: 0, message: "", errorCode: "" };
+          })
+          .addCase(getAnalogs.fulfilled, (state, action) => {
+            state.status = 'resolved';
+            state.analogsWord = action.payload.words;
+          })
+          .addCase(getAnalogs.rejected, (state, action) => {
             const errorObj: any = action.payload;
             state.status = 'rejected';
             state.error = errorObj;

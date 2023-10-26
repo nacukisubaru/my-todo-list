@@ -13,8 +13,9 @@ import { useActions } from "../../hooks/useAction";
 import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
-import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
+import { fullTranslate, getAnalogs } from "../../store/services/dictionary/dictionary.slice";
 import WordsPanel from "../../ui/WordsPanel/WordsPanel";
+import { availableLanguages } from "../../helpers/languageHelper";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -31,7 +32,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         studyStage,
     } = props;
 
-    const { dictionary, fullTranslateList, analogsWord, dictionaryActiveSettings } = useAppSelector((state) => state.dictionaryReducer);
+    const { dictionary, fullTranslateList, analogsWord } = useAppSelector((state) => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
     const { 
         translate, 
@@ -76,16 +77,16 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const getWordsFromLingvo = () => {
         dispatch(fullTranslate({
             word: translatedWord,
-            sourceLang: dictionaryActiveSettings.targetLanguage,
-            targetLang: dictionaryActiveSettings.sourceLanguage
+            sourceLang: languageTranslation,
+            targetLang: 'ru'
         }));
     }
 
     const getAnalogsWord = () => {
-        dispatch(fullTranslate({
+        dispatch(getAnalogs({
             word: originalWord,
-            sourceLang: dictionaryActiveSettings.sourceLanguage,
-            targetLang: dictionaryActiveSettings.targetLanguage
+            sourceLang: 'ru',
+            targetLang: languageTranslation
         }));
     }
 
@@ -179,16 +180,21 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 {languageTranslation}
             </div>
             <Divider />
-            <ArrowWithText 
-                onClick={getWordsFromLingvo} 
-                content={fullTranslateList.length ? <WordsPanel wordsList={fullTranslateList}/> : false}>
-                Получить значения слова {translatedWord}
-            </ArrowWithText>
-            <ArrowWithText 
-                onClick={getAnalogsWord} 
-                content={analogsWord.length ? <WordsPanel wordsList={analogsWord}/> : false}>
-                Альтернативы слову {translatedWord} на английском
-            </ArrowWithText>
+            {availableLanguages.includes(languageOriginal) && availableLanguages.includes(languageTranslation) 
+            && (languageTranslation === 'ru' || languageOriginal === 'ru')  && (
+                <>
+                    <ArrowWithText 
+                        onClick={getWordsFromLingvo} 
+                        content={fullTranslateList.length ? <WordsPanel wordsList={fullTranslateList}/> : false}>
+                        Получить значения слова {translatedWord}
+                    </ArrowWithText>
+                    <ArrowWithText 
+                        onClick={getAnalogsWord} 
+                        content={analogsWord.length ? <WordsPanel wordsList={analogsWord}/> : false}>
+                        Альтернативы слову {translatedWord}
+                    </ArrowWithText>
+                </>
+            )}
             <div className="text-left mb-[15px]">
                 <div className="font-bold">Примеры</div>
                 <DictionaryExamples

@@ -67,8 +67,8 @@ export const useDictionary = () => {
             translatedWord: isAddWord
                 ? inputTranslation
                 : targetWord,
-            languageOriginal: translateLanguages[0],
-            languageTranslation: translateLanguages[1],
+            languageOriginal: dictionaryActiveSettings.sourceLanguage,
+            languageTranslation: dictionaryActiveSettings.targetLanguage,
             studyStage: "BEING_STUDIED",
             id: "",
             dictionaryExamples: [],

@@ -184,3 +184,5 @@ export const LangCodesISO: any = {
     'za' : 'Zhuang, Chuang',
     'zu' : 'Zulu'
 };
+
+export const availableLanguages = ['en', 'ru', 'ch', 'de', 'es', 'it'];
