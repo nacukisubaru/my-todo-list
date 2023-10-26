@@ -35,6 +35,7 @@ const DictionaryWords = () => {
         languageOriginal: "",
         languageTranslation: "",
         dictionaryExamples: [],
+        linkedWords: [],
         studyStage: "NOT_STUDIED"
     });
     const [isVisibleCard, setVisibleCard] = useState(false);

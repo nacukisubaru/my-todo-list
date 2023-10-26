@@ -5,7 +5,8 @@ interface IDictionary {
     translatedWord: string;
     languageOriginal: string;
     languageTranslation: string;
-    dictionaryExamples: IDictionaryExample[]; 
+    dictionaryExamples: IDictionaryExample[];
+    linkedWords: string[],
     studyStage: studyStageType;
 }
 

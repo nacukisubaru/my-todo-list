@@ -10,6 +10,7 @@ interface IState {
     translateLanguages: string[],
     translateMethod: translateMethod,
     fullTranslateList: IFullTranslateObject[],
+    analogsWord: IFullTranslateObject[],
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
     page: number,
@@ -35,6 +36,7 @@ const initialState: IState = {
         originalLang: ""
     },
     fullTranslateList: [],
+    analogsWord: [],
     languages: [],
     filterDictionary: {
         page: 0,
@@ -146,6 +148,7 @@ export const dictionarySlice = createSlice({
         },
         resetFullTranslateList: (state) => {
             state.fullTranslateList = [];
+            state.analogsWord = [];
         }
     },
     extraReducers: (builder) => {
@@ -288,7 +291,11 @@ export const dictionarySlice = createSlice({
           })
           .addCase(fullTranslate.fulfilled, (state, action) => {
             state.status = 'resolved';
-            state.fullTranslateList = action.payload;
+            if (action.payload.targetLang === state.dictionaryActiveSettings.targetLanguage) {
+                state.analogsWord = action.payload.words;
+            } else {
+                state.fullTranslateList = action.payload.words;
+            }
           })
           .addCase(fullTranslate.rejected, (state, action) => {
             const errorObj: any = action.payload;

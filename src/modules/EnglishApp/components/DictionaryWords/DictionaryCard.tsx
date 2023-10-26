@@ -31,7 +31,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         studyStage,
     } = props;
 
-    const { dictionary, fullTranslateList } = useAppSelector((state) => state.dictionaryReducer);
+    const { dictionary, fullTranslateList, analogsWord, dictionaryActiveSettings } = useAppSelector((state) => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
     const { 
         translate, 
@@ -74,11 +74,18 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     };
 
     const getWordsFromLingvo = () => {
-        console.log('sdfs');
+        dispatch(fullTranslate({
+            word: translatedWord,
+            sourceLang: dictionaryActiveSettings.targetLanguage,
+            targetLang: dictionaryActiveSettings.sourceLanguage
+        }));
+    }
+
+    const getAnalogsWord = () => {
         dispatch(fullTranslate({
             word: originalWord,
-            sourceLang: languageOriginal,
-            targetLang: languageTranslation
+            sourceLang: dictionaryActiveSettings.sourceLanguage,
+            targetLang: dictionaryActiveSettings.targetLanguage
         }));
     }
 
@@ -175,7 +182,12 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             <ArrowWithText 
                 onClick={getWordsFromLingvo} 
                 content={fullTranslateList.length ? <WordsPanel wordsList={fullTranslateList}/> : false}>
-                Получить слова из lingvo
+                Получить значения слова {translatedWord}
+            </ArrowWithText>
+            <ArrowWithText 
+                onClick={getAnalogsWord} 
+                content={analogsWord.length ? <WordsPanel wordsList={analogsWord}/> : false}>
+                Альтернативы слову {translatedWord} на английском
             </ArrowWithText>
             <div className="text-left mb-[15px]">
                 <div className="font-bold">Примеры</div>
