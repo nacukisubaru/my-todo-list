@@ -298,7 +298,7 @@ export const dictionarySlice = createSlice({
           })
           .addCase(fullTranslate.fulfilled, (state, action) => {
             state.status = 'resolved';
-            state.fullTranslateList = action.payload.words;
+            state.fullTranslateList = action.payload;
           })
           .addCase(fullTranslate.rejected, (state, action) => {
             const errorObj: any = action.payload;
@@ -312,7 +312,7 @@ export const dictionarySlice = createSlice({
           })
           .addCase(getAnalogs.fulfilled, (state, action) => {
             state.status = 'resolved';
-            state.analogsWord = action.payload.words;
+            state.analogsWord = action.payload;
           })
           .addCase(getAnalogs.rejected, (state, action) => {
             const errorObj: any = action.payload;
