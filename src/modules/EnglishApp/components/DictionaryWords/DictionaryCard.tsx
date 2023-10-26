@@ -47,7 +47,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
     const [linkedWordsList, addToLinkedWordsList] = useState<string[]>([]);
-    const [linkedWordsToRemove, addToLinkedWordsToRemove] = useState<string[]>([]);
 
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
@@ -100,7 +99,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         createLinkedWords({
             dictionaryId: id,
             words: linkedWordsList,
-            wordsToRemove: linkedWordsToRemove
         })
     }
 
@@ -109,7 +107,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         if (isRemove) {
             words = linkedWordsList.filter(linkedWord => linkedWord !== word);
             addToLinkedWordsList(words);
-            addToLinkedWordsToRemove([...linkedWordsToRemove, word]);
         } else {
             addToLinkedWordsList([...words, word]);
         }

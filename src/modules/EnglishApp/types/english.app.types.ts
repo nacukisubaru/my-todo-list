@@ -123,8 +123,7 @@ interface ICreateDictionaryExample {
 
 interface ICreateLinkedWord {
     dictionaryId: string;
-    words: string[],
-    wordsToRemove: string[]
+    words: string[]
 }
 
 interface IGetDictionaryListParams {
