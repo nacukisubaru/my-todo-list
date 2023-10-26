@@ -121,6 +121,12 @@ interface ICreateDictionaryExample {
     type: string;
 }
 
+interface ICreateLinkedWord {
+    dictionaryId: string;
+    words: string[],
+    wordsToRemove: string[]
+}
+
 interface IGetDictionaryListParams {
     page: number,
     languageOriginal?: string | string[], 

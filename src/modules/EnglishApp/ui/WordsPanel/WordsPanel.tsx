@@ -4,10 +4,11 @@ import { uniqueList } from "../../../../helpers/arrayHelper";
 import WordTag from "./WordTag";
 
 interface IWordsPanel {
-    wordsList: IFullTranslateObject[]
+    wordsList: IFullTranslateObject[],
+    addWord?: (word: string, isRemove: boolean) => void
 }
 
-const WordsPanel: FC<IWordsPanel> = ({wordsList}) => {
+const WordsPanel: FC<IWordsPanel> = ({wordsList, addWord}) => {
     const [value, setValue] = useState(0);
     const [typeWord, setTypeWord] = useState(wordsList[0].type);
     const [words, setWords] = useState<string[]>([]);
@@ -36,7 +37,7 @@ const WordsPanel: FC<IWordsPanel> = ({wordsList}) => {
             </div>
             
             {words.map(word => {
-                return <span className="mr-[5px]"><WordTag>{word}</WordTag></span>;
+                return <span className="mr-[5px]"><WordTag onClick={(isActive) =>{addWord && addWord(word, isActive)}}>{word}</WordTag></span>;
             })}
        </>
     );

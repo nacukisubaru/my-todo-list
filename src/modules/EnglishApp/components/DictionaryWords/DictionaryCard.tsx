@@ -16,6 +16,7 @@ import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
 import { fullTranslate, getAnalogs } from "../../store/services/dictionary/dictionary.slice";
 import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 import { availableLanguages } from "../../helpers/languageHelper";
+import { Button } from "@mui/material";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -43,13 +44,18 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     } = useDictionaryExample(props);
 
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
+    const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
+    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>([]);
+    const [linkedWordsToRemove, addToLinkedWordsToRemove] = useState<string[]>([]);
+
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
     
     useEffect(() => {
         getExamples();
     }, []);
+
     const dispatch = useAppDispatch();
     
     const changeStudyStage = async (studyStage: studyStageType) => {
@@ -88,6 +94,25 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             sourceLang: 'ru',
             targetLang: languageTranslation
         }));
+    }
+
+    const addLinkedWords = () => {
+        createLinkedWords({
+            dictionaryId: id,
+            words: linkedWordsList,
+            wordsToRemove: linkedWordsToRemove
+        })
+    }
+
+    const addToLinkedWords = (word: string, isRemove: boolean) => {
+        let words: string[] = linkedWordsList;
+        if (isRemove) {
+            words = linkedWordsList.filter(linkedWord => linkedWord !== word);
+            addToLinkedWordsList(words);
+            addToLinkedWordsToRemove([...linkedWordsToRemove, word]);
+        } else {
+            addToLinkedWordsList([...words, word]);
+        }
     }
 
     return (
@@ -185,7 +210,16 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 <>
                     <ArrowWithText 
                         onClick={getWordsFromLingvo} 
-                        content={fullTranslateList.length ? <WordsPanel wordsList={fullTranslateList}/> : false}>
+                        content={fullTranslateList.length ?
+                        <>
+                            <WordsPanel 
+                                wordsList={fullTranslateList}
+                                addWord={addToLinkedWords}
+                            /> 
+                            <div className="flex justify-end">
+                                <Button variant="contained" size="small" onClick={addLinkedWords}>Сохранить</Button>
+                            </div>
+                        </> : false}>
                         Получить значения слова {translatedWord}
                     </ArrowWithText>
                     <ArrowWithText 
