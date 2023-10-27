@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import ArrowButton from "../../../../ui/Buttons/ArrowButton/ArrowButton";
@@ -32,6 +32,10 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
             setEndExampleList(true);
         }
     }
+
+    useEffect(() => {
+        console.log({examplesList});
+    },[]);
 
     return (
         <div>

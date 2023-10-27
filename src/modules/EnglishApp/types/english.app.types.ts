@@ -14,8 +14,8 @@ interface IDictionary {
 interface IDictionaryExample {
     originalText: string,
     translatedText: string,
-    exampleType: string,
-    showTranslate: boolean
+    exampleType?: string,
+    showTranslate?: boolean
 }
 
 interface IDictionaryLinkedWord {
@@ -80,9 +80,21 @@ interface ITranslateParams {
     translateMethod?: translateMethod
 }
 
+interface IExampleParams {
+    word: string,
+    sourceLang: string,
+    targetLang: string,
+    pageSize: number
+}
+
 interface IFullTranslateObject {
     word: string,
     type: string
+}
+
+interface ILingvoExample {
+    originalText: string,
+    translatedText: string
 }
 
 interface ICreateDictionary {

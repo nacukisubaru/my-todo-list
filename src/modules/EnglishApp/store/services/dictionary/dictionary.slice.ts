@@ -11,6 +11,7 @@ interface IState {
     translateMethod: translateMethod,
     fullTranslateList: IFullTranslateObject[],
     analogsWord: IFullTranslateObject[],
+    lingvoExamples: ILingvoExample[],
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
     page: number,
@@ -38,6 +39,7 @@ const initialState: IState = {
     fullTranslateList: [],
     analogsWord: [],
     languages: [],
+    lingvoExamples: [],
     filterDictionary: {
         page: 0,
         languageOriginal: [],
@@ -100,6 +102,13 @@ export const getAnalogs = createAsyncThunk(
     }
 );
 
+export const getExamplesForWord = createAsyncThunk(
+    'get-examples-for-word/fetch',
+    async (params: IExampleParams, { rejectWithValue }) => {
+        return thunkAxiosGet('/lingvo-api/get-examples-for-word/', params, rejectWithValue);
+    }
+);
+
 export const dictionarySlice = createSlice({
     name: 'dictionary',
     initialState,
@@ -156,6 +165,7 @@ export const dictionarySlice = createSlice({
         resetFullTranslateList: (state) => {
             state.fullTranslateList = [];
             state.analogsWord = [];
+            state.lingvoExamples = [];
         }
     },
     extraReducers: (builder) => {
@@ -315,6 +325,20 @@ export const dictionarySlice = createSlice({
             state.analogsWord = action.payload;
           })
           .addCase(getAnalogs.rejected, (state, action) => {
+            const errorObj: any = action.payload;
+            state.status = 'rejected';
+            state.error = errorObj;
+          })
+
+          .addCase(getExamplesForWord.pending, (state, action) => {
+            state.status = 'loading';
+            state.error = { statusCode: 0, message: "", errorCode: "" };
+          })
+          .addCase(getExamplesForWord.fulfilled, (state, action) => {
+            state.status = 'resolved';
+            state.lingvoExamples = action.payload;
+          })
+          .addCase(getExamplesForWord.rejected, (state, action) => {
             const errorObj: any = action.payload;
             state.status = 'rejected';
             state.error = errorObj;
