@@ -49,7 +49,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
     const [linkedWordsList, addToLinkedWordsList] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
-    const [dictionaryWords, addToDictionaryWords] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
     const [lingvoExamplesList, setLingvoExample] = useState<ILingvoExample[]>([]);
 
     const { setDictionary, resetFullTranslateList } = useActions();
@@ -126,7 +125,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
 
     const addLinkedWords = () => {
         changeDictionaryWord("dictionaryLinkedWords", linkedWordsList.map(word => {return {word}}));
-        addToDictionaryWords(linkedWordsList);
         createLinkedWords({
             dictionaryId: id,
             words: linkedWordsList,
