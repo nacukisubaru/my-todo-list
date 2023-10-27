@@ -29,7 +29,7 @@ const WordsPanel: FC<IWordsPanel> = ({ wordsList, checkWords = true, addWord }) 
             .filter((word) => word.type === typeWord)
             .map((word) => word);
         setWords(words);
-    }, [typeWord]);
+    }, [typeWord, wordsList]);
     
     return (
         <>

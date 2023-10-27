@@ -235,7 +235,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             </div>
 
             <div className="font-bold mb-[5px]">Значения</div>
-            {dictionaryWords.map(word => {
+            {linkedWordsList.map(word => {
                 return  <WordTag onClick={()=>{}} checkTags={false}>{word}</WordTag>;
             })}
            
@@ -250,7 +250,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                             <>
                                 <WordsPanel 
                                     wordsList={fullTranslateList.map(translate => {
-                                        if (dictionaryWords.length && dictionaryWords.includes(translate.word)) {
+                                        if (linkedWordsList.length && linkedWordsList.includes(translate.word)) {
                                             return {...translate, isActive: true}
                                         }
                                         return {...translate, isActive: false}
