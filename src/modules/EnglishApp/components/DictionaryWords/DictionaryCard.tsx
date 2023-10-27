@@ -113,7 +113,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     }
 
     const showLingvoExample = (example: IDictionaryExample, isShow: boolean) => {
-        console.log({lingvoExamplesList})
         const examples = lingvoExamplesList.map(lingvoExample => {
             if (lingvoExample.originalText === example.originalText) {
                 return {...lingvoExample, showTranslate: isShow};
@@ -121,7 +120,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 return {...lingvoExample, showTranslate: false};
             }
         });
-        console.log({examples})
+
         setLingvoExample(examples);
     }
 
@@ -282,41 +281,48 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                         </ArrowWithText>
                     </>
                 )}
-                <div className="font-bold">Примеры</div>
-                <DictionaryExamples
-                    examplesList={examples.filter((example) => {
-                        if (example.exampleType === "example") {
-                            return example;
-                        }
-                    })}
-                    showTranslate={showTranslte}
-                    translate={translate}
-                    translateExampleLang={translateExampleLang}
-                />
-                <div className="font-bold">синонимы</div>
-                <DictionaryExamples
-                    examplesList={examples.filter((example) => {
-                        if (example.exampleType === "synonym") {
-                            return example;
-                        }
-                    })}
-                    showTranslate={showTranslte}
-                    translate={translate}
-                    translateExampleLang={translateExampleLang}
-                    quantityExamplesOnPage={2}
-                />
-                <div className="font-bold">антонимы</div>
-                <DictionaryExamples
-                    examplesList={examples.filter((example) => {
-                        if (example.exampleType === "antonym") {
-                            return example;
-                        }
-                    })}
-                    showTranslate={showTranslte}
-                    translate={translate}
-                    translateExampleLang={translateExampleLang}
-                    quantityExamplesOnPage={2}
-                />
+                <ArrowWithText 
+                    onClick={()=>{}}
+                    content={
+                        <>
+                            <DictionaryExamples
+                                examplesList={examples.filter((example) => {
+                                    if (example.exampleType === "example") {
+                                        return example;
+                                    }
+                                })}
+                                showTranslate={showTranslte}
+                                translate={translate}
+                                translateExampleLang={translateExampleLang}
+                            />
+                            <div className="font-bold">синонимы</div>
+                            <DictionaryExamples
+                                examplesList={examples.filter((example) => {
+                                    if (example.exampleType === "synonym") {
+                                        return example;
+                                    }
+                                })}
+                                showTranslate={showTranslte}
+                                translate={translate}
+                                translateExampleLang={translateExampleLang}
+                                quantityExamplesOnPage={2}
+                            />
+                            <div className="font-bold">антонимы</div>
+                            <DictionaryExamples
+                                examplesList={examples.filter((example) => {
+                                    if (example.exampleType === "antonym") {
+                                        return example;
+                                    }
+                                })}
+                                showTranslate={showTranslte}
+                                translate={translate}
+                                translateExampleLang={translateExampleLang}
+                                quantityExamplesOnPage={2}
+                            />
+                        </>
+                    }>
+                        Другие примеры
+                </ArrowWithText>
             </div>
             <div className="display flex justify-end">
                 {studyStageState === "BEING_STUDIED" && (
