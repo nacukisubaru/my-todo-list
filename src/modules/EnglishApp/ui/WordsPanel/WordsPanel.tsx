@@ -6,14 +6,16 @@ import WordTag from "./WordTag";
 interface IWordTag {
     word: string,
     type: string,
-    isActive: boolean
+    isActive?: boolean
 }
+
 interface IWordsPanel {
     wordsList: IWordTag[];
     addWord?: (word: string, isRemove: boolean) => void;
+    checkWords?: boolean;
 }
 
-const WordsPanel: FC<IWordsPanel> = ({ wordsList, addWord }) => {
+const WordsPanel: FC<IWordsPanel> = ({ wordsList, checkWords = true, addWord }) => {
     const [value, setValue] = useState(0);
     const [typeWord, setTypeWord] = useState(wordsList[0].type);
     const [words, setWords] = useState<IWordTag[]>([]);
@@ -66,6 +68,7 @@ const WordsPanel: FC<IWordsPanel> = ({ wordsList, addWord }) => {
                                 addWord && addWord(word.word, isActive);
                             }}
                             isActive={word.isActive}
+                            checkTags={checkWords}
                         >
                             {word.word}
                         </WordTag>

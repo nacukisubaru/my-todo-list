@@ -234,7 +234,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     </ArrowWithText>
                     <ArrowWithText 
                         onClick={getAnalogsWord} 
-                        content={analogsWord.length ? <WordsPanel wordsList={analogsWord}/> : false}>
+                        content={analogsWord.length ? <WordsPanel wordsList={analogsWord} checkWords={false}/> : false}>
                         Альтернативы слову {translatedWord}
                     </ArrowWithText>
                 </>

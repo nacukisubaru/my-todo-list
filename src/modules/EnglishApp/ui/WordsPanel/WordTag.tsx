@@ -4,16 +4,19 @@ import { FC, useState } from "react";
 interface IWordTag {
     children: any,
     isActive?: boolean,
+    checkTags?: boolean,
     onClick: (isActive: boolean) => void
 }
 
-const WordTag: FC<IWordTag> = ({children, isActive = false, onClick}) => {
+const WordTag: FC<IWordTag> = ({children, isActive = false, checkTags = true, onClick}) => {
     const [active, setActive] = useState(isActive);
     const changeTag = () => {
-        if (active) {
-            setActive(false);
-        } else {
-            setActive(true);
+        if (checkTags) {
+            if (active) {
+                setActive(false);
+            } else {
+                setActive(true);
+            }
         }
 
         onClick(active);
