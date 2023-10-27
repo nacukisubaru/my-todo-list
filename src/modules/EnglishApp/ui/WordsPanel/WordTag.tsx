@@ -3,19 +3,20 @@ import { FC, useState } from "react";
 
 interface IWordTag {
     children: any,
+    isActive?: boolean,
     onClick: (isActive: boolean) => void
 }
 
-const WordTag: FC<IWordTag> = ({children, onClick}) => {
-    const [isActive, setActive] = useState(false);
+const WordTag: FC<IWordTag> = ({children, isActive = false, onClick}) => {
+    const [active, setActive] = useState(isActive);
     const changeTag = () => {
-        if (isActive) {
+        if (active) {
             setActive(false);
         } else {
             setActive(true);
         }
 
-        onClick(isActive);
+        onClick(active);
     }
 
     return (
@@ -23,7 +24,7 @@ const WordTag: FC<IWordTag> = ({children, onClick}) => {
             color="primary"
             disabled={false}
             size="small"
-            variant={isActive ? "contained" : "outlined"}
+            variant={active ? "contained" : "outlined"}
             style={{borderRadius:'27px', textTransform: 'lowercase', cursor: 'pointer'}}
             onClick={changeTag}
         >

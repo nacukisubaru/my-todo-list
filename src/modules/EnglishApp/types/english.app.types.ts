@@ -6,7 +6,8 @@ interface IDictionary {
     languageOriginal: string;
     languageTranslation: string;
     dictionaryExamples: IDictionaryExample[];
-    linkedWords: string[],
+    dictionaryLinkedWords: IDictionaryLinkedWord[];
+    linkedWords: string[];
     studyStage: studyStageType;
 }
 
@@ -15,6 +16,11 @@ interface IDictionaryExample {
     translatedText: string,
     exampleType: string,
     showTranslate: boolean
+}
+
+interface IDictionaryLinkedWord {
+    id: number,
+    word: string
 }
 
 interface ILanguageSettings {

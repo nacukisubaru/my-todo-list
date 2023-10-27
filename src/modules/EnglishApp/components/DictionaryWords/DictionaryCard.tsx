@@ -17,6 +17,7 @@ import { fullTranslate, getAnalogs } from "../../store/services/dictionary/dicti
 import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 import { availableLanguages } from "../../helpers/languageHelper";
 import { Button } from "@mui/material";
+import WordTag from "../../ui/WordsPanel/WordTag";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -31,6 +32,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         languageOriginal,
         languageTranslation,
         studyStage,
+        dictionaryLinkedWords
     } = props;
 
     const { dictionary, fullTranslateList, analogsWord } = useAppSelector((state) => state.dictionaryReducer);
@@ -197,10 +199,16 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     )}
                 </>
             </div>
-            <div className="display flex justify-between mt-[5px]">
+            <div className="display flex justify-between mt-[5px] mb-[5px]">
                 {languageOriginal}&#8594;
                 {languageTranslation}
             </div>
+
+            <div className="font-bold mb-[5px]">Значения</div>
+            {dictionaryLinkedWords.map(word => {
+                return  <WordTag onClick={()=>{}}>{word.word}</WordTag>;
+            })}
+           
             <Divider />
             {availableLanguages.includes(languageOriginal) && availableLanguages.includes(languageTranslation) 
             && (languageTranslation === 'ru' || languageOriginal === 'ru')  && (
@@ -210,7 +218,12 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                         content={fullTranslateList.length ?
                         <>
                             <WordsPanel 
-                                wordsList={fullTranslateList}
+                                wordsList={fullTranslateList.map(translate => {
+                                    if (dictionaryLinkedWords.length && dictionaryLinkedWords.map(item => item.word).includes(translate.word)) {
+                                        return {...translate, isActive: true}
+                                    }
+                                    return {...translate, isActive: false}
+                                })}
                                 addWord={addToLinkedWords}
                             /> 
                             <div className="flex justify-end">
