@@ -48,7 +48,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
-    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>([]);
+    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
+    const [dictionaryWords, addToDictionaryWords] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
 
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
@@ -66,7 +67,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         filtrate();
     };
 
-    const changeDictionaryWord = (field: string, value: string) => {
+    const changeDictionaryWord = (field: string, value: any) => {
         const cloneDictionary = dictionary.map((word) => {
             return { ...word };
         });
@@ -98,6 +99,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     }
 
     const addLinkedWords = () => {
+        changeDictionaryWord("dictionaryLinkedWords", linkedWordsList.map(word => {return {word}}));
+        addToDictionaryWords(linkedWordsList);
         createLinkedWords({
             dictionaryId: id,
             words: linkedWordsList,
@@ -110,6 +113,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             words = linkedWordsList.filter(linkedWord => linkedWord !== word);
             addToLinkedWordsList(words);
         } else {
+            console.log([...words, word])
             addToLinkedWordsList([...words, word]);
         }
     }
@@ -205,8 +209,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             </div>
 
             <div className="font-bold mb-[5px]">Значения</div>
-            {dictionaryLinkedWords.map(word => {
-                return  <WordTag onClick={()=>{}}>{word.word}</WordTag>;
+            {dictionaryWords.map(word => {
+                return  <WordTag onClick={()=>{}} checkTags={false}>{word}</WordTag>;
             })}
            
             <Divider />
@@ -219,7 +223,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                         <>
                             <WordsPanel 
                                 wordsList={fullTranslateList.map(translate => {
-                                    if (dictionaryLinkedWords.length && dictionaryLinkedWords.map(item => item.word).includes(translate.word)) {
+                                    if (dictionaryWords.length && dictionaryWords.includes(translate.word)) {
                                         return {...translate, isActive: true}
                                     }
                                     return {...translate, isActive: false}

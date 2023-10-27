@@ -30,7 +30,7 @@ const WordsPanel: FC<IWordsPanel> = ({ wordsList, checkWords = true, addWord }) 
             .map((word) => word);
         setWords(words);
     }, [typeWord]);
-
+    
     return (
         <>
             <div className="mb-[15px]">
@@ -39,7 +39,6 @@ const WordsPanel: FC<IWordsPanel> = ({ wordsList, checkWords = true, addWord }) 
                     variant="scrollable"
                     scrollButtons="auto"
                     onChange={handleChange}
-                    centered
                 >
                     {uniqueList(wordsList.map((word) => word.type)).map(
                         (typeWord) => {

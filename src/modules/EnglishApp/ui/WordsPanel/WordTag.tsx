@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 interface IWordTag {
     children: any,
@@ -9,7 +9,7 @@ interface IWordTag {
 }
 
 const WordTag: FC<IWordTag> = ({children, isActive = false, checkTags = true, onClick}) => {
-    const [active, setActive] = useState(isActive);
+    const [active, setActive] = useState(false);
     const changeTag = () => {
         if (checkTags) {
             if (active) {
@@ -21,6 +21,10 @@ const WordTag: FC<IWordTag> = ({children, isActive = false, checkTags = true, on
 
         onClick(active);
     }
+
+    useEffect(() => {
+        setActive(isActive);
+    }, [isActive])
 
     return (
         <Button
