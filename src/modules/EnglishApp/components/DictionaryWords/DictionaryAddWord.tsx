@@ -11,6 +11,8 @@ import SnackBar from "../../../../ui/SnackBars/SnackBar";
 import { Button } from "@mui/material";
 import Settings from "../Settings/Settings";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
+import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -49,6 +51,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     const openSettings = () => {
         setOpenModalSettings(true);
     };
+    
+    const [translationWord, setTransltionWord] = useState(translateResult.translatedWord);
 
     const closeModalAddWord = () => {
         resetTranslateResult();
@@ -83,6 +87,11 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
 
     const changeTranslate = () => {
         changeTranslateMethod();
+    }
+
+    const choiceTranslationWord = (word: string) => {
+        setWord(word);
+        setTransltionWord(word);
     }
 
     return (
@@ -121,6 +130,29 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 }}
                 maxWidth="sm:max-w-[32rem]"
             >
+                { translateResult.wordsList && translateResult.wordsList.length && (
+                    <>
+                        <ArrowWithText 
+                            onClick={() => {}} 
+                            content={
+                                <>
+                                    <WordsPanel 
+                                        wordsList={translateResult.wordsList.map(word => {
+                                            if (word.word === translationWord) {
+                                                return {...word, isActive: true}
+                                            }
+                                            return {...word, isActive: false}
+                                        })}
+                                        checkWords={false}
+                                        addWord={choiceTranslationWord}
+                                    /> 
+                                </>
+                            }
+                        >
+                            Список значений
+                        </ArrowWithText>
+                    </>
+                )}
                 <div className="display flex">
                     {isAddWord ? (
                         <>

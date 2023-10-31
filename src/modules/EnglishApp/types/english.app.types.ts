@@ -70,7 +70,8 @@ interface ITranslateResult {
     originalWord: string,
     translatedWord: string,
     originalLang: string,
-    translateLang: string
+    translateLang: string,
+    wordsList?: IDictionaryLinkedWord[]
 }
 
 interface ITranslateParams {
