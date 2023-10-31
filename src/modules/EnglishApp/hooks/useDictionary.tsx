@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "./useAppSelector";
 import { dictionaryApi } from "../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../helpers/stringHelper";
-import { LangCodesISO } from "../helpers/languageHelper";
 
 export const useDictionary = () => {
     const { translateResult, translateLanguages, translateMethod } = useAppSelector(
@@ -35,6 +34,7 @@ export const useDictionary = () => {
     const { dictionaryActiveSettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
+    const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
 
     useEffect(() => {
         
@@ -51,7 +51,7 @@ export const useDictionary = () => {
         }
     }, [translateResult]);
 
-    const addNewWord = async () => {
+    const addNewWord = async (linkedWords: string[] = []) => {
         let sourceWord = translateResult.originalWord;
         let targetWord = word;
 
@@ -73,7 +73,7 @@ export const useDictionary = () => {
             id: "",
             dictionaryExamples: [],
         };
-        
+
         const filterIsApply = checkApplyFilter();
         if (filterIsApply) {
             await resetDictionary();
@@ -94,15 +94,27 @@ export const useDictionary = () => {
             languageOriginal &&
             languageTranslation
         ) {
+            
             wordObj.id = generateCryptId(wordObj);
-            createWord(wordObj);
-            addWord(wordObj);
+            if (linkedWords.length) {
+                wordObj.dictionaryLinkedWords = linkedWords.map(word => {return {word}});
+            }
+
+            await addWord(wordObj);
+            await createWord(wordObj);
+            
+            if (linkedWords.length) {
+                createLinkedWords({
+                    dictionaryId: wordObj.id,
+                    words: linkedWords,
+                })
+            }
         }
     };
 
-    const translateOrAddWord = async () => {
+    const translateOrAddWord = async (linkedWords: string[] = []) => {
         if (translateResult.translatedWord) {
-            addNewWord();
+            addNewWord(linkedWords);
         } else {
             translate(word);
         }

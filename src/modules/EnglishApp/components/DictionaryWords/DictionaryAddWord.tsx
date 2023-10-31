@@ -129,7 +129,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 }}
                 callbacks={{
                     primaryBtnClick: () => {
-                        isAddWord ? addNewWord() : translateOrAddWord();
+                        isAddWord ? addNewWord([translationWord]) : translateOrAddWord([translationWord]);
                     },
                     secondaryBtnClick: closeModalAddWord,
                 }}

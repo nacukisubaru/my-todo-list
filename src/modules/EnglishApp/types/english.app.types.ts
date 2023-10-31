@@ -19,7 +19,7 @@ interface IDictionaryExample {
 }
 
 interface IDictionaryLinkedWord {
-    id: number,
+    id?: number,
     word: string
 }
 
