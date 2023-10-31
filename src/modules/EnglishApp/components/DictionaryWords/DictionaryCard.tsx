@@ -32,7 +32,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         languageOriginal,
         languageTranslation,
         studyStage,
-        dictionaryLinkedWords
+        dictionaryLinkedWords,
+        transcription
     } = props;
 
     const { dictionary, fullTranslateList, analogsWord, lingvoExamples } = useAppSelector((state) => state.dictionaryReducer);
@@ -40,8 +41,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const { 
         translate, 
         showTranslte, 
-        getExamples, 
-        translateExampleLang, 
+        getExamples,
         examples
     } = useDictionaryExample(props);
 
@@ -137,7 +137,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             words = linkedWordsList.filter(linkedWord => linkedWord !== word);
             addToLinkedWordsList(words);
         } else {
-            console.log([...words, word])
             addToLinkedWordsList([...words, word]);
         }
     }
@@ -232,11 +231,22 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 {languageTranslation}
             </div>
 
-            <div className="font-bold mb-[5px]">Значения</div>
-            {linkedWordsList.map(word => {
-                return  <WordTag onClick={()=>{}} checkTags={false}>{word}</WordTag>;
-            })}
-           
+            {transcription && (
+                <>
+                    <div className="font-bold mb-[5px]">Транскрипция</div>
+                    {transcription}
+                </>
+            )}
+
+            {linkedWordsList.length && (
+                <>
+                    <div className="font-bold mb-[5px]">Значения</div>
+                    {linkedWordsList.map(word => {
+                        return  <WordTag onClick={()=>{}} checkTags={false}>{word}</WordTag>;
+                    })}
+                </>
+            )}
+
             <Divider />
             <div className="text-left mb-[15px]">
                 {availableLanguages.includes(languageOriginal) && availableLanguages.includes(languageTranslation) 

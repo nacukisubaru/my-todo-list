@@ -34,6 +34,15 @@ export const useDictionary = () => {
     const { dictionaryActiveSettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
+
+    const [translationWord, setTransltionWord] = useState("");
+
+    useEffect(() => {
+        if (translateResult.translatedWord) {
+            setTransltionWord(translateResult.translatedWord);
+        }
+    }, [translateResult.translatedWord])
+
     const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
 
     useEffect(() => {
@@ -51,7 +60,7 @@ export const useDictionary = () => {
         }
     }, [translateResult]);
 
-    const addNewWord = async (linkedWords: string[] = []) => {
+    const addNewWord = async () => {
         let sourceWord = translateResult.originalWord;
         let targetWord = word;
 
@@ -72,6 +81,7 @@ export const useDictionary = () => {
             studyStage: "BEING_STUDIED",
             id: "",
             dictionaryExamples: [],
+            transcription: translateResult.transcription
         };
 
         const filterIsApply = checkApplyFilter();
@@ -96,25 +106,25 @@ export const useDictionary = () => {
         ) {
             
             wordObj.id = generateCryptId(wordObj);
-            if (linkedWords.length) {
-                wordObj.dictionaryLinkedWords = linkedWords.map(word => {return {word}});
+            if (translationWord) {
+                wordObj.dictionaryLinkedWords = [{word: translationWord}];
             }
 
             await addWord(wordObj);
             await createWord(wordObj);
             
-            if (linkedWords.length) {
+            if (translationWord) {
                 createLinkedWords({
                     dictionaryId: wordObj.id,
-                    words: linkedWords,
+                    words: [translationWord],
                 })
             }
         }
     };
 
-    const translateOrAddWord = async (linkedWords: string[] = []) => {
+    const translateOrAddWord = async () => {
         if (translateResult.translatedWord) {
-            addNewWord(linkedWords);
+            addNewWord();
         } else {
             translate(word);
         }
@@ -177,6 +187,8 @@ export const useDictionary = () => {
         setOriginalLang,
         setTranslatelLang,
         setVoiceWordSettings,
+        setTransltionWord,
+        translationWord,
         inputOriginal,
         inputTranslation,
         word,

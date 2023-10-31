@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
@@ -34,6 +34,8 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setOriginalLang,
         setTranslatelLang,
         setVoiceWordSettings,
+        setTransltionWord,
+        translationWord,
         inputOriginal,
         inputTranslation,
         word,
@@ -54,10 +56,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
     const openSettings = () => {
         setOpenModalSettings(true);
     };
-
-    const [translationWord, setTransltionWord] = useState(
-        translateResult.translatedWord
-    );
 
     const closeModalAddWord = () => {
         resetTranslateResult();
@@ -129,7 +127,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                 }}
                 callbacks={{
                     primaryBtnClick: () => {
-                        isAddWord ? addNewWord([translationWord]) : translateOrAddWord([translationWord]);
+                        isAddWord ? addNewWord() : translateOrAddWord();
                     },
                     secondaryBtnClick: closeModalAddWord,
                 }}
@@ -147,10 +145,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                             <WordsPanel
                                                 wordsList={translateResult.wordsList.map(
                                                     (word) => {
-                                                        if (
-                                                            word.word ===
-                                                            translationWord
-                                                        ) {
+                                                        if (word.word === translationWord) {
                                                             return {
                                                                 ...word,
                                                                 isActive: true,

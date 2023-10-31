@@ -9,6 +9,7 @@ interface IDictionary {
     dictionaryLinkedWords: IDictionaryLinkedWord[];
     linkedWords: string[];
     studyStage: studyStageType;
+    transcription?: string;
 }
 
 interface IDictionaryExample {
@@ -71,7 +72,8 @@ interface ITranslateResult {
     translatedWord: string,
     originalLang: string,
     translateLang: string,
-    wordsList?: IDictionaryLinkedWord[]
+    wordsList?: IDictionaryLinkedWord[],
+    transcription?: string
 }
 
 interface ITranslateParams {
