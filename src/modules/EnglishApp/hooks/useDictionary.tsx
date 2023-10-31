@@ -47,7 +47,7 @@ export const useDictionary = () => {
                 voiceLang = translateResult.originalLang;
             }
             
-            setVoiceWordSettings({voiceWord, voiceLang: LangCodesISO[voiceLang]});
+            setVoiceWordSettings({voiceWord, voiceLang});
         }
     }, [translateResult]);
 

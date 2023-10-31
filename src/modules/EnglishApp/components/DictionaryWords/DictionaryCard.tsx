@@ -273,7 +273,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                                 examplesList={lingvoExamplesList}
                                 showTranslate={showLingvoExample}
                                 translate={translate}
-                                translateExampleLang={translateExampleLang}
+                                languageOriginal={languageOriginal}
+                                languageTranslation={languageTranslation}
                             />  : false}>
                             Примеры из lingvo
                         </ArrowWithText>
@@ -291,7 +292,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                                 })}
                                 showTranslate={showTranslte}
                                 translate={translate}
-                                translateExampleLang={translateExampleLang}
+                                languageOriginal={languageOriginal}
+                                languageTranslation={languageTranslation}
                             />
                             <div className="font-bold">синонимы</div>
                             <DictionaryExamples
@@ -302,7 +304,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                                 })}
                                 showTranslate={showTranslte}
                                 translate={translate}
-                                translateExampleLang={translateExampleLang}
+                                languageOriginal={languageOriginal}
+                                languageTranslation={languageTranslation}
                                 quantityExamplesOnPage={2}
                             />
                             <div className="font-bold">антонимы</div>
@@ -314,7 +317,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                                 })}
                                 showTranslate={showTranslte}
                                 translate={translate}
-                                translateExampleLang={translateExampleLang}
+                                languageOriginal={languageOriginal}
+                                languageTranslation={languageTranslation}
                                 quantityExamplesOnPage={2}
                             />
                         </>

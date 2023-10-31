@@ -185,4 +185,4 @@ export const LangCodesISO: any = {
     'zu' : 'Zulu'
 };
 
-export const availableLanguages = ['en', 'ru', 'ch', 'de', 'es', 'it'];
+export const availableLanguages = ['en', 'ru', 'ch', 'de', 'es', 'it', 'fr'];

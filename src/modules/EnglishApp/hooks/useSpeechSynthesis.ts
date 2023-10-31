@@ -1,8 +1,8 @@
 export const useSpeechSynthesis = () => {
     
     const findVoiceByLang = (voiceValue: string) => {
-        return window.speechSynthesis.getVoices().find(voice => {
-            return voice.name.includes(voiceValue);
+        return window.speechSynthesis.getVoices().find(voice => {  
+            return voice.lang.includes(voiceValue);
         });
     }
 

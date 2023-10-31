@@ -6,7 +6,8 @@ import TranslateButton from "../../ui/Buttons/TranslateButton";
 
 interface IDictionaryExamplesProps {
     examplesList: IDictionaryExample[];
-    translateExampleLang: string;
+    languageOriginal: string,
+    languageTranslation: string,
     quantityExamplesOnPage?: number;
     showTranslate: (example: IDictionaryExample, isShow: boolean) => void;
     translate: (example: IDictionaryExample) => void;
@@ -14,7 +15,8 @@ interface IDictionaryExamplesProps {
 
 const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
     examplesList,
-    translateExampleLang,
+    languageOriginal,
+    languageTranslation,
     quantityExamplesOnPage = 5,
     showTranslate,
     translate,
@@ -26,16 +28,19 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
 
     const showMore = () => {
         setShowMoreInc(showMoreInc + quantityExamplesOnPage);
-        const listLength = examplesList.slice(0, showMoreInc + quantityExamplesOnPage).length;
+        const listLength = examplesList.slice(
+            0,
+            showMoreInc + quantityExamplesOnPage
+        ).length;
         setExampleListLength(listLength);
         if (listLength === exampleListLength) {
             setEndExampleList(true);
         }
-    }
+    };
 
     useEffect(() => {
-        console.log({examplesList});
-    },[]);
+        console.log({ examplesList });
+    }, []);
 
     return (
         <div>
@@ -86,7 +91,7 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                                                     onClick={() => {
                                                         speak(
                                                             example.translatedText,
-                                                            translateExampleLang
+                                                            languageOriginal
                                                         );
                                                     }}
                                                 />
@@ -94,27 +99,45 @@ const DictionaryExamples: FC<IDictionaryExamplesProps> = ({
                                         </>
                                     )}
                             </div>
-
-                            <div className="display flex">
-                                <span className="font-bold">uk</span>
+                            {languageTranslation === "en" || languageOriginal === "en" ? (
+                                <div className="display flex">
+                                    <span className="font-bold">uk</span>
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(
+                                                example.originalText,
+                                                "en-GB"
+                                            );
+                                        }}
+                                    />
+                                    <span className="font-bold">us</span>
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(
+                                                example.originalText,
+                                                "en-US"
+                                            );
+                                        }}
+                                    />
+                                </div>
+                            ) : (
                                 <PlayButton
                                     onClick={() => {
-                                        speak(example.originalText, "en-GB");
+                                        speak(
+                                            example.originalText,
+                                            languageTranslation
+                                        );
                                     }}
                                 />
-                                <span className="font-bold">us</span>
-                                <PlayButton
-                                    onClick={() => {
-                                        speak(example.originalText, "en-US");
-                                    }}
-                                />
-                            </div>
+                            )}
                         </div>
                     );
                 })}
-                {!isEndExampleList && (
-                    <a className="cursor-pointer" onClick={showMore}>показать еще</a>
-                )}
+            {!isEndExampleList && (
+                <a className="cursor-pointer" onClick={showMore}>
+                    показать еще
+                </a>
+            )}
         </div>
     );
 };
