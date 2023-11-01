@@ -10,14 +10,15 @@ import { dictionaryApi } from "../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../helpers/stringHelper";
 
 export const useDictionary = () => {
-    const { translateResult, translateLanguages, translateMethod } = useAppSelector(
+    const { translateResult, translateLanguages, translateMethod, dictionary } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
     const {
         addWord,
         resetDictionaryFilter,
-        resetDictionary
+        resetDictionary,
+        setDictionary
     } = useActions();
     
     const dispatch = useAppDispatch();
@@ -167,6 +168,21 @@ export const useDictionary = () => {
         }
     };
 
+    const changeDictionaryWord = (field: string, value: any, id: any) => {
+        const cloneDictionary = dictionary.map((word) => {
+            return { ...word };
+        });
+
+        cloneDictionary.map((clone, key) => {
+            if (clone.id === id) {
+                const changableWord: any = cloneDictionary;
+                changableWord[key][field] = value;
+            }
+        });
+
+        setDictionary(cloneDictionary);
+    };
+
     useEffect(() => {
         if (translateResult.translatedWord) {
             setWord(translateResult.translatedWord);
@@ -188,6 +204,7 @@ export const useDictionary = () => {
         setTranslatelLang,
         setVoiceWordSettings,
         setTransltionWord,
+        changeDictionaryWord,
         translationWord,
         inputOriginal,
         inputTranslation,

@@ -33,6 +33,13 @@ export const dictionaryApi = createApi({
                 body
             }),
         }),
+        updateNotes: build.mutation({
+            query: (body: IUpdateNotes) => ({
+                url: '/dictionary/update-notes',
+                method: 'POST',
+                body
+            }),
+        }),
         remove: build.mutation({
             query:(body) => ({
                 url: '/dictionary/remove',

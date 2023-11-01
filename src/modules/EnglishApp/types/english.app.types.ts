@@ -10,6 +10,7 @@ interface IDictionary {
     linkedWords: string[];
     studyStage: studyStageType;
     transcription?: string;
+    notes: string;
 }
 
 interface IDictionaryExample {
@@ -113,6 +114,11 @@ type studyStageType = "NOT_STUDIED" | "BEING_STUDIED" | "STUDIED";
 interface IUpdateStudyStage {
     id: string,
     studyStage: studyStageType
+}
+
+interface IUpdateNotes {
+    id: string,
+    notes: string
 }
 
 interface ILanguage {

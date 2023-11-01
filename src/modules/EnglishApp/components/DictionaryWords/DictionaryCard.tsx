@@ -18,6 +18,8 @@ import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 import { availableLanguages } from "../../helpers/languageHelper";
 import { Button } from "@mui/material";
 import WordTag from "../../ui/WordsPanel/WordTag";
+import CreateIcon from '@mui/icons-material/Create';
+import DictionaryNotes from "./DictionaryNotes";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -33,7 +35,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         languageTranslation,
         studyStage,
         dictionaryLinkedWords,
-        transcription
+        transcription, 
+        notes
     } = props;
 
     const { dictionary, fullTranslateList, analogsWord, lingvoExamples } = useAppSelector((state) => state.dictionaryReducer);
@@ -226,27 +229,29 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     )}
                 </>
             </div>
-            <div className="display flex justify-between mt-[5px] mb-[5px]">
-                {languageOriginal}&#8594;
-                {languageTranslation}
+            <div className="text-left">
+                <div className="display flex justify-between mt-[5px] mb-[5px]">
+                    {languageOriginal}&#8594;
+                    {languageTranslation}
+                </div>
+
+                {transcription && (
+                    <>
+                        <div className="font-bold mb-[5px]">Транскрипция</div>
+                        {transcription}
+                    </>
+                )}
+
+                {linkedWordsList.length && (
+                    <>
+                        <div className="font-bold mb-[5px]">Значения</div>
+                        {linkedWordsList.map(word => {
+                            return  <WordTag onClick={()=>{}} checkTags={false}>{word}</WordTag>;
+                        })}
+                    </>
+                )}
+                <DictionaryNotes notes={notes} dictionaryId={id}/>
             </div>
-
-            {transcription && (
-                <>
-                    <div className="font-bold mb-[5px]">Транскрипция</div>
-                    {transcription}
-                </>
-            )}
-
-            {linkedWordsList.length && (
-                <>
-                    <div className="font-bold mb-[5px]">Значения</div>
-                    {linkedWordsList.map(word => {
-                        return  <WordTag onClick={()=>{}} checkTags={false}>{word}</WordTag>;
-                    })}
-                </>
-            )}
-
             <Divider />
             <div className="text-left mb-[15px]">
                 {availableLanguages.includes(languageOriginal) && availableLanguages.includes(languageTranslation) 
