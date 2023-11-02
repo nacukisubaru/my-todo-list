@@ -6,3 +6,11 @@ export const arrayUniqueByKey = (array:any, key = 'id') => {
 
     return arrayUniqueByKey;
 }
+  
+export const uniqueList = (array: any[]) => {
+    function onlyUnique(value: any, index: number, array: any[]) {
+        return array.indexOf(value) === index;
+    }
+
+    return array.filter(onlyUnique);
+}

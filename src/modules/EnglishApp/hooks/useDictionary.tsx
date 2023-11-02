@@ -1,4 +1,3 @@
-import { useDispatch } from "react-redux";
 import {
     getDictionaryByUser,
     translateWord,
@@ -6,12 +5,12 @@ import {
 import { useActions } from "./useAction";
 import { useFilter } from "./useFilter";
 import { useEffect, useState } from "react";
-import { useAppSelector } from "./useAppSelector";
+import { useAppDispatch, useAppSelector } from "./useAppSelector";
 import { dictionaryApi } from "../store/services/dictionary/dictionary.api";
 import { generateCryptId } from "../../../helpers/stringHelper";
 
 export const useDictionary = () => {
-    const { translateResult, languageForTranslate } = useAppSelector(
+    const { translateResult, translateLanguages, translateMethod, dictionary } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
@@ -19,10 +18,10 @@ export const useDictionary = () => {
         addWord,
         resetDictionaryFilter,
         resetDictionary,
-        setTranslateLanguage
+        setDictionary
     } = useActions();
-
-    const dispatch = useDispatch();
+    
+    const dispatch = useAppDispatch();
     const { checkApplyFilter } = useFilter();
     const [createWord] = dictionaryApi.useAddMutation();
 
@@ -32,25 +31,62 @@ export const useDictionary = () => {
     const [inputOriginal, setInputOriginal] = useState("");
     const [originalLang, setOriginalLang] = useState("");
     const [translateLang, setTranslatelLang] = useState("");
+    const [voiceWordSettings, setVoiceWordSettings] = useState({voiceWord: '', voiceLang: ''});
+    const { dictionaryActiveSettings } = useAppSelector(
+        (state) => state.dictionaryReducer
+    );
 
-    const addNewWord = async (wordObj?: IDictionary) => {
-        if (!wordObj) {
-            wordObj = {
-                originalWord: isAddWord
-                    ? inputOriginal
-                    : translateResult.originalWord,
-                translatedWord: isAddWord
-                    ? inputTranslation
-                    : translateResult.translatedWord,
-                languageOriginal: isAddWord
-                    ? originalLang
-                    : translateResult.textLang,
-                languageTranslation: isAddWord ? translateLang : languageForTranslate,
-                studyStage: "NOT_STUDIED",
-                id: "",
-                dictionaryExamples: [],
-            };
-        } 
+    const [translationWord, setTransltionWord] = useState("");
+
+    useEffect(() => {
+        if (translateResult.translatedWord) {
+            setTransltionWord(translateResult.translatedWord);
+        }
+    }, [translateResult.translatedWord])
+
+    const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
+
+    useEffect(() => {
+        
+        if (translateResult.translateLang && translateResult.originalLang) {
+            let voiceWord = translateResult.translatedWord;
+            let voiceLang = translateResult.translateLang;
+
+            if (dictionaryActiveSettings.sourceLanguage !== translateResult.originalLang) {
+                voiceWord = translateResult.originalWord;       
+                voiceLang = translateResult.originalLang;
+            }
+            
+            setVoiceWordSettings({voiceWord, voiceLang});
+        }
+    }, [translateResult]);
+
+    const addNewWord = async () => {
+        let sourceWord = translateResult.originalWord;
+        let targetWord = word;
+
+        if (dictionaryActiveSettings.sourceLanguage !== translateResult.originalLang) {
+            sourceWord = word;
+            targetWord = translateResult.originalWord;
+        }
+        
+        const wordObj: IDictionary = {
+            originalWord: isAddWord
+                ? inputOriginal
+                : sourceWord,
+            translatedWord: isAddWord
+                ? inputTranslation
+                : targetWord,
+            languageOriginal: dictionaryActiveSettings.sourceLanguage,
+            languageTranslation: dictionaryActiveSettings.targetLanguage,
+            studyStage: "BEING_STUDIED",
+            id: "",
+            dictionaryExamples: [],
+            transcription: translateResult.transcription,
+            dictionaryLinkedWords: [],
+            linkedWords: [],
+            notes: ""
+        };
 
         const filterIsApply = checkApplyFilter();
         if (filterIsApply) {
@@ -72,9 +108,21 @@ export const useDictionary = () => {
             languageOriginal &&
             languageTranslation
         ) {
+            
             wordObj.id = generateCryptId(wordObj);
-            createWord(wordObj);
-            addWord(wordObj);
+            if (translationWord) {
+                wordObj.dictionaryLinkedWords = [{word: translationWord}];
+            }
+
+            await addWord(wordObj);
+            await createWord(wordObj);
+            
+            if (translationWord) {
+                createLinkedWords({
+                    dictionaryId: wordObj.id,
+                    words: [translationWord],
+                })
+            }
         }
     };
 
@@ -82,26 +130,18 @@ export const useDictionary = () => {
         if (translateResult.translatedWord) {
             addNewWord();
         } else {
-            translate(word, languageForTranslate);
+            translate(word);
         }
     };
 
-    const translate = (word: string, targetLang: string) => {
-        if (word && targetLang) {
-            dispatch(translateWord({ word, targetLang }));
-        }
-    };
-
-    const selectTargetLang = async (lang: ILanguage[]) => {
-        if (lang.length) {
-            const langCode: string = lang[0].code;
-            if (langCode && languageForTranslate !== langCode) {
-                setTranslateLanguage(langCode);
-            }
-
-            if (languageForTranslate !== "") {
-                translate(translateResult.originalWord, langCode);
-            }
+    const translate = (word: string) => {
+        if (word) {
+            dispatch(translateWord({ 
+                word, 
+                sourceLang: translateLanguages[0], 
+                targetLang: translateLanguages[1], 
+                translateMethod 
+            }));
         }
     };
 
@@ -131,6 +171,21 @@ export const useDictionary = () => {
         }
     };
 
+    const changeDictionaryWord = (field: string, value: any, id: any) => {
+        const cloneDictionary = dictionary.map((word) => {
+            return { ...word };
+        });
+
+        cloneDictionary.map((clone, key) => {
+            if (clone.id === id) {
+                const changableWord: any = cloneDictionary;
+                changableWord[key][field] = value;
+            }
+        });
+
+        setDictionary(cloneDictionary);
+    };
+
     useEffect(() => {
         if (translateResult.translatedWord) {
             setWord(translateResult.translatedWord);
@@ -143,7 +198,6 @@ export const useDictionary = () => {
         translate,
         setAddWordWithoutTranslate,
         selectOriginalLang,
-        selectTargetLang,
         selectTranslateLang,
         setInputOriginal,
         setInputTranslation,
@@ -151,10 +205,14 @@ export const useDictionary = () => {
         setAddWord,
         setOriginalLang,
         setTranslatelLang,
+        setVoiceWordSettings,
+        setTransltionWord,
+        changeDictionaryWord,
+        translationWord,
         inputOriginal,
         inputTranslation,
         word,
-        languageForTranslate,
+        voiceWordSettings,
         isAddWord,
         originalLang,
         translateLang

@@ -5,6 +5,8 @@ import DictionaryExamples from "../DictionaryWords/DictionaryExamples";
 import Divider from "../../../../ui/Dividers/Divider";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
+import DictionaryLingvoExamples from "../DictionaryWords/DictionaryLingvoExamples";
+import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
 
 interface IPassedTrainingProps {
     isPassed: boolean;
@@ -19,7 +21,7 @@ const PassedTraining: FC<IPassedTrainingProps> = ({
     word,
     isPassed,
 }) => {
-    const {translate, showTranslte, getExamples, translateExampleLang, examples} = useDictionaryExample(word);
+    const {translate, showTranslte, getExamples, examples} = useDictionaryExample(word);
     const { speak } = useSpeechSynthesis();
 
     useEffect(() => {
@@ -64,12 +66,24 @@ const PassedTraining: FC<IPassedTrainingProps> = ({
                     </div>
                     
                     <Divider />
-                    <DictionaryExamples
-                        examplesList={examples}
-                        translateExampleLang={translateExampleLang}
-                        showTranslate={showTranslte}
-                        translate={translate}
-                    ></DictionaryExamples>
+                    <DictionaryLingvoExamples 
+                        translatedWord={word.translatedWord} 
+                        languageOriginal={word.languageOriginal} 
+                        languageTranslation={word.languageTranslation}
+                    />
+                    <ArrowWithText
+                        content={
+                        <DictionaryExamples
+                            examplesList={examples}
+                            languageOriginal={word.languageOriginal}
+                            languageTranslation={word.languageTranslation}
+                            showTranslate={showTranslte}
+                            translate={translate}
+                        />
+                        
+                    }>
+                        Другие примеры
+                    </ArrowWithText>
                 </>
             )}
         </>

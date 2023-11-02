@@ -1,93 +1,74 @@
-import { AutoComplete } from "@progress/kendo-react-dropdowns";
 import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { MultiSelect } from "@progress/kendo-react-dropdowns";
+import { Autocomplete, Checkbox, TextField } from "@mui/material";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 interface IDictionaryLanguages {
     selectLang: (value: ILanguage[]) => void;
+    options?: ILanguageSettings[];
     defaultLang?: string;
     placeholder?: string;
+    label?: string;
     multi?: boolean;
-    style?: any,
+    style?: any;
     defaultValue?: any[] | any;
 }
 
 const DictionaryLanguages: FC<IDictionaryLanguages> = ({
     selectLang,
-    defaultLang,
-    defaultValue = '',
-    multi = false,
-    style = {},
+    options,
+    defaultValue = "",
     placeholder = "Выберите язык",
+    label
 }) => {
     const languages = useAppSelector(
         (state) => state.dictionaryReducer.languages
     );
-    const [defaultTargetLang, setDefaultTargetLang] = useState("");
+  
+    const [langOptions, setLangOptions] = useState<ILanguageSettings[]>([]);
 
-    useEffect(() => {
-        if (defaultLang) {
-            const defaultLanguages = languages.filter((lang) => {
-                if (lang.code === defaultLang) {
-                    return lang;
-                }
-            });
-
-            setDefaultTargetLang(defaultLanguages[0].isoName);
-        }
-    }, []);
-
-    const setLanguage = (e: any) => {
-        if (e.value) {
-            if (Array.isArray(e.value)) {
-                let values: string[] = e.value;
-                const languagesCodesList: ILanguage[] = [];
-                values.map((value) => {
-                    languages.filter((lang) => {
-                        if (lang.isoName === value) {
-                            languagesCodesList.push(lang);
-                        }
-                    });
-                });
-                selectLang(languagesCodesList);
-            } else {
-                const selectedLang = languages.filter((lang) => {
-                    if (lang.isoName === e.value) {
-                        return lang;
-                    }
-                });
-
-                if (selectedLang.length) {
-                    selectLang(selectedLang);
-                }
-            }
-        }
+    const setLanguage = (_: any, values: any) => {
+        selectLang(values);
     };
 
+    useEffect(() => {
+        if (options) {
+            setLangOptions(options.filter(lang => !defaultValue.map((value:any) => value.code).includes(lang.code)));
+        } else if (languages) {
+            setLangOptions(languages.filter(lang => !defaultValue.map((value:any) => value.code).includes(lang.code)));
+        }
+    }, [options, languages]);
+
     return (
-        <>
-            {multi ? (
-                <MultiSelect
-                    data={languages.map((lang) => {
-                        return lang.isoName;
-                    })}
-                    onChange={setLanguage}
-                    defaultValue={defaultValue}
+        <Autocomplete
+            multiple
+            id="languages-tags"
+            options={langOptions}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option.isoName}
+            renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                    <Checkbox
+                        icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                        checkedIcon={<CheckBoxIcon fontSize="small" />}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                    />
+                    {option.isoName}
+                </li>
+            )}
+            style={{ width: 300 }}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label={label}
                     placeholder={placeholder}
-                    style={{...style}}
-                />
-            ) : (
-                <AutoComplete
-                    data={languages.map((lang) => {
-                        return lang.isoName;
-                    })}
-                    placeholder={placeholder}
-                    onChange={setLanguage}
-                    defaultValue={defaultTargetLang}
-                    style={{...style}}
                 />
             )}
-        </>
+            defaultValue={defaultValue}
+            onChange={setLanguage}
+        />      
     );
 };
 

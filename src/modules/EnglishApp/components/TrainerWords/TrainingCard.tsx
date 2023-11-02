@@ -1,5 +1,7 @@
 import { FC } from "react";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
+import WordTag from "../../ui/WordsPanel/WordTag";
+import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
 
 interface ITrainingCardProps {
     word: IDictionary;
@@ -20,7 +22,28 @@ const TrainingCard: FC<ITrainingCardProps> = ({
         <div className="display flex justify-center">
             {isVisible && (
                 <div className="w-[52vh]">
-                    {word.originalWord}
+                    <div className="font-bold">{word.originalWord}</div>
+                    {word.dictionaryLinkedWords && word.dictionaryLinkedWords.length > 0 && (
+                        <ArrowWithText 
+                            content={
+                                <>
+                                    {word.dictionaryLinkedWords.map(word => {
+                                        return  <WordTag checkTags={false}>{word.word}</WordTag>;
+                                    })}
+                                </>
+                            }
+                        >
+                            Теги
+                        </ArrowWithText>
+                    )}
+                    {word.notes && (
+                        <ArrowWithText 
+                            content={word.notes}
+                        >
+                            Заметки
+                        </ArrowWithText>
+                    )}
+
                     <input
                         id="trainerInput"
                         name="trainerInput"

@@ -19,9 +19,23 @@ export const dictionaryApi = createApi({
                 body
             }),
         }),
+        createLinkedWord: build.mutation({
+            query: (body: ICreateLinkedWord) => ({
+                url: '/dictionary-linked-words/create',
+                method: 'POST',
+                body
+            }),
+        }),
         updateSudyStage: build.mutation({
             query: (body: IUpdateStudyStage) => ({
                 url: '/dictionary/update-study-stage',
+                method: 'POST',
+                body
+            }),
+        }),
+        updateNotes: build.mutation({
+            query: (body: IUpdateNotes) => ({
+                url: '/dictionary/update-notes',
                 method: 'POST',
                 body
             }),

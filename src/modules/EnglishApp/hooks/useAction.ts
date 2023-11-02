@@ -1,9 +1,11 @@
 import { bindActionCreators } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux"
 import { dictionaryActions } from "../store/services/dictionary/dictionary.slice";
+import { settingsActions } from "../store/services/settings/settings.slice";
 
 const allActions = {
-    ...dictionaryActions
+    ...dictionaryActions,
+    ...settingsActions
 }
 
 export const useActions = () => {

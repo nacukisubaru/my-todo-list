@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
     getDictionaryByUser,
     getLanguages,
 } from "../../store/services/dictionary/dictionary.slice";
 import { useActions } from "../../hooks/useAction";
 import Card from "../../../../ui/Cards/Card";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import TrainerWords from "./TrainerWords";
-import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 
 const Trainer = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const { resetDictionary } = useActions();
-    const { dictionary, error } = useAppSelector(
+    const { dictionary, error, dictionaryActiveSettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
     const [pagination, setPagination] = useState<{
@@ -30,8 +28,6 @@ const Trainer = () => {
     const [trainingIsPassed, setPassTraining] = useState(false);
     const [inputWord, setInputWord] = useState<any>("");
     const [score, setScore] = useState(0);
-    const [trainingFirstLang, setTrainingFirstLang] = useState("");
-    const [trainingSecoundLang, setTrainingSecoundLang] = useState("");
 
     useEffect(() => {
         dispatch(getLanguages());
@@ -55,8 +51,8 @@ const Trainer = () => {
                 setPage(page + 1);
                 const params: IGetDictionaryListParams = {
                     page: page + 1,
-                    languageOriginal: trainingFirstLang,
-                    languageTranslation: trainingSecoundLang,
+                    languageOriginal: dictionaryActiveSettings.sourceLanguage,
+                    languageTranslation: dictionaryActiveSettings.targetLanguage,
                     studyStage: ['BEING_STUDIED']
                 };
                 dispatch(getDictionaryByUser(params));
@@ -73,8 +69,8 @@ const Trainer = () => {
     const trainingAgain = async () => {
         const params: IGetDictionaryListParams = {
             page: 0,
-            languageOriginal: trainingFirstLang,
-            languageTranslation: trainingSecoundLang,
+            languageOriginal: dictionaryActiveSettings.sourceLanguage,
+            languageTranslation: dictionaryActiveSettings.targetLanguage,
             studyStage: ['BEING_STUDIED']
         };
         await resetDictionary();
@@ -127,28 +123,16 @@ const Trainer = () => {
         }
     };
 
-    const selectFirstLang = (lang: ILanguage[]) => {
-        const langCode: string = lang[0].code;
-        setTrainingFirstLang(langCode);
-    };
-
-    const selectSecoundLang = (lang: ILanguage[]) => {
-        const langCode: string = lang[0].code;
-        setTrainingSecoundLang(langCode);
-    };
-
     const startTraining = async () => {
-        if (trainingFirstLang && trainingSecoundLang) {
-            setTrainingStart(true);
-            const params: IGetDictionaryListParams = {
-                page,
-                languageOriginal: trainingFirstLang,
-                languageTranslation: trainingSecoundLang,
-                studyStage: ['BEING_STUDIED']
-            };
-            await resetDictionary();
-            dispatch(getDictionaryByUser(params));
-        }
+        setTrainingStart(true);
+        const params: IGetDictionaryListParams = {
+            page,
+            languageOriginal: dictionaryActiveSettings.sourceLanguage,
+            languageTranslation: dictionaryActiveSettings.targetLanguage,
+            studyStage: ['BEING_STUDIED']
+        };
+        await resetDictionary();
+        dispatch(getDictionaryByUser(params));
     };
 
     return (
@@ -161,29 +145,11 @@ const Trainer = () => {
                 >
                     {!isTrainingStart && (
                         <>
-                            <div className="mb-[10px]">
-                                <DictionaryLanguages
-                                    selectLang={selectFirstLang}
-                                    placeholder="Выберите язык оригинала"
-                                ></DictionaryLanguages>
-                            </div>
-                            <div className="mb-[15px]">
-                                <DictionaryLanguages
-                                    selectLang={selectSecoundLang}
-                                    placeholder="Выберите язык перевода"
-                                ></DictionaryLanguages>
-                            </div>
                             <div className="display flex justify-center">
                                 <BasicButton
                                     name="Начать тренировку"
                                     color="primary"
                                     onClick={startTraining}
-                                    isDisabled={
-                                        !trainingFirstLang &&
-                                        !trainingSecoundLang
-                                            ? true
-                                            : false
-                                    }
                                 />
                             </div>
                         </>

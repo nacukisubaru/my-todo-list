@@ -15,7 +15,6 @@ const BasicButton: FC<IBasicButton> = ({
     isDisabled,
     onClick,
 }) => {
-    console.log({ isDisabled });
     return (
         <button
             type="button"

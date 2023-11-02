@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import Card from "../../../../ui/Cards/Card";
 import {
     getDictionaryByUser,
-    getDictionarySettings,
     getLanguages,
 } from "../../store/services/dictionary/dictionary.slice";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import SpeedDialButton from "../../../../ui/Buttons/SpeedDialButton";
 import DictionaryAddWord from "./DictionaryAddWord";
 import { useObserverScroll } from "../../../../hooks/useObserverScroll";
@@ -16,11 +14,13 @@ import Filter from "../Filter/Filter";
 import { useFilter } from "../../hooks/useFilter";
 import SearchInput from "../../../../ui/Inputs/SearchInput";
 import { useActions } from "../../hooks/useAction";
+import useLocalStorageState from "use-local-storage-state";
 
 const DictionaryWords = () => {
     const {dictionary, status} = useAppSelector(
         (state) => state.dictionaryReducer
     );
+    const {dictionaryActiveSettings, filterDictionary} = useAppSelector(state => state.dictionaryReducer);
     const {filtrate, setDictionaryFilter} = useFilter();
     const page = useAppSelector((state) => state.dictionaryReducer.page);
 
@@ -33,21 +33,32 @@ const DictionaryWords = () => {
         languageOriginal: "",
         languageTranslation: "",
         dictionaryExamples: [],
-        studyStage: "NOT_STUDIED"
+        linkedWords: [],
+        studyStage: "NOT_STUDIED",
+        notes: "",
+        dictionaryLinkedWords: []
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const {resetDictionary} = useActions();
+    const [filterStorage] = useLocalStorageState('filter',{
+        defaultValue: [filterDictionary]
+    })
 
     useEffect(() => {
-        filtrate();
+        const actions = async () => {
+           await dispatch(getLanguages());
+        }
+        actions();
+        setDictionaryFilter(filterStorage[0]);
     }, []);
 
     useEffect(() => {
-        dispatch(getDictionarySettings());
-        dispatch(getLanguages());
-    }, []);
+        if (dictionaryActiveSettings.sourceLanguage) {
+            filtrate();
+        }
+    }, [dictionaryActiveSettings]);
 
     const fetchData = () => {
         if (status !== "loading") {

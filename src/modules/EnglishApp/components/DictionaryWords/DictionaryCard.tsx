@@ -8,12 +8,18 @@ import Divider from "../../../../ui/Dividers/Divider";
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 import BookButton from "../../ui/Buttons/BookButton";
 import RetryButton from "../../ui/Buttons/RetryButton";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
-import SwapButton from "../../../../ui/Buttons/SwapButton";
-import { useDictionary } from "../../hooks/useDictionary";
+import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
+import { fullTranslate, getAnalogs } from "../../store/services/dictionary/dictionary.slice";
+import WordsPanel from "../../ui/WordsPanel/WordsPanel";
+import { availableLanguages } from "../../helpers/languageHelper";
+import { Button } from "@mui/material";
+import WordTag from "../../ui/WordsPanel/WordTag";
+import DictionaryNotes from "./DictionaryNotes";
+import DictionaryLingvoExamples from "./DictionaryLingvoExamples";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -28,27 +34,34 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         languageOriginal,
         languageTranslation,
         studyStage,
+        dictionaryLinkedWords,
+        transcription, 
+        notes
     } = props;
 
-    const { dictionary } = useAppSelector((state) => state.dictionaryReducer);
+    const { dictionary, fullTranslateList, analogsWord } = useAppSelector((state) => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
     const { 
         translate, 
         showTranslte, 
-        getExamples, 
-        translateExampleLang, 
+        getExamples,
         examples
     } = useDictionaryExample(props);
+
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
+    const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
-    const { setDictionary } = useActions();
+    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
+
+    const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
-    const { addNewWord } = useDictionary();
     
     useEffect(() => {
         getExamples();
     }, []);
 
+    const dispatch = useAppDispatch();
+    
     const changeStudyStage = async (studyStage: studyStageType) => {
         setStudyStage(studyStage);
         changeDictionaryWord("studyStage", studyStage);
@@ -56,7 +69,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         filtrate();
     };
 
-    const changeDictionaryWord = (field: string, value: string) => {
+    const changeDictionaryWord = (field: string, value: any) => {
         const cloneDictionary = dictionary.map((word) => {
             return { ...word };
         });
@@ -71,17 +84,39 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         setDictionary(cloneDictionary);
     };
 
-    const createReverseWord = () => {
-        addNewWord({
-            originalWord: translatedWord,
-            translatedWord: originalWord,
-            languageOriginal: languageTranslation,
-            languageTranslation: languageOriginal,
-            id: "",
-            studyStage: "NOT_STUDIED",
-            dictionaryExamples: [],
-        });
-    };
+    const getWordsFromLingvo = () => {
+        dispatch(fullTranslate({
+            word: translatedWord,
+            sourceLang: languageTranslation,
+            targetLang: 'ru'
+        }));
+    }
+
+    const getAnalogsWord = () => {
+        dispatch(getAnalogs({
+            word: originalWord,
+            sourceLang: 'ru',
+            targetLang: languageTranslation
+        }));
+    }
+
+    const addLinkedWords = () => {
+        changeDictionaryWord("dictionaryLinkedWords", linkedWordsList.map(word => {return {word}}));
+        createLinkedWords({
+            dictionaryId: id,
+            words: linkedWordsList,
+        })
+    }
+
+    const addToLinkedWords = (word: string, isRemove: boolean) => {
+        let words: string[] = linkedWordsList;
+        if (isRemove) {
+            words = linkedWordsList.filter(linkedWord => linkedWord !== word);
+            addToLinkedWordsList(words);
+        } else {
+            addToLinkedWordsList([...words, word]);
+        }
+    }
 
     return (
         <Modal
@@ -129,6 +164,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 primaryBtnClick: () => {},
                 secondaryBtnClick: () => {
                     closeCard();
+                    resetFullTranslateList();
                 },
             }}
             maxWidth="sm:max-w-[32rem]"
@@ -167,48 +203,109 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     )}
                 </>
             </div>
-            <div className="display flex justify-between mt-[5px]">
-                {languageOriginal}&#8594;
-                {languageTranslation}
-                <SwapButton onClick={createReverseWord}></SwapButton>
+            <div className="text-left">
+                <div className="display flex justify-between mt-[5px] mb-[5px]">
+                    {languageOriginal}&#8594;
+                    {languageTranslation}
+                </div>
+
+                {transcription && (
+                    <>
+                        <div className="font-bold mb-[5px]">Транскрипция</div>
+                        {transcription}
+                    </>
+                )}
+
+                {linkedWordsList.length && (
+                    <>
+                        <div className="font-bold mb-[5px]">Значения</div>
+                        {linkedWordsList.map(word => {
+                            return  <WordTag checkTags={false}>{word}</WordTag>;
+                        })}
+                    </>
+                )}
+                <DictionaryNotes notes={notes} dictionaryId={id}/>
             </div>
             <Divider />
             <div className="text-left mb-[15px]">
-                <div className="font-bold">Примеры</div>
-                <DictionaryExamples
-                    examplesList={examples.filter((example) => {
-                        if (example.exampleType === "example") {
-                            return example;
-                        }
-                    })}
-                    showTranslate={showTranslte}
-                    translate={translate}
-                    translateExampleLang={translateExampleLang}
-                />
-                <div className="font-bold">синонимы</div>
-                <DictionaryExamples
-                    examplesList={examples.filter((example) => {
-                        if (example.exampleType === "synonym") {
-                            return example;
-                        }
-                    })}
-                    showTranslate={showTranslte}
-                    translate={translate}
-                    translateExampleLang={translateExampleLang}
-                    quantityExamplesOnPage={2}
-                />
-                <div className="font-bold">антонимы</div>
-                <DictionaryExamples
-                    examplesList={examples.filter((example) => {
-                        if (example.exampleType === "antonym") {
-                            return example;
-                        }
-                    })}
-                    showTranslate={showTranslte}
-                    translate={translate}
-                    translateExampleLang={translateExampleLang}
-                    quantityExamplesOnPage={2}
-                />
+                {availableLanguages.includes(languageOriginal) && availableLanguages.includes(languageTranslation) 
+                && (languageTranslation === 'ru' || languageOriginal === 'ru')  && (
+                    <>
+                        <ArrowWithText 
+                            onClick={getWordsFromLingvo} 
+                            content={fullTranslateList.length ?
+                            <>
+                                <WordsPanel 
+                                    wordsList={fullTranslateList.map(translate => {
+                                        if (linkedWordsList.length && linkedWordsList.includes(translate.word)) {
+                                            return {...translate, isActive: true}
+                                        }
+                                        return {...translate, isActive: false}
+                                    })}
+                                    addWord={addToLinkedWords}
+                                /> 
+                                <div className="flex justify-end">
+                                    <Button variant="contained" size="small" onClick={addLinkedWords}>Сохранить</Button>
+                                </div>
+                            </> : false}>
+                            Получить значения слова {translatedWord}
+                        </ArrowWithText>
+                        <ArrowWithText 
+                            onClick={getAnalogsWord} 
+                            content={analogsWord.length ? <WordsPanel wordsList={analogsWord} checkWords={false}/> : false}>
+                            Альтернативы слову {translatedWord}
+                        </ArrowWithText>
+                        <DictionaryLingvoExamples 
+                            translatedWord={translatedWord} 
+                            languageOriginal={languageOriginal} 
+                            languageTranslation={languageTranslation}
+                        />
+                    </>
+                )}
+                <ArrowWithText                    
+                    content={
+                        <>
+                            <DictionaryExamples
+                                examplesList={examples.filter((example) => {
+                                    if (example.exampleType === "example") {
+                                        return example;
+                                    }
+                                })}
+                                showTranslate={showTranslte}
+                                translate={translate}
+                                languageOriginal={languageOriginal}
+                                languageTranslation={languageTranslation}
+                            />
+                            <div className="font-bold">синонимы</div>
+                            <DictionaryExamples
+                                examplesList={examples.filter((example) => {
+                                    if (example.exampleType === "synonym") {
+                                        return example;
+                                    }
+                                })}
+                                showTranslate={showTranslte}
+                                translate={translate}
+                                languageOriginal={languageOriginal}
+                                languageTranslation={languageTranslation}
+                                quantityExamplesOnPage={2}
+                            />
+                            <div className="font-bold">антонимы</div>
+                            <DictionaryExamples
+                                examplesList={examples.filter((example) => {
+                                    if (example.exampleType === "antonym") {
+                                        return example;
+                                    }
+                                })}
+                                showTranslate={showTranslte}
+                                translate={translate}
+                                languageOriginal={languageOriginal}
+                                languageTranslation={languageTranslation}
+                                quantityExamplesOnPage={2}
+                            />
+                        </>
+                    }>
+                        Другие примеры
+                </ArrowWithText>
             </div>
             <div className="display flex justify-end">
                 {studyStageState === "BEING_STUDIED" && (
