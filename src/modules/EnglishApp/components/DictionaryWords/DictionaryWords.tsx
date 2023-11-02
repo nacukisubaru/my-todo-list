@@ -36,7 +36,9 @@ const DictionaryWords = () => {
         languageTranslation: "",
         dictionaryExamples: [],
         linkedWords: [],
-        studyStage: "NOT_STUDIED"
+        studyStage: "NOT_STUDIED",
+        notes: "",
+        dictionaryLinkedWords: []
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
@@ -48,9 +50,7 @@ const DictionaryWords = () => {
 
     useEffect(() => {
         const actions = async () => {
-           await dispatch(getDictionaryActiveSettings());
            await dispatch(getLanguages());
-           await dispatch(getDictionarySettings());
         }
         actions();
         setDictionaryFilter(filterStorage[0]);

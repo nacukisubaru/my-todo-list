@@ -27,13 +27,12 @@ const EnglishApp: FC<EnglishAppProps> = ({
             {includeTrainer ? (
                 <Trainer></Trainer>
             ): (
-                <>
-                    <DictionaryWords></DictionaryWords>
-                    {openSettings && (
-                        <Settings close={closeSettings}></Settings>
-                    )}
-                </>
+                <DictionaryWords />
             )}
+
+            
+            <Settings close={closeSettings} isOpen={openSettings}></Settings>
+            
         </Provider>
     </>);
 }
