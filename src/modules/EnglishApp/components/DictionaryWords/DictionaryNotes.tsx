@@ -50,6 +50,7 @@ const DictionaryNotes: FC<IDictionaryNotesProps> = ({
                 <>
                     <div className="flex">
                         <Textarea
+                            placeholder="Напишите что-нибудь"
                             change={changeText}
                             defaultText={textareaText}
                         />

@@ -13,7 +13,7 @@ import { useActions } from "../../hooks/useAction";
 import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
-import { fullTranslate, getAnalogs, getExamplesForWord } from "../../store/services/dictionary/dictionary.slice";
+import { fullTranslate, getAnalogs } from "../../store/services/dictionary/dictionary.slice";
 import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 import { availableLanguages } from "../../helpers/languageHelper";
 import { Button } from "@mui/material";
@@ -39,7 +39,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         notes
     } = props;
 
-    const { dictionary, fullTranslateList, analogsWord, lingvoExamples } = useAppSelector((state) => state.dictionaryReducer);
+    const { dictionary, fullTranslateList, analogsWord } = useAppSelector((state) => state.dictionaryReducer);
     const { speak } = useSpeechSynthesis();
     const { 
         translate, 
@@ -52,7 +52,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
     const [linkedWordsList, addToLinkedWordsList] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
-    const [lingvoExamplesList, setLingvoExample] = useState<ILingvoExample[]>([]);
 
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
@@ -60,10 +59,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     useEffect(() => {
         getExamples();
     }, []);
-
-    useEffect(() => {
-        setLingvoExample(lingvoExamples);
-    }, [lingvoExamples]);
 
     const dispatch = useAppDispatch();
     
@@ -103,27 +98,6 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             sourceLang: 'ru',
             targetLang: languageTranslation
         }));
-    }
-
-    const getExamplesFromLingvo = () => {
-        dispatch(getExamplesForWord({
-            word: translatedWord,
-            sourceLang: languageTranslation,
-            targetLang: 'ru',
-            pageSize: 200
-        }));
-    }
-
-    const showLingvoExample = (example: IDictionaryExample, isShow: boolean) => {
-        const examples = lingvoExamplesList.map(lingvoExample => {
-            if (lingvoExample.originalText === example.originalText) {
-                return {...lingvoExample, showTranslate: isShow};
-            } else {
-                return {...lingvoExample, showTranslate: false};
-            }
-        });
-
-        setLingvoExample(examples);
     }
 
     const addLinkedWords = () => {

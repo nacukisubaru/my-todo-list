@@ -7,7 +7,7 @@ export const useFilter = () => {
     const filterDictionary: IFilterDictionary = useAppSelector(state => state.dictionaryReducer.filterDictionary);
     const { resetDictionary, setDictionaryFilter } = useActions();
     const dispatch = useAppDispatch();
-    const [filterStorage, setFilterToStorage] = useLocalStorageState('filter', {
+    const [_filterStorage, setFilterToStorage] = useLocalStorageState('filter', {
         defaultValue: [filterDictionary]
     })
 

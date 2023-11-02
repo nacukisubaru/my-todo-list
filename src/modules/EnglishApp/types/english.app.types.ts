@@ -22,7 +22,13 @@ interface IDictionaryExample {
 
 interface IDictionaryLinkedWord {
     id?: number,
-    word: string
+    word: string,
+}
+
+interface ILinkedWords {
+    id?: number,
+    word: string,
+    type: string
 }
 
 interface ILanguageSettings {
@@ -73,7 +79,7 @@ interface ITranslateResult {
     translatedWord: string,
     originalLang: string,
     translateLang: string,
-    wordsList?: IDictionaryLinkedWord[],
+    wordsList?: ILinkedWords[],
     transcription?: string
 }
 

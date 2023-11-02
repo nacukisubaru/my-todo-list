@@ -170,7 +170,7 @@ export const dictionarySlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-          .addCase(getDictionaryByUser.pending, (state, action) => {
+          .addCase(getDictionaryByUser.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
@@ -185,7 +185,7 @@ export const dictionarySlice = createSlice({
             state.error = errorObj;
           })
 
-          .addCase(translateWord.pending, (state, action) => {
+          .addCase(translateWord.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
@@ -199,7 +199,7 @@ export const dictionarySlice = createSlice({
             state.error = errorObj;
           })
 
-          .addCase(getLanguages.pending, (state, action) => {
+          .addCase(getLanguages.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
@@ -213,7 +213,7 @@ export const dictionarySlice = createSlice({
             state.error = errorObj;
           })
 
-          .addCase(getDictionaryActiveSettings.pending, (state, action) => {
+          .addCase(getDictionaryActiveSettings.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
@@ -282,7 +282,7 @@ export const dictionarySlice = createSlice({
             state.error = errorObj;
           })
 
-          .addCase(getDictionarySettings.pending, (state, action) => {
+          .addCase(getDictionarySettings.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
@@ -302,7 +302,7 @@ export const dictionarySlice = createSlice({
             state.error = errorObj;
           })
 
-          .addCase(fullTranslate.pending, (state, action) => {
+          .addCase(fullTranslate.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
@@ -316,7 +316,7 @@ export const dictionarySlice = createSlice({
             state.error = errorObj;
           })
 
-          .addCase(getAnalogs.pending, (state, action) => {
+          .addCase(getAnalogs.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
@@ -330,7 +330,7 @@ export const dictionarySlice = createSlice({
             state.error = errorObj;
           })
 
-          .addCase(getExamplesForWord.pending, (state, action) => {
+          .addCase(getExamplesForWord.pending, (state) => {
             state.status = 'loading';
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
@@ -147,12 +147,14 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                                     (word) => {
                                                         if (word.word === translationWord) {
                                                             return {
-                                                                ...word,
+                                                                word: word.word,
+                                                                type: word.type,
                                                                 isActive: true,
                                                             };
                                                         }
                                                         return {
-                                                            ...word,
+                                                            word: word.word,
+                                                            type: word.type,
                                                             isActive: false,
                                                         };
                                                     }
@@ -312,7 +314,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                     </div>
                 </div>
             </Modal>
-            {openModalSettings && <Settings close={closeSettings}></Settings>}
+            <Settings close={closeSettings} isOpen={openModalSettings}></Settings>
         </>
     );
 };

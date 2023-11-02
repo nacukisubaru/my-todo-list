@@ -69,7 +69,7 @@ export const useDictionaryExample = (dictionary: IDictionary) => {
             dictionaryId: id,
             text: example.originalText,
             targetLanguageCode: translateExampleLang,
-            type: example.exampleType
+            type: example.exampleType ? example.exampleType : ''
         });
        
         if (translateResult && translateResult.data) {

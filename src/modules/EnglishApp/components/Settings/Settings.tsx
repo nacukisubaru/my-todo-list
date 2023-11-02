@@ -93,9 +93,13 @@ const Settings: FC<ISettings> = ({ close, isOpen }) => {
     }, [languagesForStudy]);
 
     useEffect(() => {
-        dispatch(getDictionaryActiveSettings());
-        dispatch(getDictionarySettings());
-    }, []);
+        if (!dictionarySettings.settings.length) {
+            dispatch(getDictionarySettings());
+        }
+        if (!dictionaryActiveSettings.id) {
+            dispatch(getDictionaryActiveSettings());
+        }
+    }, [dictionarySettings, dictionaryActiveSettings]);
 
     return (
         <>

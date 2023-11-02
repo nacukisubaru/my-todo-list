@@ -20,7 +20,7 @@ const WordsPanel: FC<IWordsPanel> = ({ wordsList, checkWords = true, addWord }) 
     const [typeWord, setTypeWord] = useState(wordsList[0].type);
     const [words, setWords] = useState<IWordTag[]>([]);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleChange = (_: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 

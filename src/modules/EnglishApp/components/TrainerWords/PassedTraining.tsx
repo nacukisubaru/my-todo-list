@@ -21,7 +21,7 @@ const PassedTraining: FC<IPassedTrainingProps> = ({
     word,
     isPassed,
 }) => {
-    const {translate, showTranslte, getExamples, translateExampleLang, examples} = useDictionaryExample(word);
+    const {translate, showTranslte, getExamples, examples} = useDictionaryExample(word);
     const { speak } = useSpeechSynthesis();
 
     useEffect(() => {

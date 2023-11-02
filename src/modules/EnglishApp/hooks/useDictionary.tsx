@@ -82,7 +82,10 @@ export const useDictionary = () => {
             studyStage: "BEING_STUDIED",
             id: "",
             dictionaryExamples: [],
-            transcription: translateResult.transcription
+            transcription: translateResult.transcription,
+            dictionaryLinkedWords: [],
+            linkedWords: [],
+            notes: ""
         };
 
         const filterIsApply = checkApplyFilter();

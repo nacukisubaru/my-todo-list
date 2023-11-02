@@ -28,7 +28,7 @@ const DictionaryLanguages: FC<IDictionaryLanguages> = ({
   
     const [langOptions, setLangOptions] = useState<ILanguageSettings[]>([]);
 
-    const setLanguage = (e: any, values: any) => {
+    const setLanguage = (_: any, values: any) => {
         selectLang(values);
     };
 

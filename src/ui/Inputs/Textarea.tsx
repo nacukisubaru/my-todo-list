@@ -73,7 +73,7 @@ const Textarea: FC<ITextareaProps> = ({
     return (
         <TextareaAutosize
             aria-label="empty textarea"
-            placeholder="Empty"
+            placeholder={placeholder}
             value={defaultText}
             style={{
                 width: "1000px",
