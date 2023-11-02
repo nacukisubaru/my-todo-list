@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import Card from "../../../../ui/Cards/Card";
 import {
-    getDictionaryActiveSettings,
     getDictionaryByUser,
-    getDictionarySettings,
     getLanguages,
 } from "../../store/services/dictionary/dictionary.slice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";

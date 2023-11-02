@@ -28,11 +28,10 @@ const TrainingCard: FC<ITrainingCardProps> = ({
                             content={
                                 <>
                                     {word.dictionaryLinkedWords.map(word => {
-                                        return  <WordTag onClick={()=>{}} checkTags={false}>{word.word}</WordTag>;
+                                        return  <WordTag checkTags={false}>{word.word}</WordTag>;
                                     })}
                                 </>
                             }
-                            onClick={()=>{}}
                         >
                             Теги
                         </ArrowWithText>
@@ -40,7 +39,6 @@ const TrainingCard: FC<ITrainingCardProps> = ({
                     {word.notes && (
                         <ArrowWithText 
                             content={word.notes}
-                            onClick={()=>{}}
                         >
                             Заметки
                         </ArrowWithText>

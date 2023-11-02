@@ -18,8 +18,8 @@ import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 import { availableLanguages } from "../../helpers/languageHelper";
 import { Button } from "@mui/material";
 import WordTag from "../../ui/WordsPanel/WordTag";
-import CreateIcon from '@mui/icons-material/Create';
 import DictionaryNotes from "./DictionaryNotes";
+import DictionaryLingvoExamples from "./DictionaryLingvoExamples";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -246,7 +246,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     <>
                         <div className="font-bold mb-[5px]">Значения</div>
                         {linkedWordsList.map(word => {
-                            return  <WordTag onClick={()=>{}} checkTags={false}>{word}</WordTag>;
+                            return  <WordTag checkTags={false}>{word}</WordTag>;
                         })}
                     </>
                 )}
@@ -281,22 +281,14 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                             content={analogsWord.length ? <WordsPanel wordsList={analogsWord} checkWords={false}/> : false}>
                             Альтернативы слову {translatedWord}
                         </ArrowWithText>
-                        <ArrowWithText 
-                            onClick={getExamplesFromLingvo} 
-                            content={lingvoExamples.length ? 
-                            <DictionaryExamples
-                                examplesList={lingvoExamplesList}
-                                showTranslate={showLingvoExample}
-                                translate={translate}
-                                languageOriginal={languageOriginal}
-                                languageTranslation={languageTranslation}
-                            />  : false}>
-                            Примеры из lingvo
-                        </ArrowWithText>
+                        <DictionaryLingvoExamples 
+                            translatedWord={translatedWord} 
+                            languageOriginal={languageOriginal} 
+                            languageTranslation={languageTranslation}
+                        />
                     </>
                 )}
-                <ArrowWithText 
-                    onClick={()=>{}}
+                <ArrowWithText                    
                     content={
                         <>
                             <DictionaryExamples

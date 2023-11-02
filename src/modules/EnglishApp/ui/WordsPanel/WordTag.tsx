@@ -5,7 +5,7 @@ interface IWordTag {
     children: any,
     isActive?: boolean,
     checkTags?: boolean,
-    onClick: (isActive: boolean) => void
+    onClick?: (isActive: boolean) => void
 }
 
 const WordTag: FC<IWordTag> = ({children, isActive = false, checkTags = true, onClick}) => {
@@ -19,7 +19,7 @@ const WordTag: FC<IWordTag> = ({children, isActive = false, checkTags = true, on
             }
         }
 
-        onClick(active);
+       onClick && onClick(active);
     }
 
     useEffect(() => {

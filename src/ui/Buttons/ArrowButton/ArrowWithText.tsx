@@ -3,7 +3,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 interface IArrowWithTextProps {
-    onClick: (isArrowUp: boolean) => void,
+    onClick?: (isArrowUp: boolean) => void,
     children: any,
     content: any
 }
@@ -19,7 +19,7 @@ const ArrowWithText: FC<IArrowWithTextProps> = ({onClick, children, content}) =>
         }
 
         if (!content) {
-            onClick(isArrowUp);
+           onClick && onClick(isArrowUp);
         }
     }
 
