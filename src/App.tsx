@@ -40,6 +40,10 @@ const router = createBrowserRouter([
     {
         path: "/englishApp/trainer",
         element: <EnglishAppSpace includeTrainer={true}/>
+    },
+    {
+        path: "/englishApp/book/:id",
+        element: <EnglishAppSpace includeBook={true}/>
     }
 ]);
 function App() {

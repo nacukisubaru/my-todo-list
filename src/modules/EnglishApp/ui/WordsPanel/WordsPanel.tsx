@@ -4,9 +4,9 @@ import { uniqueList } from "../../../../helpers/arrayHelper";
 import WordTag from "./WordTag";
 
 interface IWordTag {
-    word: string,
-    type: string,
-    isActive?: boolean
+    word: string;
+    type: string;
+    isActive?: boolean;
 }
 
 interface IWordsPanel {
@@ -15,7 +15,11 @@ interface IWordsPanel {
     checkWords?: boolean;
 }
 
-const WordsPanel: FC<IWordsPanel> = ({ wordsList, checkWords = true, addWord }) => {
+const WordsPanel: FC<IWordsPanel> = ({
+    wordsList,
+    checkWords = true,
+    addWord,
+}) => {
     const [value, setValue] = useState(0);
     const [typeWord, setTypeWord] = useState(wordsList[0].type);
     const [words, setWords] = useState<IWordTag[]>([]);
@@ -26,11 +30,20 @@ const WordsPanel: FC<IWordsPanel> = ({ wordsList, checkWords = true, addWord }) 
 
     useEffect(() => {
         const words = wordsList
+            .filter((word) => word.type === wordsList[0].type)
+            .map((word) => word);
+        setWords(words);
+        setValue(0);
+        setTypeWord(wordsList[0].type);
+    }, [wordsList]);
+
+    useEffect(() => {
+        const words = wordsList
             .filter((word) => word.type === typeWord)
             .map((word) => word);
         setWords(words);
-    }, [typeWord, wordsList]);
-    
+    }, [typeWord]);
+
     return (
         <>
             <div className="mb-[15px]">

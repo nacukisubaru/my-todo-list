@@ -10,10 +10,12 @@ import { Button } from "@mui/material";
 
 interface EnglishAppSpaceProps {
     includeTrainer?: boolean;
+    includeBook?: boolean;
 }
 
 const EnglishAppSpace: FC<EnglishAppSpaceProps> = ({
     includeTrainer = false,
+    includeBook = false
 }) => {
     const navigate = useNavigate();
     useStartApp();
@@ -38,20 +40,23 @@ const EnglishAppSpace: FC<EnglishAppSpaceProps> = ({
     return (
         <>
             <SectionsMenu />
-            <Header>
-                <div className="-mt-[4px] mr-[17px] flex">
-                    <BasicButton
-                        name={includeTrainer ? "Словарь" : "Тренажёр"}
-                        color="secondary"
-                        onClick={navigateByEnglishApp}
-                    />
-                    <Button variant="text" size="small" onClick={openSettings}>
-                        <SettingsIcon style={{ color: "white" }} />
-                    </Button>
-                </div>
-            </Header>
+            {!includeBook && (
+                <Header>
+                    <div className="-mt-[4px] mr-[17px] flex">
+                        <BasicButton
+                            name={includeTrainer ? "Словарь" : "Тренажёр"}
+                            color="secondary"
+                            onClick={navigateByEnglishApp}
+                        />
+                        <Button variant="text" size="small" onClick={openSettings}>
+                            <SettingsIcon style={{ color: "white" }} />
+                        </Button>
+                    </div>
+                </Header>
+            )}
             <EnglishApp
                 includeTrainer={includeTrainer}
+                includeBook={includeBook}
                 openSettings={openModalSettings}
                 closeSettings={closeSettings}
             ></EnglishApp>
