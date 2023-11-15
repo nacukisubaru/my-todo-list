@@ -1,8 +1,5 @@
 import { FC, useState } from "react";
-import {
-    IMenuItem,
-    IModalSettings,
-} from "../../types/ui.types";
+import { IMenuItem, IModalSettings } from "../../types/ui.types";
 import CloseButton from "../Buttons/CloseButton/CloseButton";
 import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
 
@@ -13,7 +10,7 @@ interface IButtonsCallbacks {
 
 interface IToolPanel {
     menu: IMenuItem[];
-    componentsList?: any[]
+    componentsList?: any[];
 }
 
 interface IModalProps {
@@ -27,11 +24,11 @@ interface IModalProps {
 
 const Modal: FC<IModalProps> = ({
     modalSettings,
-    toolPanel = {menu: [], componentsList: []},
+    toolPanel = { menu: [], componentsList: [] },
     callbacks,
     children,
     icon,
-    maxWidth
+    maxWidth,
 }) => {
     const {
         title,
@@ -69,7 +66,9 @@ const Modal: FC<IModalProps> = ({
                     <div className="fixed inset-0 z-10 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                             <div
-                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full ${maxWidth ? maxWidth : 'max-w-[50rem]'} overflow-auto min-w-[326px] ${
+                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full ${
+                                    maxWidth ? maxWidth : "max-w-[50rem]"
+                                } overflow-auto min-w-[326px] ${
                                     heightBody && heightBody
                                 }`}
                             >
@@ -80,10 +79,13 @@ const Modal: FC<IModalProps> = ({
                                                 <span className="z-50">
                                                     <ToolTaskPanel
                                                         settings={{
-                                                            menuItems: toolPanel.menu,
-                                                            componentsList: toolPanel.componentsList,
+                                                            menuItems:
+                                                                toolPanel.menu,
+                                                            componentsList:
+                                                                toolPanel.componentsList,
                                                             translateY: "24px",
-                                                            translateX: "-translate-x-[149px]",
+                                                            translateX:
+                                                                "-translate-x-[149px]",
                                                             showEditBtn: false,
                                                             colorBtn:
                                                                 "bg-white",
@@ -127,7 +129,11 @@ const Modal: FC<IModalProps> = ({
                                                     >
                                                         {title}
                                                     </h3>
-                                                    {oppositeTitle && (<div>{oppositeTitle}</div>)}
+                                                    {oppositeTitle && (
+                                                        <div>
+                                                            {oppositeTitle}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="mt-2">
                                                     {children}
@@ -137,20 +143,25 @@ const Modal: FC<IModalProps> = ({
                                     </div>
                                     {showButtons && (
                                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                            <button
-                                                onClick={primaryBtnClick}
-                                                type="button"
-                                                className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            >
-                                                {primaryBtnName}
-                                            </button>
-                                            <button
-                                                onClick={secondaryBtnClick}
-                                                type="button"
-                                                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                            >
-                                                {secondaryBtnName}
-                                            </button>
+                                            {primaryBtnName && (
+                                                <button
+                                                    onClick={primaryBtnClick}
+                                                    type="button"
+                                                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                >
+                                                    {primaryBtnName}
+                                                </button>
+                                            )}
+
+                                            {secondaryBtnName && (
+                                                <button
+                                                    onClick={secondaryBtnClick}
+                                                    type="button"
+                                                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                                >
+                                                    {secondaryBtnName}
+                                                </button>
+                                            )}
                                         </div>
                                     )}
                                 </div>

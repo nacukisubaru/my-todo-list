@@ -14,8 +14,8 @@ export interface IToolTaskSettings {
 export interface IModalSettings {
     title: string;
     oppositeTitle?: any;
-    primaryBtnName: string;
-    secondaryBtnName: string;
+    primaryBtnName?: string;
+    secondaryBtnName?: string;
     isVisible: boolean;
     heightBody?: string;
     showButtons?: boolean;

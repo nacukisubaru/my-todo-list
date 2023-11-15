@@ -1,6 +1,7 @@
 interface IBook {
     text: string,
-    page: number    
+    page: number,
+    countPages: number
 }
 
 interface IBookParams { 

@@ -1,5 +1,5 @@
 import Drawer from "@mui/material/Drawer";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import WordsPanel from "../../ui/WordsPanel/WordsPanel";
 import { FC } from "react";
 
@@ -45,7 +45,7 @@ const BookDrawer: FC<IBookDrawer> = ({
             className={className}
         >
             <DrawerHeader>{headerBody && headerBody}</DrawerHeader>
-            {translateList.length > 0 && (
+            {translateList.length > 0 ? (
                 <WordsWrapper>
                     <WordsPanel
                         wordsList={translateList.map((translate) => {
@@ -53,7 +53,7 @@ const BookDrawer: FC<IBookDrawer> = ({
                         })}
                     />
                 </WordsWrapper>
-            )}
+            ) : (<WordsWrapper>Перевод не найден</WordsWrapper>)}
         </Drawer>
     );
 };

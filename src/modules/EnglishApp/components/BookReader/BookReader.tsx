@@ -16,6 +16,10 @@ import HTMLReactParser from "html-react-parser";
 import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { useParams } from "react-router-dom";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import './style.css';
+import BookPages from "./BookPages";
 
 const drawerWidth = 320;
 
@@ -61,7 +65,7 @@ const BookReader: FC = () => {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(1);
-    const [isEventsInit, setEventsInit] = useState(false);
+    const [isOpenPages, setOpenPages] = useState(false);
     const { id } = useParams();
     
     const { data, isLoading, refetch } = bookReaderApi.useGetBookQuery({
@@ -78,9 +82,36 @@ const BookReader: FC = () => {
         setOpen(false);
     };
 
+    const removeHiglights = () => {
+        const classes = document.getElementsByClassName("translateMyWord");
+        for (let inc = 0; inc < classes.length; inc++) {
+            classes[inc].classList.remove('highlight');
+        }
+    }
+
     const setNextPage = () => {
+        removeHiglights();
         setPage(page + 1);
     };
+
+    const setPrevPage = () => {
+        removeHiglights();
+        setPage(page - 1);
+    };
+
+    const openPages = () => {
+        setOpenPages(true);
+    }
+
+    const closePages = () => {
+        setOpenPages(false);
+    }
+
+    const switchPage = async (page: number) => {
+        await setPage(page);
+        removeHiglights();
+        refetch();
+    }
 
     useEffect(() => {
         refetch();
@@ -98,31 +129,69 @@ const BookReader: FC = () => {
     }
 
     useEffect(() => {
-        if (data && !isEventsInit) {
+        if (data) {
             const classes = document.getElementsByClassName("translateMyWord");
             for (let inc = 0; inc < classes.length; inc++) {
-                classes[inc].addEventListener("click", function (this: any) {
-                    translateWord(this.innerText);
-                });
+                function translateAndHighlight (id: string) {
+                    const word = document.getElementById(id);
+                    for (let inc = 0; inc < classes.length; inc++) {
+                        classes[inc].classList.remove('highlight');
+                    }
+                    if (word) {
+                        console.log('test')
+                        word.classList.add('highlight');
+                        translateWord(word.innerText);
+                    }
+                }
+                if (!classes[inc].hasAttribute('onclick')) {
+                    const element: any = classes[inc];
+                    element.onclick = function () {translateAndHighlight(classes[inc].id)};
+                }
             }
-            setEventsInit(true);
         }
     }, [data]);
 
     return (
         <>
+            {data && (
+                <BookPages 
+                    countPages={data.countPages} 
+                    isOpen={isOpenPages} 
+                    close={closePages}
+                    onClick={switchPage}
+                />
+            )}
+          
             <Box sx={{ display: "flex" }}>
                 <CssBaseline />
                 <AppBar position="fixed" open={open}>
                     <Toolbar>
+                        <div className="cursor-pointer" onClick={setPrevPage}>
+                            <ArrowBackIosNewIcon />
+                        </div>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            onClick={openPages}
+                            className="cursor-pointer"
+                        >
+                            {page}
+                        </Typography>
+                        <div className="cursor-pointer" onClick={setNextPage}>
+                            <ArrowForwardIosIcon />
+                        </div>
+                        
                         <Typography
                             variant="h6"
                             noWrap
                             sx={{ flexGrow: 1 }}
                             component="div"
                         >
-                            Persistent drawer
+                           
+                            
                         </Typography>
+                       
                         <IconButton
                             color="inherit"
                             aria-label="open drawer"
@@ -136,14 +205,7 @@ const BookReader: FC = () => {
                 </AppBar>
                 <Main open={open}>
                     <DrawerHeader />
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={setNextPage}
-                    >
-                        next page
-                    </Button>
-                    <div className="w-[83%] flex justify-center">
+                    <div className="w-[82%] flex justify-center">
                         <Typography paragraph>
                             {data && HTMLReactParser(data.text)}
                         </Typography>
