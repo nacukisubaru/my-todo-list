@@ -6,7 +6,6 @@ import Toolbar from "@mui/material/Toolbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import BookDrawer from "./BookDrawer";
@@ -15,7 +14,7 @@ import { bookReaderApi } from "../../store/services/book-reader/book-reader.api"
 import HTMLReactParser from "html-react-parser";
 import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import './style.css';
@@ -64,15 +63,23 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 const BookReader: FC = () => {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
-    const [page, setPage] = useState(1);
-    const [isOpenPages, setOpenPages] = useState(false);
     const { id } = useParams();
-    
-    const { data, isLoading, refetch } = bookReaderApi.useGetBookQuery({
+    const [currentPage, setPage] = useState(1);
+    const [isOpenPages, setOpenPages] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
-        page,
+        page: currentPage,
         limitOnPage: 500,
     });
+
+    useEffect(() => {
+        const page = searchParams.get('page')
+        if (page) { 
+            setPage(+page);
+        }
+    }, [searchParams]);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -91,12 +98,12 @@ const BookReader: FC = () => {
 
     const setNextPage = () => {
         removeHiglights();
-        setPage(page + 1);
+        setSearchParams({page: new String(currentPage + 1).toString()})
     };
 
     const setPrevPage = () => {
         removeHiglights();
-        setPage(page - 1);
+        setSearchParams({page: new String(currentPage - 1).toString()})
     };
 
     const openPages = () => {
@@ -108,19 +115,20 @@ const BookReader: FC = () => {
     }
 
     const switchPage = async (page: number) => {
-        await setPage(page);
+        setSearchParams({page: new String(page).toString()})
         removeHiglights();
         refetch();
     }
 
     useEffect(() => {
         refetch();
-    }, [page]);
+    }, [currentPage]);
 
     const dispatch = useAppDispatch();
     const { fullTranslateList } = useAppSelector((state) => state.dictionaryReducer);
 
     const translateWord = (word: string) => {
+        handleDrawerOpen();
         dispatch(fullTranslate({
             word,
             sourceLang: 'en',
@@ -138,7 +146,6 @@ const BookReader: FC = () => {
                         classes[inc].classList.remove('highlight');
                     }
                     if (word) {
-                        console.log('test')
                         word.classList.add('highlight');
                         translateWord(word.innerText);
                     }
@@ -176,31 +183,12 @@ const BookReader: FC = () => {
                             onClick={openPages}
                             className="cursor-pointer"
                         >
-                            {page}
+                            {currentPage}
                         </Typography>
                         <div className="cursor-pointer" onClick={setNextPage}>
                             <ArrowForwardIosIcon />
                         </div>
                         
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            sx={{ flexGrow: 1 }}
-                            component="div"
-                        >
-                           
-                            
-                        </Typography>
-                       
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="end"
-                            onClick={handleDrawerOpen}
-                            sx={{ ...(open && { display: "none" }) }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
                     </Toolbar>
                 </AppBar>
                 <Main open={open}>
