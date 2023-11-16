@@ -50,9 +50,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     } = useDictionaryExample(props);
 
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
-    const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
-    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
 
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
@@ -102,18 +100,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     }
 
     const addLinkedWords = (words: IFullTranslateObject[]) => {
-        changeDictionaryWord("dictionaryLinkedWords", words.map(word => {return {word}}));
+        changeDictionaryWord("dictionaryLinkedWords", words.map(word => {return {word: word.word}}));
     }
-
-    // const addToLinkedWords = (word: string, isRemove: boolean) => {
-    //     let words: string[] = linkedWordsList;
-    //     if (isRemove) {
-    //         words = linkedWordsList.filter(linkedWord => linkedWord !== word);
-    //         addToLinkedWordsList(words);
-    //     } else {
-    //         addToLinkedWordsList([...words, word]);
-    //     }
-    // }
 
     return (
         <Modal
