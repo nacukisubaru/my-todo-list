@@ -12,7 +12,7 @@ import { Button } from "@mui/material";
 import Settings from "../Settings/Settings";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
-import WordsPanel from "../../ui/WordsPanel/WordsPanel";
+import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -35,7 +35,6 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setTranslatelLang,
         setVoiceWordSettings,
         setTransltionWord,
-        translationWord,
         inputOriginal,
         inputTranslation,
         word,
@@ -141,28 +140,11 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 <ArrowWithText
                                     onClick={() => {}}
                                     content={
-                                        <>
-                                            <WordsPanel
-                                                wordsList={translateResult.wordsList.map(
-                                                    (word) => {
-                                                        if (word.word === translationWord) {
-                                                            return {
-                                                                word: word.word,
-                                                                type: word.type,
-                                                                isActive: true,
-                                                            };
-                                                        }
-                                                        return {
-                                                            word: word.word,
-                                                            type: word.type,
-                                                            isActive: false,
-                                                        };
-                                                    }
-                                                )}
-                                                checkWords={false}
-                                                addWord={choiceTranslationWord}
-                                            />
-                                        </>
+                                        <WordsTagsPanel
+                                            renderByTabs={true}
+                                            checkWords={false}
+                                            selectTag={choiceTranslationWord}
+                                        />
                                     }
                                 >
                                     Список значений

@@ -12,8 +12,8 @@ import BookDrawer from "./BookDrawer";
 import { Button } from "@mui/material";
 import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
 import HTMLReactParser from "html-react-parser";
-import { fullTranslate, fullTranslateWithDictionaryWord } from "../../store/services/dictionary/dictionary.slice";
-import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
+import { useAppDispatch } from "../../hooks/useAppSelector";
 import { useParams, useSearchParams } from "react-router-dom";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -125,11 +125,10 @@ const BookReader: FC = () => {
     }, [currentPage]);
 
     const dispatch = useAppDispatch();
-    const { fullTranslateWithDictionaryWordResult } = useAppSelector((state) => state.dictionaryReducer);
 
     const translateWord = (word: string) => {
         handleDrawerOpen();
-        dispatch(fullTranslateWithDictionaryWord({
+        dispatch(fullTranslate({
             word,
             sourceLang: 'en',
             targetLang: 'ru'
@@ -208,8 +207,6 @@ const BookReader: FC = () => {
                         </Button>
                     }
                     width={450}
-                    translateList={fullTranslateWithDictionaryWordResult.translateValues}
-                    existTranslatedList={fullTranslateWithDictionaryWordResult.dictionaryWord?.dictionaryLinkedWords.map(item=> item.word)}
                 />
                 <BookDrawer
                     isOpen={open}
@@ -233,8 +230,6 @@ const BookReader: FC = () => {
                         </div>
                     }
                     width={drawerWidth}
-                    translateList={fullTranslateWithDictionaryWordResult.translateValues}
-                    existTranslatedList={fullTranslateWithDictionaryWordResult.dictionaryWord?.dictionaryLinkedWords.map(item=> item.word)}
                 />
             </Box>
         </>

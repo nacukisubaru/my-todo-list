@@ -1,7 +1,7 @@
 import Drawer from "@mui/material/Drawer";
 import { styled } from "@mui/material/styles";
-import WordsPanel from "../../ui/WordsPanel/WordsPanel";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
+import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -20,23 +20,15 @@ interface IBookDrawer {
     headerBody?: any;
     className?: string;
     width: number;
-    translateList: IFullTranslateObject[];
-    existTranslatedList?: string[];
 }
 
 const BookDrawer: FC<IBookDrawer> = ({
-    translateList,
     isOpen,
     headerBody,
     className = "",
     width = 320,
-    existTranslatedList
 }) => {
-    // const [existTranslates, setExistTranslates] = useState();
-    // useEffect(() => {
-    //     setExistTranslates(existTranslatedList);
-    // },[])
-
+  
     return (
         <Drawer
             sx={{
@@ -52,18 +44,11 @@ const BookDrawer: FC<IBookDrawer> = ({
             className={className}
         >
             <DrawerHeader>{headerBody && headerBody}</DrawerHeader>
-            {translateList.length > 0 ? (
-                <WordsWrapper>
-                    <WordsPanel
-                        wordsList={translateList.map((translate) => {
-                            // if (existTranslates && existTranslates.length && existTranslates.includes(translate.word)) {
-                            //     return {...translate, isActive: true}
-                            // }
-                            return { ...translate, isActive: false };
-                        })}
-                    />
-                </WordsWrapper>
-            ) : (<WordsWrapper>Перевод не найден</WordsWrapper>)}
+            <WordsWrapper>
+                <WordsTagsPanel
+                    renderByTabs={isOpen}
+                />
+            </WordsWrapper>
         </Drawer>
     );
 };

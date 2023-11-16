@@ -99,12 +99,9 @@ interface IExampleParams {
 
 interface IFullTranslateObject {
     word: string,
-    type: string
-}
-
-interface IFullTranslateWithDictionaryWord {
-    dictionaryWord?: IDictionary, 
-    translateValues: IFullTranslateObject[]
+    type: string,
+    isActive: boolean,
+    dictionaryWordId: string
 }
 
 interface ILingvoExample {
