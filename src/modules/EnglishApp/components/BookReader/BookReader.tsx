@@ -12,7 +12,7 @@ import BookDrawer from "./BookDrawer";
 import { Button } from "@mui/material";
 import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
 import HTMLReactParser from "html-react-parser";
-import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
+import { fullTranslate, fullTranslateWithDictionaryWord } from "../../store/services/dictionary/dictionary.slice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { useParams, useSearchParams } from "react-router-dom";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -125,11 +125,11 @@ const BookReader: FC = () => {
     }, [currentPage]);
 
     const dispatch = useAppDispatch();
-    const { fullTranslateList } = useAppSelector((state) => state.dictionaryReducer);
+    const { fullTranslateWithDictionaryWordResult } = useAppSelector((state) => state.dictionaryReducer);
 
     const translateWord = (word: string) => {
         handleDrawerOpen();
-        dispatch(fullTranslate({
+        dispatch(fullTranslateWithDictionaryWord({
             word,
             sourceLang: 'en',
             targetLang: 'ru'
@@ -188,7 +188,7 @@ const BookReader: FC = () => {
                         <div className="cursor-pointer" onClick={setNextPage}>
                             <ArrowForwardIosIcon />
                         </div>
-                        
+
                     </Toolbar>
                 </AppBar>
                 <Main open={open}>
@@ -208,7 +208,8 @@ const BookReader: FC = () => {
                         </Button>
                     }
                     width={450}
-                    translateList={fullTranslateList}
+                    translateList={fullTranslateWithDictionaryWordResult.translateValues}
+                    existTranslatedList={fullTranslateWithDictionaryWordResult.dictionaryWord?.dictionaryLinkedWords.map(item=> item.word)}
                 />
                 <BookDrawer
                     isOpen={open}
@@ -232,7 +233,8 @@ const BookReader: FC = () => {
                         </div>
                     }
                     width={drawerWidth}
-                    translateList={fullTranslateList}
+                    translateList={fullTranslateWithDictionaryWordResult.translateValues}
+                    existTranslatedList={fullTranslateWithDictionaryWordResult.dictionaryWord?.dictionaryLinkedWords.map(item=> item.word)}
                 />
             </Box>
         </>

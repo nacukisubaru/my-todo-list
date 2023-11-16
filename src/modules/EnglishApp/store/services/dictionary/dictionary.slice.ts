@@ -10,6 +10,7 @@ interface IState {
     translateLanguages: string[],
     translateMethod: translateMethod,
     fullTranslateList: IFullTranslateObject[],
+    fullTranslateWithDictionaryWordResult: IFullTranslateWithDictionaryWord,
     analogsWord: IFullTranslateObject[],
     lingvoExamples: ILingvoExample[],
     languages: ILanguage[],
@@ -37,6 +38,22 @@ const initialState: IState = {
         originalLang: ""
     },
     fullTranslateList: [],
+    fullTranslateWithDictionaryWordResult: {
+        dictionaryWord: {
+            id: '',
+            originalWord: '',
+            translatedWord: '',
+            languageOriginal: '',
+            languageTranslation: '',
+            dictionaryExamples: [],
+            dictionaryLinkedWords: [],
+            linkedWords: [],
+            studyStage: 'BEING_STUDIED',
+            transcription: '',
+            notes: ''
+        },
+        translateValues: []
+    },
     analogsWord: [],
     languages: [],
     lingvoExamples: [],
@@ -92,6 +109,13 @@ export const fullTranslate = createAsyncThunk(
     'full-translate/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
         return thunkAxiosGet('/lingvo-api/full-translate/', params, rejectWithValue);
+    }
+);
+
+export const fullTranslateWithDictionaryWord = createAsyncThunk(
+    'full-translate-with-dictionary-word/fetch',
+    async (params: ITranslateParams, { rejectWithValue }) => {
+        return thunkAxiosGet('/lingvo-api/full-translate-with-dictionary-word/', params, rejectWithValue);
     }
 );
 
@@ -166,6 +190,24 @@ export const dictionarySlice = createSlice({
             state.fullTranslateList = [];
             state.analogsWord = [];
             state.lingvoExamples = [];
+        },
+        resetFullTranslateListWithDictionaryWord: (state) => {
+            state.fullTranslateWithDictionaryWordResult = {
+                dictionaryWord: {
+                    id: '',
+                    originalWord: '',
+                    translatedWord: '',
+                    languageOriginal: '',
+                    languageTranslation: '',
+                    dictionaryExamples: [],
+                    dictionaryLinkedWords: [],
+                    linkedWords: [],
+                    studyStage: 'BEING_STUDIED',
+                    transcription: '',
+                    notes: ''
+                },
+                translateValues: []
+            }
         }
     },
     extraReducers: (builder) => {
@@ -311,6 +353,20 @@ export const dictionarySlice = createSlice({
             state.fullTranslateList = action.payload;
           })
           .addCase(fullTranslate.rejected, (state, action) => {
+            const errorObj: any = action.payload;
+            state.status = 'rejected';
+            state.error = errorObj;
+          })
+
+          .addCase(fullTranslateWithDictionaryWord.pending, (state) => {
+            state.status = 'loading';
+            state.error = { statusCode: 0, message: "", errorCode: "" };
+          })
+          .addCase(fullTranslateWithDictionaryWord.fulfilled, (state, action) => {
+            state.status = 'resolved';
+            state.fullTranslateWithDictionaryWordResult = action.payload;
+          })
+          .addCase(fullTranslateWithDictionaryWord.rejected, (state, action) => {
             const errorObj: any = action.payload;
             state.status = 'rejected';
             state.error = errorObj;

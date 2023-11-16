@@ -1,7 +1,7 @@
 import Drawer from "@mui/material/Drawer";
 import { styled } from "@mui/material/styles";
 import WordsPanel from "../../ui/WordsPanel/WordsPanel";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -21,6 +21,7 @@ interface IBookDrawer {
     className?: string;
     width: number;
     translateList: IFullTranslateObject[];
+    existTranslatedList?: string[];
 }
 
 const BookDrawer: FC<IBookDrawer> = ({
@@ -29,7 +30,13 @@ const BookDrawer: FC<IBookDrawer> = ({
     headerBody,
     className = "",
     width = 320,
+    existTranslatedList
 }) => {
+    // const [existTranslates, setExistTranslates] = useState();
+    // useEffect(() => {
+    //     setExistTranslates(existTranslatedList);
+    // },[])
+
     return (
         <Drawer
             sx={{
@@ -49,6 +56,9 @@ const BookDrawer: FC<IBookDrawer> = ({
                 <WordsWrapper>
                     <WordsPanel
                         wordsList={translateList.map((translate) => {
+                            // if (existTranslates && existTranslates.length && existTranslates.includes(translate.word)) {
+                            //     return {...translate, isActive: true}
+                            // }
                             return { ...translate, isActive: false };
                         })}
                     />

@@ -23,26 +23,26 @@ const WordsPanel: FC<IWordsPanel> = ({
     const [value, setValue] = useState(0);
     const [typeWord, setTypeWord] = useState(wordsList[0].type);
     const [words, setWords] = useState<IWordTag[]>([]);
+    const [isInitPanel, setPanelInit] = useState(false); 
 
     const handleChange = (_: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
     useEffect(() => {
+        let type = typeWord;
+        if (!isInitPanel) {
+            type = wordsList[0].type;
+            setValue(0);
+            setTypeWord(wordsList[0].type);
+            setPanelInit(true);
+        }
         const words = wordsList
-            .filter((word) => word.type === wordsList[0].type)
+            .filter((word) => word.type === type)
             .map((word) => word);
         setWords(words);
-        setValue(0);
-        setTypeWord(wordsList[0].type);
-    }, [wordsList]);
 
-    useEffect(() => {
-        const words = wordsList
-            .filter((word) => word.type === typeWord)
-            .map((word) => word);
-        setWords(words);
-    }, [typeWord]);
+    }, [typeWord, wordsList]);
 
     return (
         <>

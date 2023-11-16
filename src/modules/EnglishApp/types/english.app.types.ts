@@ -102,6 +102,11 @@ interface IFullTranslateObject {
     type: string
 }
 
+interface IFullTranslateWithDictionaryWord {
+    dictionaryWord?: IDictionary, 
+    translateValues: IFullTranslateObject[]
+}
+
 interface ILingvoExample {
     originalText: string,
     translatedText: string
