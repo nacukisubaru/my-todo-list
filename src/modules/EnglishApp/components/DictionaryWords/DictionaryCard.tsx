@@ -51,6 +51,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
 
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
+    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>([]);
 
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
@@ -100,8 +101,16 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
     }
 
     const addLinkedWords = (words: IFullTranslateObject[]) => {
+        addToLinkedWordsList(words.map(word => word.word));
         changeDictionaryWord("dictionaryLinkedWords", words.map(word => {return {word: word.word}}));
+        
     }
+
+    useEffect(() => {
+        if (dictionaryLinkedWords.length) {
+            addToLinkedWordsList(dictionaryLinkedWords.map(item => item.word));
+        }
+    }, [dictionaryLinkedWords]);
 
     return (
         <Modal
@@ -201,11 +210,11 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     </>
                 )}
 
-                {dictionaryLinkedWords.length && (
+                {linkedWordsList.length && (
                     <>
                         <div className="font-bold mb-[5px]">Значения</div>
-                        {dictionaryLinkedWords.map(item => {
-                            return  <WordTag>{item.word}</WordTag>;
+                        {linkedWordsList.map(word => {
+                            return  <WordTag>{word}</WordTag>;
                         })}
                     </>
                 )}
