@@ -12,7 +12,6 @@ interface IWordsPanel {
     wordsList: IWordTag[];
     tabs: string[];
     selectTag?: (word: string, isRemove: boolean) => void;
-    renderByTabs?: boolean
 }
 
 const WordsPanel: FC<IWordsPanel> = ({
@@ -36,7 +35,6 @@ const WordsPanel: FC<IWordsPanel> = ({
         setWords(words);
     };
 
-   
     useEffect(() => {
         const words = filterWords(tabs[value]);
         setWords(words);

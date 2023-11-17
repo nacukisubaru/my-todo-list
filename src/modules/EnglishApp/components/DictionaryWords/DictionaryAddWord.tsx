@@ -12,7 +12,8 @@ import { Button } from "@mui/material";
 import Settings from "../Settings/Settings";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
-import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
+import WordsPanel from "../WordsTagsPanel/WordsPanel";
+import { uniqueList } from "../../../../helpers/arrayHelper";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -140,11 +141,19 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 <ArrowWithText
                                     onClick={() => {}}
                                     content={
-                                        <WordsTagsPanel
-                                            renderByTabs={true}
-                                            checkWords={false}
-                                            selectTag={choiceTranslationWord}
-                                        />
+                                        <>
+                                            {translateResult.wordsList.length && (
+                                                <WordsPanel 
+                                                    wordsList={translateResult.wordsList} 
+                                                    tabs={uniqueList(
+                                                        translateResult.wordsList
+                                                            .map((word) => word.type)
+                                                            .filter((type) => type !== "transcription")
+                                                    )} 
+                                                    selectTag={choiceTranslationWord} 
+                                                />
+                                            )}
+                                       </>
                                     }
                                 >
                                     Список значений

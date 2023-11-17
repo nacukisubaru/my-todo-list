@@ -5,19 +5,15 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import BookDrawer from "./BookDrawer";
-import { Button } from "@mui/material";
 import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
 import HTMLReactParser from "html-react-parser";
 import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
 import { useAppDispatch } from "../../hooks/useAppSelector";
 import { useParams, useSearchParams } from "react-router-dom";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import './style.css';
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import "./style.css";
 import BookPages from "./BookPages";
 
 const drawerWidth = 320;
@@ -65,6 +61,7 @@ const BookReader: FC = () => {
     const [open, setOpen] = useState(false);
     const { id } = useParams();
     const [currentPage, setPage] = useState(1);
+    const [currentWord, setCurrentWord] = useState("");
     const [isOpenPages, setOpenPages] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -75,8 +72,8 @@ const BookReader: FC = () => {
     });
 
     useEffect(() => {
-        const page = searchParams.get('page')
-        if (page) { 
+        const page = searchParams.get("page");
+        if (page) {
             setPage(+page);
         }
     }, [searchParams]);
@@ -92,33 +89,33 @@ const BookReader: FC = () => {
     const removeHiglights = () => {
         const classes = document.getElementsByClassName("translateMyWord");
         for (let inc = 0; inc < classes.length; inc++) {
-            classes[inc].classList.remove('highlight');
+            classes[inc].classList.remove("highlight");
         }
-    }
+    };
 
     const setNextPage = () => {
         removeHiglights();
-        setSearchParams({page: new String(currentPage + 1).toString()})
+        setSearchParams({ page: new String(currentPage + 1).toString() });
     };
 
     const setPrevPage = () => {
         removeHiglights();
-        setSearchParams({page: new String(currentPage - 1).toString()})
+        setSearchParams({ page: new String(currentPage - 1).toString() });
     };
 
     const openPages = () => {
         setOpenPages(true);
-    }
+    };
 
     const closePages = () => {
         setOpenPages(false);
-    }
+    };
 
     const switchPage = async (page: number) => {
-        setSearchParams({page: new String(page).toString()})
+        setSearchParams({ page: new String(page).toString() });
         removeHiglights();
         refetch();
-    }
+    };
 
     useEffect(() => {
         refetch();
@@ -127,31 +124,37 @@ const BookReader: FC = () => {
     const dispatch = useAppDispatch();
 
     const translateWord = (word: string) => {
+        setCurrentWord(word);
         handleDrawerOpen();
-        dispatch(fullTranslate({
-            word,
-            sourceLang: 'en',
-            targetLang: 'ru'
-        }));
-    }
+        dispatch(
+            fullTranslate({
+                word,
+                sourceLang: "en",
+                targetLang: "ru",
+                getTranscription: true
+            })
+        );
+    };
 
     useEffect(() => {
         if (data) {
             const classes = document.getElementsByClassName("translateMyWord");
             for (let inc = 0; inc < classes.length; inc++) {
-                function translateAndHighlight (id: string) {
+                function translateAndHighlight(id: string) {
                     const word = document.getElementById(id);
                     for (let inc = 0; inc < classes.length; inc++) {
-                        classes[inc].classList.remove('highlight');
+                        classes[inc].classList.remove("highlight");
                     }
                     if (word) {
-                        word.classList.add('highlight');
+                        word.classList.add("highlight");
                         translateWord(word.innerText);
                     }
                 }
-                if (!classes[inc].hasAttribute('onclick')) {
+                if (!classes[inc].hasAttribute("onclick")) {
                     const element: any = classes[inc];
-                    element.onclick = function () {translateAndHighlight(classes[inc].id)};
+                    element.onclick = function () {
+                        translateAndHighlight(classes[inc].id);
+                    };
                 }
             }
         }
@@ -160,14 +163,14 @@ const BookReader: FC = () => {
     return (
         <>
             {data && (
-                <BookPages 
-                    countPages={data.countPages} 
-                    isOpen={isOpenPages} 
+                <BookPages
+                    countPages={data.countPages}
+                    isOpen={isOpenPages}
                     close={closePages}
                     onClick={switchPage}
                 />
             )}
-          
+
             <Box sx={{ display: "flex" }}>
                 <CssBaseline />
                 <AppBar position="fixed" open={open}>
@@ -187,7 +190,6 @@ const BookReader: FC = () => {
                         <div className="cursor-pointer" onClick={setNextPage}>
                             <ArrowForwardIosIcon />
                         </div>
-
                     </Toolbar>
                 </AppBar>
                 <Main open={open}>
@@ -201,35 +203,18 @@ const BookReader: FC = () => {
                 <BookDrawer
                     isOpen={true}
                     className="hidden lg:block"
-                    headerBody={
-                        <Button variant="contained" size="small">
-                            Добавить в словарь
-                        </Button>
-                    }
+                    word={currentWord}
                     width={450}
+                    lang="en"
                 />
                 <BookDrawer
                     isOpen={open}
                     className="block lg:hidden"
-                    headerBody={
-                        <div>
-                            <div>
-                                <IconButton onClick={handleDrawerClose}>
-                                    {theme.direction === "rtl" ? (
-                                        <ChevronLeftIcon />
-                                    ) : (
-                                        <ChevronRightIcon />
-                                    )}
-                                </IconButton>
-                            </div>
-                            <div>
-                                <Button variant="contained" size="small">
-                                    Добавить в словарь
-                                </Button>
-                            </div>
-                        </div>
-                    }
+                    word={currentWord}
+                    showChevron={true}
+                    close={handleDrawerClose}
                     width={drawerWidth}
+                    lang="en"
                 />
             </Box>
         </>

@@ -87,7 +87,8 @@ interface ITranslateParams {
     word: string,
     sourceLang: string,
     targetLang: string,
-    translateMethod?: translateMethod
+    translateMethod?: translateMethod,
+    getTranscription?: boolean
 }
 
 interface IExampleParams {
@@ -101,7 +102,8 @@ interface IFullTranslateObject {
     word: string,
     type: string,
     isActive: boolean,
-    dictionaryWordId: string
+    dictionaryWordId: string,
+    originalWord: string
 }
 
 interface ILingvoExample {
