@@ -8,8 +8,8 @@ import { useActions } from "../../hooks/useAction";
 import { generateCryptId } from "../../../../helpers/stringHelper";
 
 interface IWordsTagsPanel {
-    selectTag?: (word: string) => void;
-    saveTagsCallback?: (tags: IFullTranslateObject[]) => void;
+    selectTag?: (word: string[]) => void;
+    saveTagsCallback?: (tags: string[]) => void;
     saveTags?: boolean;
     saveBtnName?: string;
     lang?: string;
@@ -76,13 +76,14 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
             };
 
             await addWordToDictionary(translateItem);
-
+            const uniqueWords = uniqueList(translateList.map((item) => item.word));
+            
             createLinkedWords({
                 dictionaryId: dictionaryWordId,
-                words: translateList.map((item) => item.word),
+                words: uniqueWords,
             });
 
-            saveTagsCallback && saveTagsCallback(translateList);
+            saveTagsCallback && saveTagsCallback(uniqueWords);
         }
     };
 

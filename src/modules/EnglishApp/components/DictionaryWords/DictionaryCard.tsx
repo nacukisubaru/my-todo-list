@@ -100,10 +100,9 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         }));
     }
 
-    const addLinkedWords = (words: IFullTranslateObject[]) => {
-        addToLinkedWordsList(words.map(word => word.word));
-        changeDictionaryWord("dictionaryLinkedWords", words.map(word => {return {word: word.word}}));
-        
+    const addLinkedWords = (words: string[]) => {
+        addToLinkedWordsList(words);
+        changeDictionaryWord("dictionaryLinkedWords", words.map(word => {return {word}}));
     }
 
     useEffect(() => {

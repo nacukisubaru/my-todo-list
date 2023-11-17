@@ -63,6 +63,7 @@ const BookReader: FC = () => {
     const [currentWord, setCurrentWord] = useState("");
     const [isOpenPages, setOpenPages] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
+    const [language, setLanguage] = useState('en');
 
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
@@ -72,9 +73,16 @@ const BookReader: FC = () => {
 
     useEffect(() => {
         const page = searchParams.get("page");
+        const lang = searchParams.get("lang");
+        
         if (page) {
             setPage(+page);
         }
+
+        if (lang) {
+            setLanguage(language);
+        }
+
     }, [searchParams]);
 
     const handleDrawerOpen = () => {
@@ -128,7 +136,7 @@ const BookReader: FC = () => {
         dispatch(
             fullTranslate({
                 word,
-                sourceLang: "en",
+                sourceLang: language,
                 targetLang: "ru",
                 getTranscription: true
             })
@@ -204,7 +212,7 @@ const BookReader: FC = () => {
                     className="hidden lg:block"
                     word={currentWord}
                     width={450}
-                    lang="en"
+                    lang={language}
                 />
                 <BookDrawer
                     isOpen={open}
@@ -213,7 +221,7 @@ const BookReader: FC = () => {
                     showChevron={true}
                     close={handleDrawerClose}
                     width={drawerWidth}
-                    lang="en"
+                    lang={language}
                 />
             </Box>
         </>
