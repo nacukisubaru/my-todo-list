@@ -57,7 +57,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const BookReader: FC = () => {
-    const theme = useTheme();
     const [open, setOpen] = useState(false);
     const { id } = useParams();
     const [currentPage, setPage] = useState(1);

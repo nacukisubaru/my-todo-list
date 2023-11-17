@@ -2,10 +2,12 @@ import Drawer from "@mui/material/Drawer";
 import { FC } from "react";
 import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { IconButton } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { styled, useTheme } from "@mui/material/styles";
+import PlayButton from "../../../../ui/Buttons/PlayButton";
+import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -16,7 +18,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const WordsWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
+    padding: theme.spacing(2, 2, 2, 2),
 }));
 
 interface IBookDrawer {
@@ -37,13 +39,14 @@ const BookDrawer: FC<IBookDrawer> = ({
     width = 320,
     lang,
     showChevron = false,
-    close
+    close,
 }) => {
     const { fullTranslateList } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
     const theme = useTheme();
+    const { speak } = useSpeechSynthesis();
 
     return (
         <Drawer
@@ -60,26 +63,59 @@ const BookDrawer: FC<IBookDrawer> = ({
             className={className}
         >
             <DrawerHeader>
-                {showChevron && (
-                    <div>
-                        <IconButton onClick={() => {close && close()}}>
-                            {theme.direction === "rtl" ? (
-                                <ChevronLeftIcon />
-                            ) : (
-                                <ChevronRightIcon />
-                            )}
-                        </IconButton>
-                    </div>
-                )}
-                {word && word}
-                {fullTranslateList.find(item => item.type === 'transcription')?.word}
+                <div>
+                    {showChevron && (
+                        <div>
+                            <IconButton
+                                onClick={() => {
+                                    close && close();
+                                }}
+                            >
+                                {theme.direction === "rtl" ? (
+                                    <ChevronLeftIcon />
+                                ) : (
+                                    <ChevronRightIcon />
+                                )}
+                            </IconButton>
+                        </div>
+                    )}
+                    {fullTranslateList.length > 0 && (
+                        <WordsWrapper>
+                            <div className="flex justify-start">
+                                <div className="flex">
+                                    <Typography
+                                        variant="h5"
+                                        style={{
+                                            fontWeight: "bold",
+                                            marginRight: "11px",
+                                        }}
+                                    >
+                                        {word && word}
+                                    </Typography>
+
+                                    <PlayButton
+                                        onClick={() => {
+                                            speak(word, lang === 'en' ? "en-GB" : lang);
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-start">
+                                <Typography>
+                                    {
+                                        fullTranslateList.find(
+                                            (item) =>
+                                                item.type === "transcription"
+                                        )?.word
+                                    }
+                                </Typography>
+                            </div>
+                        </WordsWrapper>
+                    )}
+                </div>
             </DrawerHeader>
             <WordsWrapper>
-                <WordsTagsPanel
-                    saveTags={true}
-                    forBook={true}
-                    lang={lang}
-                />
+                <WordsTagsPanel saveTags={true} forBook={true} lang={lang} />
             </WordsWrapper>
         </Drawer>
     );
