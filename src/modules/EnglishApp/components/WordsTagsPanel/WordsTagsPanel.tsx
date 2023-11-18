@@ -2,13 +2,13 @@ import { FC, useEffect, useState } from "react";
 import { uniqueList } from "../../../../helpers/arrayHelper";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import WordsPanel from "./WordsPanel";
-import { Box, Button, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 import { useActions } from "../../hooks/useAction";
 import { generateCryptId } from "../../../../helpers/stringHelper";
 
 interface IWordsTagsPanel {
-    selectTag?: (word: string[]) => void;
+    selectTag?: (word: string) => void;
     saveTagsCallback?: (tags: string[]) => void;
     saveTags?: boolean;
     saveBtnName?: string;
@@ -31,6 +31,7 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
     const [createWord] = dictionaryApi.useAddMutation();
     const [dictionaryId, setDictionaryId] = useState<string>("");
     const [isVisibleSaveBtn, setVisibleSaveBtn] = useState<boolean>(false);
+    const [isInitTags, setTagsInit] = useState(false);
 
     const { setFullTranslateList } = useActions();
     const save = async () => {
@@ -122,6 +123,10 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
             } else {
                 setVisibleSaveBtn(false);
             }
+            
+            if (!isInitTags) {
+                setTagsInit(true);
+            }
         } else {
             setDictionaryId("");
             setVisibleSaveBtn(false);
@@ -161,9 +166,20 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
                     )}
                 </>
             ) : (
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <CircularProgress />
-                </Box>
+                <>
+                {!isInitTags ? 
+                    <div className="flex justify-center">
+                        <Typography variant="h4" style={{fontWeight: 'bold'}}>
+                            Начать
+                        </Typography>
+                    </div> 
+                : (
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <CircularProgress />
+                    </Box>
+                )}
+                
+                </>
             )}
         </>
     );
