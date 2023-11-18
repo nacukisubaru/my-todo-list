@@ -88,7 +88,8 @@ interface ITranslateParams {
     sourceLang: string,
     targetLang: string,
     translateMethod?: translateMethod,
-    getTranscription?: boolean
+    getTranscription?: boolean,
+    getYandexTranslate?: boolean
 }
 
 interface IExampleParams {

@@ -30,6 +30,9 @@ interface IBookDrawer {
     lang: string;
     showChevron?: boolean;
     close?: () => void;
+    yandexTranslate?: () => void;
+    setYandexData?: boolean;
+    selectTag:() => void 
 }
 
 const BookDrawer: FC<IBookDrawer> = ({
@@ -40,6 +43,9 @@ const BookDrawer: FC<IBookDrawer> = ({
     lang,
     showChevron = false,
     close,
+    yandexTranslate = () => {},
+    selectTag,
+    setYandexData = false
 }) => {
     const { fullTranslateList } = useAppSelector(
         (state) => state.dictionaryReducer
@@ -115,7 +121,14 @@ const BookDrawer: FC<IBookDrawer> = ({
                 </div>
             </DrawerHeader>
             <WordsWrapper>
-                <WordsTagsPanel saveTags={true} forBook={true} lang={lang} />
+                <WordsTagsPanel 
+                    saveTags={true} 
+                    forBook={true} 
+                    lang={lang}
+                    yandexTranslate={yandexTranslate}
+                    setYandexData={setYandexData}
+                    selectTag={selectTag}
+                />
             </WordsWrapper>
         </Drawer>
     );

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -64,6 +64,7 @@ const BookReader: FC = () => {
     const [isOpenPages, setOpenPages] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const [language, setLanguage] = useState('en');
+    const [isExecuteYandexTranslate, setYandexTranslateExecute] = useState(false);
 
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
@@ -130,7 +131,7 @@ const BookReader: FC = () => {
 
     const dispatch = useAppDispatch();
 
-    const translateWord = (word: string) => {
+    const translateWord = (word: string, getYandexTranslate: boolean = false) => {
         setCurrentWord(word);
         handleDrawerOpen();
         dispatch(
@@ -138,9 +139,15 @@ const BookReader: FC = () => {
                 word,
                 sourceLang: language,
                 targetLang: "ru",
-                getTranscription: true
+                getTranscription: true,
+                getYandexTranslate
             })
         );
+        if (getYandexTranslate) {
+            setYandexTranslateExecute(true);
+        } else {
+            setYandexTranslateExecute(false);
+        }
     };
 
     useEffect(() => {
@@ -213,6 +220,9 @@ const BookReader: FC = () => {
                     word={currentWord}
                     width={450}
                     lang={language}
+                    yandexTranslate={() =>{translateWord(currentWord, true)}}
+                    setYandexData={isExecuteYandexTranslate}
+                    selectTag={()=>{setYandexTranslateExecute(false)}}
                 />
                 <BookDrawer
                     isOpen={open}
@@ -222,6 +232,9 @@ const BookReader: FC = () => {
                     close={handleDrawerClose}
                     width={drawerWidth}
                     lang={language}
+                    yandexTranslate={() =>{translateWord(currentWord, true)}}
+                    setYandexData={isExecuteYandexTranslate}
+                    selectTag={()=>{setYandexTranslateExecute(false)}}
                 />
             </Box>
         </>

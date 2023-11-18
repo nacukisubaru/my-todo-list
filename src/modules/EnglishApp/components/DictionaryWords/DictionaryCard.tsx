@@ -21,6 +21,7 @@ import DictionaryNotes from "./DictionaryNotes";
 import DictionaryLingvoExamples from "./DictionaryLingvoExamples";
 import { uniqueList } from "../../../../helpers/arrayHelper";
 import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
+import { useDictionary } from "../../hooks/useDictionary";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -48,6 +49,8 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         getExamples,
         examples
     } = useDictionaryExample(props);
+    
+    const {isExecuteYandexTranslate, setYandexTranslateExecute} = useDictionary();
 
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
@@ -84,12 +87,19 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         setDictionary(cloneDictionary);
     };
 
-    const getWordsFromLingvo = () => {
+    const getWordsFromLingvo = (getYandexTranslate: boolean = false) => {
         dispatch(fullTranslate({
             word: translatedWord,
             sourceLang: languageTranslation,
-            targetLang: 'ru'
+            targetLang: 'ru',
+            getYandexTranslate
         }));
+
+        if (getYandexTranslate) {
+            setYandexTranslateExecute(true);
+        } else {
+            setYandexTranslateExecute(false);
+        }
     }
 
     const getAnalogsWord = () => {
@@ -229,7 +239,10 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                             content={fullTranslateList.length ?
                                 <WordsTagsPanel
                                     saveTagsCallback={addLinkedWords}
-                                    saveTags={true}                          
+                                    saveTags={true}
+                                    yandexTranslate={() => {getWordsFromLingvo(true)}}                
+                                    setYandexData={isExecuteYandexTranslate}
+                                    selectTag={()=>{setYandexTranslateExecute(false)}}
                                 />
                              : false}>
                             Получить значения слова {translatedWord}

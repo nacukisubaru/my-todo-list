@@ -14,6 +14,8 @@ interface IWordsTagsPanel {
     saveBtnName?: string;
     lang?: string;
     forBook?: boolean;
+    yandexTranslate?: () => void;
+    setYandexData?: boolean;
 }
 
 const WordsTagsPanel: FC<IWordsTagsPanel> = ({
@@ -22,6 +24,8 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
     saveTags = false,
     lang,
     forBook = false,
+    yandexTranslate = () => {},
+    setYandexData = false
 }) => {
     const { fullTranslateList } = useAppSelector(
         (state) => state.dictionaryReducer
@@ -146,6 +150,8 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
                                     .map((word) => word.type)
                                     .filter((type) => type !== "transcription")
                             )}
+                            yandexTranslate={yandexTranslate}
+                            setYandexData={setYandexData}
                         />
                     </div>
                     {saveTags && (

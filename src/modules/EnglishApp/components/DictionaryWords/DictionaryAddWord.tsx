@@ -36,11 +36,13 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setTranslatelLang,
         setVoiceWordSettings,
         setTransltionWord,
+        translate,
         inputOriginal,
         inputTranslation,
         word,
         isAddWord,
         voiceWordSettings,
+        isExecuteYandexTranslate
     } = useDictionary();
 
     const { translateResult, translateLanguages, translateMethod, error } =
@@ -97,6 +99,10 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setTransltionWord(word);
     };
 
+    const translateByYandex = () => {
+        translate(translateResult.originalWord, true)
+    }
+
     return (
         <>
             <SnackBar isOpen={error.message ? true : false} type={"error"}>
@@ -150,7 +156,9 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                                             .map((word) => word.type)
                                                             .filter((type) => type !== "transcription")
                                                     )} 
-                                                    selectTag={choiceTranslationWord} 
+                                                    selectTag={choiceTranslationWord}
+                                                    yandexTranslate={translateByYandex}
+                                                    setYandexData={isExecuteYandexTranslate}
                                                 />
                                             )}
                                        </>
