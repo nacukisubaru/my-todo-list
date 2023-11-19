@@ -4,6 +4,7 @@ import { dictionaryReducer } from "./services/dictionary/dictionary.slice";
 import { settingsReducer } from "./services/settings/settings.slice";
 import { settingsApi } from "./services/settings/settings.api";
 import { bookReaderApi } from "./services/book-reader/book-reader.api";
+import { bookReaderReducer } from "./services/book-reader/book-reader.slice";
 
 const arrayMiddlewares: any[] = [
     dictionaryApi.middleware,
@@ -15,6 +16,7 @@ export const makeStore = () => configureStore({
     reducer: {
         dictionaryReducer,
         settingsReducer,
+        bookReaderReducer,
         [bookReaderApi.reducerPath]: bookReaderApi.reducer,
     },
 

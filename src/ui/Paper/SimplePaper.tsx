@@ -21,7 +21,7 @@ const SimplePaper: FC<ISimplePaper> = ({width, height, children}) => {
                 },
             }}
         >
-            <Paper elevation={3} >
+            <Paper>
                 <Box sx={{
                   paddingLeft: '50px',
                   paddingRight: '50px',
