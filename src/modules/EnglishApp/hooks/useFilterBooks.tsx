@@ -2,26 +2,19 @@ import useLocalStorageState from "use-local-storage-state";
 import { useActions } from "./useAction";
 import { useAppDispatch, useAppSelector } from "./useAppSelector";
 import { getBooksList } from "../store/services/book-reader/book-reader.slice";
+import { useEffect } from "react";
 
 export const useFilterBooks = () => {
     const {booksFilter, books, pages} = useAppSelector(state => state.bookReaderReducer);
     const { resetBooks, setBooksFilter } = useActions();
     const dispatch = useAppDispatch();
-    const [_filterStorage, setFilterToStorage] = useLocalStorageState('books-filter', {
+    const [filterStorage, setFilterToStorage] = useLocalStorageState<any>('books-filter', {
         defaultValue: [booksFilter]
     })
 
     const filtrate = async (page: number = 1, resetState: boolean = true) => {
         const filter: IBooksFilter = booksFilter;
-        //let searchByName: string = '';
-
-        setFilterToStorage([filter]);
-
-        // if (filter.searchByName) {
-        //     searchByName = filter.searchByName;
-        // }
-
-        if (filter.videoOnly) {}
+        setFilterToStorage(filter);
 
         if (resetState) {
             await resetBooks();
@@ -34,17 +27,10 @@ export const useFilterBooks = () => {
         }));
     }
 
-    
+    useEffect(() => {
+        console.log({filterStorage})
+    }, []);
 
-    // const selectOriginalLang = (langs: ILanguage[]) => {
-    //     setBooksFilter({ ...booksFilter, languageOriginal: langs });
-    // };
 
-    // const selectTranslationLang = (langs: ILanguage[]) => {
-    //     setBooksFilter({ ...booksFilter, languageTranslation: langs });
-    // };
-
-    
-
-    return { filtrate, setBooksFilter, booksFilter, books, pages };
+    return { filtrate, setFilterToStorage, setBooksFilter, booksFilter, books, pages, filterStorage };
 }

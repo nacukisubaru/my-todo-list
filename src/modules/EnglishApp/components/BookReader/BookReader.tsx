@@ -15,6 +15,10 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import BookPages from "./BookPages";
 import { AppBar } from "../../../../ui/AppBar/AppBar";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import StarIcon from '@mui/icons-material/Star';
 import "./style.css";
 
 const drawerWidth = 320;
@@ -47,7 +51,11 @@ const BookReader: FC = () => {
     const [isExecuteYandexTranslate, setYandexTranslateExecute] =
         useState(false);
     const navigate = useNavigate();
-
+    const [isSetBookMarkerOnPage, setBookMarkerOnPage] = useState(false);
+    const [isRead, setRead] = useState(false);
+  
+    const [updBookmarker] = bookReaderApi.useUpdateBookmarkerMutation();
+    const [updRead] = bookReaderApi.useUpdateReadMutation();
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
         page: currentPage,
@@ -74,7 +82,7 @@ const BookReader: FC = () => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-
+   
     const removeHiglights = () => {
         const classes = document.getElementsByClassName("translateMyWord");
         for (let inc = 0; inc < classes.length; inc++) {
@@ -105,6 +113,21 @@ const BookReader: FC = () => {
         removeHiglights();
         refetch();
     };
+
+    const updateBookMarker = () => {
+        if (id) {
+            updBookmarker({id: +id, bookmarker: currentPage});
+            setBookMarkerOnPage(true);
+        }
+    }
+
+    const updateRead = (isRead: boolean) => {
+        if (id) {
+            updRead({id: +id, isRead});
+            console.log({isRead})
+            setRead(isRead);
+        }
+    }
 
     useEffect(() => {
         refetch();
@@ -155,6 +178,8 @@ const BookReader: FC = () => {
                     };
                 }
             }
+            setBookMarkerOnPage(false);
+            setRead(data?.book.isRead);
         }
     }, [data]);
 
@@ -188,6 +213,26 @@ const BookReader: FC = () => {
                         <div className="cursor-pointer" onClick={setNextPage}>
                             <ArrowForwardIosIcon />
                         </div>
+
+                        {data?.book.bookmarker == currentPage || isSetBookMarkerOnPage ? (
+                            <div className="cursor-pointer">
+                                <BookmarkIcon />
+                            </div>
+                        ): (
+                            <div className="cursor-pointer" onClick={updateBookMarker}>
+                                <BookmarkBorderIcon />
+                            </div>
+                        )}
+
+                        {isRead ? (
+                            <div className="cursor-pointer" onClick={() => {updateRead(false)}}>
+                                <StarIcon  />
+                            </div>
+                        ): (
+                            <div className="cursor-pointer" onClick={() => {updateRead(true)}}>
+                                <StarBorderIcon />
+                            </div>
+                        )}
                     </Toolbar>
                 </AppBar>
                 <Main open={open}>

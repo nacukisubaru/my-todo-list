@@ -2,10 +2,11 @@ import { FC, useRef } from "react";
 
 interface ISearchInput {
     search: (text: string) => void,
-    onChange?: (value: any) => void
+    onChange?: (value: any) => void,
+    value?: string
 }
 
-const SearchInput: FC<ISearchInput> = ({search, onChange}) => {
+const SearchInput: FC<ISearchInput> = ({search, onChange, value}) => {
     const inputRef: any = useRef();
 
     return (
@@ -15,6 +16,7 @@ const SearchInput: FC<ISearchInput> = ({search, onChange}) => {
                 type="search"
                 name="search"
                 ref={inputRef}
+                value={value ? value: ''}
                 onChange={() => {onChange && onChange(inputRef.current.value)}}
                 placeholder="Search"
             />

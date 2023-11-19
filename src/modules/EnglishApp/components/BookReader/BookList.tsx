@@ -13,17 +13,28 @@ import PaginationButtons from "../../../../ui/Pagination/PaginationButtons";
 import BooksFilter from "../Filter/BooksFilter";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SearchInput from "../../../../ui/Inputs/SearchInput";
+import { useNavigate } from "react-router-dom";
 
 interface IBookList {}
 
 const BookList: FC<IBookList> = () => {
-    const { filtrate, books, pages, booksFilter, setBooksFilter } =
+    const { filtrate, books, pages, booksFilter, setBooksFilter, filterStorage } =
         useFilterBooks();
     const [isOpenFilter, openFilter] = useState(false);
+    const navigate = useNavigate();
+    const [isInitFilter, setInitFilter] = useState(false);
 
     useEffect(() => {
-        filtrate(1, false);
+        setBooksFilter(filterStorage);
     }, []);
+
+    useEffect(() => {
+        if (!isInitFilter) {
+            filtrate(1, false);
+            setInitFilter(true);
+        }
+    }, [booksFilter]);
+
 
     const changePage = (page: number) => {
         filtrate(page, false);
@@ -32,7 +43,7 @@ const BookList: FC<IBookList> = () => {
     const closeFilter = () => {
         openFilter(false);
     };
-    
+
     return (
         <>
             <div className="flex justify-center mt-[25px]">
@@ -46,7 +57,11 @@ const BookList: FC<IBookList> = () => {
                         height: "800px",
                     }}
                 >
-                    <AppBar className="py-[10px]" position="static" drawerWidth={0}>
+                    <AppBar
+                        className="py-[10px]"
+                        position="static"
+                        drawerWidth={0}
+                    >
                         <Toolbar>
                             <Grid container spacing={2}>
                                 <Grid item md={6}>
@@ -59,17 +74,19 @@ const BookList: FC<IBookList> = () => {
                                 <Grid item md={6}>
                                     <div className="flex">
                                         <div className="mt-[-6px]">
-                                        <SearchInput
-                                            onChange={(val) => {
-                                                setBooksFilter({
-                                                    ...booksFilter,
-                                                    searchByName: val,
-                                                });
-                                            }}
-                                            search={() => {
-                                                filtrate(1, false);
-                                            }}
-                                        /></div>
+                                            <SearchInput
+                                                onChange={(val) => {
+                                                    setBooksFilter({
+                                                        ...booksFilter,
+                                                        searchByName: val,
+                                                    });
+                                                }}
+                                                search={() => {
+                                                    filtrate(1, false);
+                                                }}
+                                                value={booksFilter.searchByName ? booksFilter.searchByName : ''}
+                                            />
+                                        </div>
                                         <div
                                             className="text-white cursor-pointer mt-[7px] ml-[14px]"
                                             onClick={() => {
@@ -89,7 +106,14 @@ const BookList: FC<IBookList> = () => {
                                 <ListItem>
                                     <ListItemButton
                                         component="a"
-                                        href={`/englishApp/books/${book.id}${book.bookmarker && '?page='+book.bookmarker}`}
+                                        onClick={() => {
+                                            navigate(
+                                                `/englishApp/books/${book.id}${
+                                                    book.bookmarker ?
+                                                    "?page=" + book.bookmarker : ''
+                                                }`
+                                            );
+                                        }}
                                     >
                                         {book.name}
                                     </ListItemButton>
@@ -104,3 +128,4 @@ const BookList: FC<IBookList> = () => {
 };
 
 export default BookList;
+

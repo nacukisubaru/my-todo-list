@@ -1,7 +1,8 @@
 interface IBook {
     text: string,
     page: number,
-    countPages: number
+    countPages: number,
+    book: IBookList
 }
 
 interface IBookParams {
@@ -25,6 +26,7 @@ interface IBookList {
     videoUrl: string;
     bookmarker: number;
     isVideo: boolean;
+    isRead: boolean;
 }
 
 interface IBooksFilter {
@@ -33,4 +35,14 @@ interface IBooksFilter {
     booksOnly: boolean,
     readOnly: boolean,
     page: number,
+}
+
+interface IUpdateBookmarkerParams {
+    id: number,
+    bookmarker: number
+}
+
+interface IUpdateReadParams {
+    id: number,
+    isRead: boolean
 }

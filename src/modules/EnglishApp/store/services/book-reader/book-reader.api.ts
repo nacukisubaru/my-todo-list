@@ -11,5 +11,19 @@ export const bookReaderApi = createApi({
                 params
             })
         }),
+        updateBookmarker: build.mutation({
+            query: (body: IUpdateBookmarkerParams) => ({
+                url: '/book-reader/update-bookmarker',
+                method: 'POST',
+                body
+            }),
+        }),
+        updateRead: build.mutation({
+            query: (body: IUpdateReadParams) => ({
+                url: '/book-reader/update-read',
+                method: 'POST',
+                body
+            }),
+        }),
     })
 });
