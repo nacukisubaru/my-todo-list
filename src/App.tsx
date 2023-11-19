@@ -7,6 +7,7 @@ import RegistrationPage from "./pages/Login/RegistrationPage";
 import LoginPage from "./pages/Login/LoginPage";
 import EnglishAppSpace from "./pages/WorkSpace/EnglishAppSpace";
 import "./App.css";
+import { ThemeProvider, createTheme } from "@mui/material";
 
 const router = createBrowserRouter([
     {
@@ -35,21 +36,42 @@ const router = createBrowserRouter([
     },
     {
         path: "/englishApp",
-        element: <EnglishAppSpace />
+        element: <EnglishAppSpace headerBtn="Тренажер" />,
     },
     {
         path: "/englishApp/trainer",
-        element: <EnglishAppSpace includeTrainer={true}/>
+        element: <EnglishAppSpace includeTrainer={true} headerBtn="Словарь" />,
     },
     {
-        path: "/englishApp/book/:id",
-        element: <EnglishAppSpace includeBook={true}/>
-    }
+        path: "/englishApp/books",
+        element: (
+            <EnglishAppSpace includeBooksList={true} headerBtn="Словарь" />
+        ),
+    },
+    {
+        path: "/englishApp/books/:id",
+        element: <EnglishAppSpace includeBook={true} headerBtn="Словарь" />,
+    },
 ]);
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#009688",
+        },
+        text: {
+            primary: "#000000",
+            secondary: "#757575",
+        },
+    },
+});
+
 function App() {
     return (
         <Provider store={store}>
-            <RouterProvider router={router} />
+            <ThemeProvider theme={theme}>
+                <RouterProvider router={router} />
+            </ThemeProvider>
         </Provider>
     );
 }

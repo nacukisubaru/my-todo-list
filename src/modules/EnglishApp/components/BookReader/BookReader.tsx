@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
@@ -10,11 +9,13 @@ import { bookReaderApi } from "../../store/services/book-reader/book-reader.api"
 import HTMLReactParser from "html-react-parser";
 import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
 import { useAppDispatch } from "../../hooks/useAppSelector";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import "./style.css";
 import BookPages from "./BookPages";
+import { AppBar } from "../../../../ui/AppBar/AppBar";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import "./style.css";
 
 const drawerWidth = 320;
 
@@ -25,27 +26,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     padding: theme.spacing(3),
     marginRight: -drawerWidth,
     position: "relative",
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-    open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
-    transition: theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(["margin", "width"], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginRight: drawerWidth,
-    }),
 }));
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -63,8 +43,10 @@ const BookReader: FC = () => {
     const [currentWord, setCurrentWord] = useState("");
     const [isOpenPages, setOpenPages] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
-    const [language, setLanguage] = useState('en');
-    const [isExecuteYandexTranslate, setYandexTranslateExecute] = useState(false);
+    const [language, setLanguage] = useState("en");
+    const [isExecuteYandexTranslate, setYandexTranslateExecute] =
+        useState(false);
+    const navigate = useNavigate();
 
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
@@ -75,7 +57,7 @@ const BookReader: FC = () => {
     useEffect(() => {
         const page = searchParams.get("page");
         const lang = searchParams.get("lang");
-        
+
         if (page) {
             setPage(+page);
         }
@@ -83,7 +65,6 @@ const BookReader: FC = () => {
         if (lang) {
             setLanguage(language);
         }
-
     }, [searchParams]);
 
     const handleDrawerOpen = () => {
@@ -131,7 +112,10 @@ const BookReader: FC = () => {
 
     const dispatch = useAppDispatch();
 
-    const translateWord = (word: string, getYandexTranslate: boolean = false) => {
+    const translateWord = (
+        word: string,
+        getYandexTranslate: boolean = false
+    ) => {
         setCurrentWord(word);
         handleDrawerOpen();
         dispatch(
@@ -140,7 +124,7 @@ const BookReader: FC = () => {
                 sourceLang: language,
                 targetLang: "ru",
                 getTranscription: true,
-                getYandexTranslate
+                getYandexTranslate,
             })
         );
         if (getYandexTranslate) {
@@ -187,7 +171,7 @@ const BookReader: FC = () => {
 
             <Box sx={{ display: "flex" }}>
                 <CssBaseline />
-                <AppBar position="fixed" open={open}>
+                <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
                     <Toolbar>
                         <div className="cursor-pointer" onClick={setPrevPage}>
                             <ArrowBackIosNewIcon />
@@ -208,6 +192,10 @@ const BookReader: FC = () => {
                 </AppBar>
                 <Main open={open}>
                     <DrawerHeader />
+                    <div className="mb-[15px] cursor-pointer" onClick={()=>{navigate('/englishApp/books')}}>
+                        <KeyboardReturnIcon />
+                    </div>
+
                     <div className="w-[82%] flex justify-center">
                         <Typography paragraph>
                             {data && HTMLReactParser(data.text)}
@@ -220,9 +208,13 @@ const BookReader: FC = () => {
                     word={currentWord}
                     width={450}
                     lang={language}
-                    yandexTranslate={() =>{translateWord(currentWord, true)}}
+                    yandexTranslate={() => {
+                        translateWord(currentWord, true);
+                    }}
                     setYandexData={isExecuteYandexTranslate}
-                    selectTag={()=>{setYandexTranslateExecute(false)}}
+                    selectTag={() => {
+                        setYandexTranslateExecute(false);
+                    }}
                 />
                 <BookDrawer
                     isOpen={open}
@@ -232,9 +224,13 @@ const BookReader: FC = () => {
                     close={handleDrawerClose}
                     width={drawerWidth}
                     lang={language}
-                    yandexTranslate={() =>{translateWord(currentWord, true)}}
+                    yandexTranslate={() => {
+                        translateWord(currentWord, true);
+                    }}
                     setYandexData={isExecuteYandexTranslate}
-                    selectTag={()=>{setYandexTranslateExecute(false)}}
+                    selectTag={() => {
+                        setYandexTranslateExecute(false);
+                    }}
                 />
             </Box>
         </>

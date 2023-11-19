@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import SectionsMenu from "../../components/Sections/SectionsMenu";
 import { useStartApp } from "../../hooks/useStartApp";
-import { EnglishApp } from "../../modules/EnglishApp";
+import { EnglishApp, EnglishBooksApp } from "../../modules/EnglishApp";
 import BasicButton from "../../ui/Buttons/BasicButton/BasicButton";
 import Header from "../../ui/Header/Header";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -11,17 +11,21 @@ import { Button } from "@mui/material";
 interface EnglishAppSpaceProps {
     includeTrainer?: boolean;
     includeBook?: boolean;
+    includeBooksList?: boolean;
+    headerBtn?: string
 }
 
 const EnglishAppSpace: FC<EnglishAppSpaceProps> = ({
     includeTrainer = false,
-    includeBook = false
+    includeBook = false,
+    includeBooksList,
+    headerBtn = "Словарь"
 }) => {
     const navigate = useNavigate();
     useStartApp();
 
     const navigateByEnglishApp = () => {
-        if (includeTrainer) {
+        if (includeTrainer || includeBook || includeBooksList) {
             navigate("/englishApp");
         } else {
             navigate("/englishApp/trainer");
@@ -44,22 +48,35 @@ const EnglishAppSpace: FC<EnglishAppSpaceProps> = ({
                 <Header>
                     <div className="-mt-[4px] mr-[17px] flex">
                         <BasicButton
-                            name={includeTrainer ? "Словарь" : "Тренажёр"}
+                            name={headerBtn}
                             color="secondary"
                             onClick={navigateByEnglishApp}
                         />
-                        <Button variant="text" size="small" onClick={openSettings}>
+                        <Button
+                            variant="text"
+                            size="small"
+                            onClick={openSettings}
+                        >
                             <SettingsIcon style={{ color: "white" }} />
                         </Button>
                     </div>
                 </Header>
             )}
-            <EnglishApp
-                includeTrainer={includeTrainer}
-                includeBook={includeBook}
-                openSettings={openModalSettings}
-                closeSettings={closeSettings}
-            ></EnglishApp>
+
+            {includeBook ? (
+                <EnglishBooksApp includeBook={true} />
+            ) : (
+                includeBooksList && <EnglishBooksApp includeBook={false} />
+            )}
+
+            {!includeBook && !includeBooksList && (
+                <EnglishApp
+                    includeTrainer={includeTrainer}
+                    includeBook={includeBook}
+                    openSettings={openModalSettings}
+                    closeSettings={closeSettings}
+                />
+            )}
         </>
     );
 };

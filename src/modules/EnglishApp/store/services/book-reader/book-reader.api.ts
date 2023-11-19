@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import authBaseQuery from "../../../../../store/services/api/authBaseQuery";
-//params:IBookParams
+
 export const bookReaderApi = createApi({
     reducerPath: 'bookReaderApi',
     baseQuery: authBaseQuery,

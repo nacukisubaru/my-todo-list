@@ -164,7 +164,8 @@ const SectionsMenu = () => {
                     },
                 ]}
                 myapps={[
-                    {name: 'Изучение языков', link: '/englishApp'}
+                    {name: 'Изучение языков', link: '/englishApp'},
+                    {name: 'Читалка', link: '/englishApp/books'}
                 ]}
                 toggleArrow={toggleArrow}
             />

@@ -21,10 +21,10 @@ const BasicButton: FC<IBasicButton> = ({
             className={`px-[3px] py-[3px] rounded-[4px] ${
                 isDisabled
                     ? color === "primary"
-                        ? "bg-red-300"
+                        ? "bg-teal-500"
                         : "bg-gray-200"
                     : color === "primary"
-                    ? "bg-red-600"
+                    ? "bg-teal-600"
                     : "bg-gray-200"
             }  `}
             onClick={onClick}
