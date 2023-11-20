@@ -25,5 +25,12 @@ export const bookReaderApi = createApi({
                 body
             }),
         }),
+        createBook: build.mutation({
+            query: (body: ICreateBook) => ({
+                url: '/book-reader/create',
+                method: 'POST',
+                body
+            }),
+        }),
     })
 });

@@ -1,16 +1,98 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
+import { Box, TextField } from "@mui/material";
+import InputFileUpload from "../../../../ui/Upload/InputFileUpload";
+import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
+import { useForm } from "react-hook-form";
+import BasicSelect from "../../../../ui/Selects/BasicSelect";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { useFilterBooks } from "../../hooks/useFilterBooks";
 
 interface IAddBook {
     isOpen: boolean;
-    close: () => void
+    close: () => void;
 }
 
 const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
+    const [addBook] = bookReaderApi.useCreateBookMutation();
+    const [currentFile, setFile] = useState("");
+    const { register, getValues, reset } = useForm();
+    const { studyLangs, langsForStudy } = useAppSelector(
+        (state) => state.dictionaryReducer.dictionarySettings
+    );
+    const [studyLangsSelector, setStudyLangsSelector] = useState<
+        { name: string; id: string }[]
+    >([]);
+    const [langsForStudySelector, setLangsForStudySelector] = useState<
+        { name: string; id: string }[]
+    >([]);
+    const [bookLang, setBookLang] = useState("en");
+    const [translateLang, setTranslateLang] = useState("ru");
+    const {filtrate} = useFilterBooks();
 
-    const createBook = () => {
+    const createBook = async () => {
+        if (currentFile) {
+            const name = getValues("name");
+            const url = getValues("url");
 
+            const formData: any = new FormData();
+            formData.append("file", currentFile);
+            formData.append("name", name);
+            formData.append("langOriginal", bookLang);
+            formData.append("langTranslation", translateLang);
+            if (url) {
+                formData.append("url", url);
+                formData.append("isVideo", "true");
+            } else {
+                formData.append("isVideo", "false");
+            }
+
+            await addBook(formData);
+            filtrate(1, false);
+            resetData();
+        }
+    };
+
+    const resetData = () => {
+        setFile("");
+        reset();
+        setBookLang("en");
+        setTranslateLang("ru");
     }
+
+    const uploadFile = (e: any) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFile(file);
+        }
+    };
+
+    const changeBookLang = (value: string) => {
+        setBookLang(value);
+    };
+
+    const changeTranslationLang = (value: string) => {
+        setTranslateLang(value);
+    };
+
+    const closeForm = () => {
+        close();
+        resetData();
+    }
+
+    useEffect(() => {
+        const data = studyLangs.map((item) => {
+            return { id: item.code, name: item.isoName };
+        });
+        setStudyLangsSelector(data);
+    }, [studyLangs]);
+
+    useEffect(() => {
+        const data = langsForStudy.map((item) => {
+            return { id: item.code, name: item.isoName };
+        });
+        setLangsForStudySelector(data);
+    }, [langsForStudy]);
 
     return (
         <>
@@ -24,9 +106,41 @@ const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
                 maxWidth="sm:max-w-[32rem]"
                 callbacks={{
                     primaryBtnClick: createBook,
-                    secondaryBtnClick: close,
+                    secondaryBtnClick: closeForm,
                 }}
-            >sdf</Modal>
+            >
+                <Box sx={{ marginBottom: "10px" }}>
+                    <TextField
+                        label="Название книги"
+                        {...register("name")}
+                        fullWidth
+                    />
+                </Box>
+                <Box sx={{ marginBottom: "10px" }}>
+                    <TextField
+                        label="Ссылка на видео"
+                        {...register("url")}
+                        fullWidth
+                    />
+                </Box>
+                <Box sx={{ marginBottom: "10px" }}>
+                    <BasicSelect
+                        options={studyLangsSelector}
+                        label="Выбрать язык книги"
+                        onChange={changeBookLang}
+                        selectedOption={bookLang}
+                    />
+                </Box>
+                <Box sx={{ marginBottom: "10px" }}>
+                    <BasicSelect
+                        options={langsForStudySelector}
+                        label="Выбрать язык перевода"
+                        onChange={changeTranslationLang}
+                        selectedOption={translateLang}
+                    />
+                </Box>
+                <InputFileUpload onChange={uploadFile} />
+            </Modal>
         </>
     );
 };

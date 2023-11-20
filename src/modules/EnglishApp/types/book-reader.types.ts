@@ -46,3 +46,10 @@ interface IUpdateReadParams {
     id: number,
     isRead: boolean
 }
+
+interface ICreateBook {
+    name: string;
+    videoUrl: string;
+    file: any;
+    isVideo: boolean;
+}
