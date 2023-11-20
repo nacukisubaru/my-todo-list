@@ -247,9 +247,10 @@ const BookReader: FC = () => {
                         </Typography>
                     </div>
                 </Main>
+               
                 <BookDrawer
                     isOpen={true}
-                    className="hidden lg:block"
+                    className="ml-[200px] hidden lg:block"
                     word={currentWord}
                     width={450}
                     lang={language}
@@ -261,6 +262,7 @@ const BookReader: FC = () => {
                         setYandexTranslateExecute(false);
                     }}
                 />
+        
                 <BookDrawer
                     isOpen={open}
                     className="block lg:hidden"
