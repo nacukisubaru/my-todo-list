@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import BasicSelect from "../../../../ui/Selects/BasicSelect";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
+import { useLangsSelector } from "../../hooks/useLangsSelector";
 
 interface IAddBook {
     isOpen: boolean;
@@ -17,15 +18,7 @@ const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
     const [addBook] = bookReaderApi.useCreateBookMutation();
     const [currentFile, setFile] = useState("");
     const { register, getValues, reset } = useForm();
-    const { studyLangs, langsForStudy } = useAppSelector(
-        (state) => state.dictionaryReducer.dictionarySettings
-    );
-    const [studyLangsSelector, setStudyLangsSelector] = useState<
-        { name: string; id: string }[]
-    >([]);
-    const [langsForStudySelector, setLangsForStudySelector] = useState<
-        { name: string; id: string }[]
-    >([]);
+    const {langsForStudySelector, studyLangsSelector} = useLangsSelector();
     const [bookLang, setBookLang] = useState("en");
     const [translateLang, setTranslateLang] = useState("ru");
     const {filtrate} = useFilterBooks();
@@ -80,19 +73,6 @@ const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
         resetData();
     }
 
-    useEffect(() => {
-        const data = studyLangs.map((item) => {
-            return { id: item.code, name: item.isoName };
-        });
-        setStudyLangsSelector(data);
-    }, [studyLangs]);
-
-    useEffect(() => {
-        const data = langsForStudy.map((item) => {
-            return { id: item.code, name: item.isoName };
-        });
-        setLangsForStudySelector(data);
-    }, [langsForStudy]);
 
     return (
         <>

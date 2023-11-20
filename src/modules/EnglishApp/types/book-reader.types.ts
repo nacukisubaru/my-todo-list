@@ -27,6 +27,8 @@ interface IBookList {
     bookmarker: number;
     isVideo: boolean;
     isRead: boolean;
+    langOriginal: string;
+    langTranslation: string;
 }
 
 interface IBooksFilter {
@@ -34,6 +36,7 @@ interface IBooksFilter {
     videoOnly: boolean,
     booksOnly: boolean,
     readOnly: boolean,
+    langOriginal: string,
     page: number,
 }
 

@@ -47,7 +47,6 @@ const BookReader: FC = () => {
     const [currentWord, setCurrentWord] = useState("");
     const [isOpenPages, setOpenPages] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
-    const [language, setLanguage] = useState("en");
     const [isExecuteYandexTranslate, setYandexTranslateExecute] =
         useState(false);
     const navigate = useNavigate();
@@ -64,14 +63,9 @@ const BookReader: FC = () => {
 
     useEffect(() => {
         const page = searchParams.get("page");
-        const lang = searchParams.get("lang");
 
         if (page) {
             setPage(+page);
-        }
-
-        if (lang) {
-            setLanguage(language);
         }
     }, [searchParams]);
 
@@ -144,8 +138,8 @@ const BookReader: FC = () => {
         dispatch(
             fullTranslate({
                 word,
-                sourceLang: language,
-                targetLang: "ru",
+                sourceLang: data && data.book.langOriginal ? data.book.langOriginal : 'en',
+                targetLang: data && data.book.langTranslation ? data.book.langTranslation : 'ru',
                 getTranscription: true,
                 getYandexTranslate,
             })
@@ -253,7 +247,7 @@ const BookReader: FC = () => {
                     className="ml-[200px] hidden lg:block"
                     word={currentWord}
                     width={450}
-                    lang={language}
+                    lang={data && data.book.langOriginal ? data.book.langOriginal : 'en'}
                     yandexTranslate={() => {
                         translateWord(currentWord, true);
                     }}
@@ -270,7 +264,7 @@ const BookReader: FC = () => {
                     showChevron={true}
                     close={handleDrawerClose}
                     width={drawerWidth}
-                    lang={language}
+                    lang={data && data.book.langOriginal ? data.book.langOriginal : 'en'}
                     yandexTranslate={() => {
                         translateWord(currentWord, true);
                     }}

@@ -6,6 +6,9 @@ import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import { useFilter } from "../../hooks/useFilter";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
+import { Box } from "@mui/material";
+import BasicSelect from "../../../../ui/Selects/BasicSelect";
+import { useLangsSelector } from "../../hooks/useLangsSelector";
 
 interface IFilterProps {
     isVisible: boolean;
@@ -14,10 +17,7 @@ interface IFilterProps {
 
 const BooksFilter: FC<IFilterProps> = ({ isVisible, close }) => {
     const { booksFilter, setBooksFilter, filtrate } = useFilterBooks();
-
-    const { dictionarySettings } = useAppSelector(
-        (state) => state.dictionaryReducer
-    );
+    const {studyLangsSelector} = useLangsSelector();
 
     return (
         <>
@@ -37,12 +37,26 @@ const BooksFilter: FC<IFilterProps> = ({ isVisible, close }) => {
                     }}
                     maxWidth="sm:max-w-[32rem]"
                 >
+                    <Box sx={{ marginBottom: "10px" }}>
+                    <BasicSelect
+                        options={studyLangsSelector}
+                        label="Выбрать язык книги"
+                        onChange={(value) => {
+                            setBooksFilter({
+                                ...booksFilter,
+                                langOriginal: value
+                            });
+                        }}
+                        selectedOption={"en"}
+                    />
+                    </Box>
                     <CheckBoxDefault
                         label="Только книги"
                         onChange={(isChecked) => {
                             setBooksFilter({
                                 ...booksFilter,
                                 booksOnly: isChecked,
+                                videoOnly: false
                             });
                         }}
                         checked={booksFilter.booksOnly}
@@ -54,6 +68,7 @@ const BooksFilter: FC<IFilterProps> = ({ isVisible, close }) => {
                             setBooksFilter({
                                 ...booksFilter,
                                 videoOnly: isChecked,
+                                booksOnly: false
                             });
                         }}
                         checked={booksFilter.videoOnly}
