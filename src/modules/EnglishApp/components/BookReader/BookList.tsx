@@ -14,6 +14,8 @@ import BooksFilter from "../Filter/BooksFilter";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SearchInput from "../../../../ui/Inputs/SearchInput";
 import { useNavigate } from "react-router-dom";
+import AddIcon from '@mui/icons-material/Add';
+import AddBook from "./AddBook";
 
 interface IBookList {}
 
@@ -23,6 +25,7 @@ const BookList: FC<IBookList> = () => {
     const [isOpenFilter, openFilter] = useState(false);
     const navigate = useNavigate();
     const [isInitFilter, setInitFilter] = useState(false);
+    const [isOpenAddBook, setOpenAddBook] = useState(false);
 
     useEffect(() => {
         setBooksFilter(filterStorage);
@@ -44,10 +47,15 @@ const BookList: FC<IBookList> = () => {
         openFilter(false);
     };
 
+    const closeAddBook = () => {
+        setOpenAddBook(false);
+    }
+
     return (
         <>
             <div className="flex justify-center mt-[25px]">
                 <BooksFilter isVisible={isOpenFilter} close={closeFilter} />
+                <AddBook isOpen={isOpenAddBook} close={closeAddBook}/>
                 <Box
                     sx={{
                         width: "100%",
@@ -94,6 +102,14 @@ const BookList: FC<IBookList> = () => {
                                             }}
                                         >
                                             <FilterAltIcon />
+                                        </div>
+                                        <div
+                                            className="text-white cursor-pointer mt-[7px] ml-[14px]"
+                                            onClick={() => {
+                                                setOpenAddBook(true)
+                                            }}
+                                        >
+                                            <AddIcon />
                                         </div>
                                     </div>
                                 </Grid>
