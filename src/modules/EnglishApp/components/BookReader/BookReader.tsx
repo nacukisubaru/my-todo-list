@@ -58,7 +58,8 @@ const BookReader: FC = () => {
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
         page: currentPage,
-        limitOnPage: 500,
+        limitOnPage: searchParams.get("getVideo") ? 10 : 500,
+        getVideo: searchParams.get("getVideo") ? true : false
     });
 
     useEffect(() => {
@@ -208,7 +209,7 @@ const BookReader: FC = () => {
                             <ArrowForwardIosIcon />
                         </div>
 
-                        {data?.book.bookmarker == currentPage || isSetBookMarkerOnPage ? (
+                        {data && data.book.bookmarker && data.book.bookmarker == currentPage || isSetBookMarkerOnPage ? (
                             <div className="cursor-pointer">
                                 <BookmarkIcon />
                             </div>

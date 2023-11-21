@@ -6,8 +6,8 @@ export interface IQueryBuilder {
     params: any
 }
 
-export const queryBuilder = (path: string, params: any) => {
-    let url: string = host + path;
+export const queryBuilder = (path: string, params: any, withoutHost: boolean = false) => {
+    let url: string = (withoutHost ? '': host) + path;
     if (params) {
         url += '?';
     }

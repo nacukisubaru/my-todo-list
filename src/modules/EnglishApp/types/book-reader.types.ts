@@ -8,7 +8,8 @@ interface IBook {
 interface IBookParams {
     id: number,
     page: number,
-    limitOnPage: number
+    limitOnPage: number,
+    getVideo?: boolean
 }
 
 interface IBookListParams {

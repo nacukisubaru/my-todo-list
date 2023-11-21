@@ -16,8 +16,8 @@ import SearchInput from "../../../../ui/Inputs/SearchInput";
 import { useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import AddBook from "./AddBook";
+import { queryBuilder } from "../../../../helpers/queryHelper";
 
-interface IBookList {}
 
 const BookList: FC<IBookList> = () => {
     const { filtrate, books, pages, booksFilter, setBooksFilter, filterStorage } =
@@ -49,6 +49,20 @@ const BookList: FC<IBookList> = () => {
 
     const closeAddBook = () => {
         setOpenAddBook(false);
+    }
+
+    const redirectByLink = (book: IBookList) => {
+        let link = `/englishApp/books/${book.id}`;
+       
+        const arrayParams: any = {};
+        if (book.bookmarker) {
+            arrayParams.page = book.bookmarker;
+        }
+        if (book.isVideo) {
+            arrayParams.getVideo = true;
+        }
+
+        return navigate(queryBuilder(link, arrayParams, true));    
     }
 
     return (
@@ -123,12 +137,7 @@ const BookList: FC<IBookList> = () => {
                                     <ListItemButton
                                         component="a"
                                         onClick={() => {
-                                            navigate(
-                                                `/englishApp/books/${book.id}${
-                                                    book.bookmarker ?
-                                                    "?page=" + book.bookmarker : ''
-                                                }`
-                                            );
+                                            redirectByLink(book);
                                         }}
                                     >
                                         {book.name}
