@@ -15,11 +15,12 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import BookPages from "./BookPages";
 import { AppBar } from "../../../../ui/AppBar/AppBar";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import StarIcon from '@mui/icons-material/Star';
-import "./style.css";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarIcon from "@mui/icons-material/Star";
+import "./css/style.css";
+import YoutubeVideoReader from "./YoutubeVideoReader";
 
 const drawerWidth = 320;
 
@@ -52,14 +53,16 @@ const BookReader: FC = () => {
     const navigate = useNavigate();
     const [isSetBookMarkerOnPage, setBookMarkerOnPage] = useState(false);
     const [isRead, setRead] = useState(false);
-  
+    const [timecode, setTimecode] = useState('');
+
     const [updBookmarker] = bookReaderApi.useUpdateBookmarkerMutation();
     const [updRead] = bookReaderApi.useUpdateReadMutation();
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
         page: currentPage,
         limitOnPage: searchParams.get("getVideo") ? 10 : 500,
-        getVideo: searchParams.get("getVideo") ? true : false
+        getVideo: searchParams.get("getVideo") ? true : false,
+        timecode
     });
 
     useEffect(() => {
@@ -77,7 +80,7 @@ const BookReader: FC = () => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-   
+
     const removeHiglights = () => {
         const classes = document.getElementsByClassName("translateMyWord");
         for (let inc = 0; inc < classes.length; inc++) {
@@ -85,14 +88,28 @@ const BookReader: FC = () => {
         }
     };
 
+    const changePage = (page: number, action: string = "default") => {
+        let curPage = page;
+        switch (action) {
+            case "next":
+                curPage++;
+                break;
+            case "prev":
+                curPage--;
+                break;
+        }
+        searchParams.set("page", new String(curPage).toString());
+        setSearchParams(searchParams);
+    };
+
     const setNextPage = () => {
         removeHiglights();
-        setSearchParams({ page: new String(currentPage + 1).toString() });
+        changePage(currentPage, "next");
     };
 
     const setPrevPage = () => {
         removeHiglights();
-        setSearchParams({ page: new String(currentPage - 1).toString() });
+        changePage(currentPage, "prev");
     };
 
     const openPages = () => {
@@ -104,25 +121,25 @@ const BookReader: FC = () => {
     };
 
     const switchPage = async (page: number) => {
-        setSearchParams({ page: new String(page).toString() });
+        changePage(page);
         removeHiglights();
         refetch();
     };
 
     const updateBookMarker = () => {
         if (id) {
-            updBookmarker({id: +id, bookmarker: currentPage});
+            updBookmarker({ id: +id, bookmarker: currentPage });
             setBookMarkerOnPage(true);
         }
-    }
+    };
 
     const updateRead = (isRead: boolean) => {
         if (id) {
-            updRead({id: +id, isRead});
-            console.log({isRead})
+            updRead({ id: +id, isRead });
+            console.log({ isRead });
             setRead(isRead);
         }
-    }
+    };
 
     useEffect(() => {
         refetch();
@@ -139,8 +156,14 @@ const BookReader: FC = () => {
         dispatch(
             fullTranslate({
                 word,
-                sourceLang: data && data.book.langOriginal ? data.book.langOriginal : 'en',
-                targetLang: data && data.book.langTranslation ? data.book.langTranslation : 'ru',
+                sourceLang:
+                    data && data.book.langOriginal
+                        ? data.book.langOriginal
+                        : "en",
+                targetLang:
+                    data && data.book.langTranslation
+                        ? data.book.langTranslation
+                        : "ru",
                 getTranscription: true,
                 getYandexTranslate,
             })
@@ -151,6 +174,11 @@ const BookReader: FC = () => {
             setYandexTranslateExecute(false);
         }
     };
+
+    const changePageByTimecode = (timecode: string) => {
+        setTimecode(timecode);
+        refetch();
+    }
 
     useEffect(() => {
         if (data) {
@@ -174,7 +202,10 @@ const BookReader: FC = () => {
                 }
             }
             setBookMarkerOnPage(false);
-            setRead(data?.book.isRead);
+            if (data) {
+                setRead(data.book.isRead);
+                changePage(data.page);
+            }
         }
     }, [data]);
 
@@ -209,22 +240,38 @@ const BookReader: FC = () => {
                             <ArrowForwardIosIcon />
                         </div>
 
-                        {data && data.book.bookmarker && data.book.bookmarker == currentPage || isSetBookMarkerOnPage ? (
+                        {(data &&
+                            data.book.bookmarker &&
+                            data.book.bookmarker == currentPage) ||
+                        isSetBookMarkerOnPage ? (
                             <div className="cursor-pointer">
                                 <BookmarkIcon />
                             </div>
-                        ): (
-                            <div className="cursor-pointer" onClick={updateBookMarker}>
+                        ) : (
+                            <div
+                                className="cursor-pointer"
+                                onClick={updateBookMarker}
+                            >
                                 <BookmarkBorderIcon />
                             </div>
                         )}
 
                         {isRead ? (
-                            <div className="cursor-pointer" onClick={() => {updateRead(false)}}>
-                                <StarIcon  />
+                            <div
+                                className="cursor-pointer"
+                                onClick={() => {
+                                    updateRead(false);
+                                }}
+                            >
+                                <StarIcon />
                             </div>
-                        ): (
-                            <div className="cursor-pointer" onClick={() => {updateRead(true)}}>
+                        ) : (
+                            <div
+                                className="cursor-pointer"
+                                onClick={() => {
+                                    updateRead(true);
+                                }}
+                            >
                                 <StarBorderIcon />
                             </div>
                         )}
@@ -232,8 +279,26 @@ const BookReader: FC = () => {
                 </AppBar>
                 <Main open={open}>
                     <DrawerHeader />
-                    <div className="mb-[15px] cursor-pointer" onClick={()=>{navigate('/englishApp/books')}}>
+                    <div
+                        className="mb-[15px] cursor-pointer"
+                        onClick={() => {
+                            navigate("/englishApp/books");
+                        }}
+                    >
                         <KeyboardReturnIcon />
+                    </div>
+
+                    <div className="w-[82%]">
+                        {data && data.book.videoUrl && data.timecodes && (
+                            <YoutubeVideoReader
+                                videoId={data.book.videoUrl}
+                                width={drawerWidth ? -drawerWidth : 0}
+                                timecodes={data.timecodes}
+                                onProgressVideo={setNextPage}
+                                onSeek={changePageByTimecode}
+                                timecodesByString={data.timecodesByString}
+                            />
+                        )}
                     </div>
 
                     <div className="w-[82%] flex justify-center">
@@ -242,13 +307,17 @@ const BookReader: FC = () => {
                         </Typography>
                     </div>
                 </Main>
-               
+
                 <BookDrawer
                     isOpen={true}
                     className="ml-[200px] hidden lg:block"
                     word={currentWord}
                     width={450}
-                    lang={data && data.book.langOriginal ? data.book.langOriginal : 'en'}
+                    lang={
+                        data && data.book.langOriginal
+                            ? data.book.langOriginal
+                            : "en"
+                    }
                     yandexTranslate={() => {
                         translateWord(currentWord, true);
                     }}
@@ -257,7 +326,7 @@ const BookReader: FC = () => {
                         setYandexTranslateExecute(false);
                     }}
                 />
-        
+
                 <BookDrawer
                     isOpen={open}
                     className="block lg:hidden"
@@ -265,7 +334,11 @@ const BookReader: FC = () => {
                     showChevron={true}
                     close={handleDrawerClose}
                     width={drawerWidth}
-                    lang={data && data.book.langOriginal ? data.book.langOriginal : 'en'}
+                    lang={
+                        data && data.book.langOriginal
+                            ? data.book.langOriginal
+                            : "en"
+                    }
                     yandexTranslate={() => {
                         translateWord(currentWord, true);
                     }}

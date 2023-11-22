@@ -2,15 +2,24 @@ interface IBook {
     text: string,
     page: number,
     countPages: number,
-    book: IBookList
+    book: IBookList,
+    timecodes?: string[],
+    timecodesByString: ITimecodeByString[]
 }
 
 interface IBookParams {
     id: number,
     page: number,
     limitOnPage: number,
-    getVideo?: boolean
+    getVideo?: boolean,
+    timecode?: string,
 }
+
+interface ITimecodeByString {
+    text: string,
+    timecode: string
+}
+
 
 interface IBookListParams {
     searchByName: string,
