@@ -54,6 +54,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
                 if (span) {
                     resetEmphasiseString();
                     setEmphasiseString(span);
+                    span.scrollIntoView({ behavior: "smooth"});
                     span.classList.add("highlight");
                 }
             }
