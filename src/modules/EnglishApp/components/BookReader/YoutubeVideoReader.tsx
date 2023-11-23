@@ -5,6 +5,8 @@ import {
     convertSecoundsToTimeString,
     convertTimeStringToSeconds,
 } from "../../../../helpers/dateTimeHelper";
+import { useActions } from "../../hooks/useAction";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 interface IProgress {
     loaded: number;
@@ -16,7 +18,6 @@ interface IProgress {
 interface IYoutubeVideoReader {
     videoId: string;
     width?: number;
-    timecode: string;
     timecodes: string[];
     timecodesByString: ITimecodeByString[];
     onProgressVideo: () => void;
@@ -29,13 +30,17 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     timecodes = [],
     timecodesByString,
     onProgressVideo,
-    onSeek
+    onSeek,
 }) => {
     const ref: any = useRef(0);
     const [maxDuration, setMaxDuration] = useState(0);
     const [currentDuration, setCurrentDuration] = useState(0);
     const [isPlaying, setPlay] = useState(false);
-    const [isSlide, setSlide] = useState(false);
+    const [isSlide, setSlide] = useState(true);
+    const [isInitPlayer, setInitPlayer] = useState(false);
+
+    const {setCanUpdateBookPage} = useActions();
+    const {canUpdateBookPage} = useAppSelector(state => state.bookReaderReducer);
 
     const getTextByTimecode = (timecode: string) => {
         const timecodeString = timecodesByString.filter((item) => item.timecode === timecode);
@@ -47,13 +52,12 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
 
     const seek = (event: any) => {
         const target: any = event.target;
-        
         ref.current.seekTo(target.value);
         const timecode = convertSecoundsToTimeString(target.value);
+        setCanUpdateBookPage({update: false})
         getTextByTimecode(target.value)
         setPlay(true);
         onSeek(timecode);
-        setSlide(true);
     };
 
     const onProgress = (state: IProgress) => {
@@ -66,15 +70,19 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
                 lastTimeCode
             ) {
                 onProgressVideo();
-                setSlide(false);
             }
         }
         setCurrentDuration(state.playedSeconds);
     };
 
     const onPlay = () => {
-        const duration = ref.current.getDuration();
-        setMaxDuration(duration);
+        if (!isInitPlayer) {
+            const duration = ref.current.getDuration();
+            setMaxDuration(duration);
+            setPlay(true);
+            setInitPlayer(true);
+            ref.current.seekTo(convertTimeStringToSeconds(timecodes[0]));
+        }
     };
 
     const sliderTimeFormat = (time: number) => {
@@ -82,12 +90,12 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     };
 
     useEffect(() => {
-        if (!isSlide) {
+        if (isSlide || canUpdateBookPage) {
             ref.current.seekTo(convertTimeStringToSeconds(timecodes[0]));
             setPlay(true);
             setSlide(false);
         }
-    }, [timecodes]);
+    }, [timecodes, canUpdateBookPage]);
 
 
     return (

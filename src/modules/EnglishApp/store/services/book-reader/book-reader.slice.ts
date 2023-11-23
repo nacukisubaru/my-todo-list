@@ -3,7 +3,8 @@ import { thunkAxiosGet } from "../../../../../helpers/queryHelper";
 
 interface IState {
     books: IBookList[],
-    booksFilter: IBooksFilter
+    booksFilter: IBooksFilter,
+    canUpdateBookPage: boolean,
     page: number,
     status: string,
     error: IError,
@@ -17,8 +18,10 @@ const initialState: IState = {
         videoOnly: false,
         booksOnly: false,
         readOnly: false,
-        page: 0
+        page: 0,
+        langOriginal: "en"
     },
+    canUpdateBookPage: false,
     page: 0,
     pages: 0,
     status: "",
@@ -50,6 +53,9 @@ export const bookReaderSlice = createSlice({
         },
         resetBooks: (state) => {
             state.books = [];
+        },
+        setCanUpdateBookPage: (state, action: PayloadAction<{update: boolean}>) => {
+            state.canUpdateBookPage = action.payload.update;
         }
     },
     extraReducers: (builder) => {

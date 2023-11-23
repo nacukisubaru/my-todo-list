@@ -21,6 +21,7 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import "./css/style.css";
 import YoutubeVideoReader from "./YoutubeVideoReader";
+import { useActions } from "../../hooks/useAction";
 
 const drawerWidth = 320;
 
@@ -53,24 +54,39 @@ const BookReader: FC = () => {
     const navigate = useNavigate();
     const [isSetBookMarkerOnPage, setBookMarkerOnPage] = useState(false);
     const [isRead, setRead] = useState(false);
-    const [timecode, setTimecode] = useState('');
+    const [timecode, setTimecode] = useState("");
+    const [isChangePageDisabled, setChangePageDisabled] = useState(false);
 
     const [updBookmarker] = bookReaderApi.useUpdateBookmarkerMutation();
     const [updRead] = bookReaderApi.useUpdateReadMutation();
+
+    const [isMount, setMount] = useState(false);
+    const { setCanUpdateBookPage } = useActions();
+
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
         page: currentPage,
         limitOnPage: searchParams.get("getVideo") ? 10 : 500,
         getVideo: searchParams.get("getVideo") ? true : false,
-        timecode
+        timecode,
     });
 
     useEffect(() => {
-        const page = searchParams.get("page");
-
+        let page: number | string | null = searchParams.get("page");
         if (page) {
-            setPage(+page);
+            page = parseInt(page);
+            if (
+                (data && data.countPages && page <= data.countPages) ||
+                !isMount
+            ) {
+                if (page > 0) {
+                    setPage(page);
+                }
+            } else {
+                setPage(1);
+            }
         }
+        setMount(true);
     }, [searchParams]);
 
     const handleDrawerOpen = () => {
@@ -93,11 +109,14 @@ const BookReader: FC = () => {
         switch (action) {
             case "next":
                 curPage++;
+                setCanUpdateBookPage({ update: true });
                 break;
             case "prev":
                 curPage--;
+                setCanUpdateBookPage({ update: true });
                 break;
         }
+        setTimecode("");
         searchParams.set("page", new String(curPage).toString());
         setSearchParams(searchParams);
     };
@@ -121,9 +140,11 @@ const BookReader: FC = () => {
     };
 
     const switchPage = async (page: number) => {
-        changePage(page);
-        removeHiglights();
-        refetch();
+        if (!isChangePageDisabled) {
+            changePage(page);
+            removeHiglights();
+            updateBookData();
+        }
     };
 
     const updateBookMarker = () => {
@@ -142,7 +163,7 @@ const BookReader: FC = () => {
     };
 
     useEffect(() => {
-        refetch();
+        updateBookData();
     }, [currentPage]);
 
     const dispatch = useAppDispatch();
@@ -175,10 +196,16 @@ const BookReader: FC = () => {
         }
     };
 
-    const changePageByTimecode = (timecode: string) => {
-        setTimecode(timecode);
-        refetch();
+    const updateBookData = async () => {
+        await setChangePageDisabled(true);
+        await refetch();
+        await setChangePageDisabled(false);
     }
+
+    const changePageByTimecode = async (timecode: string) => {
+        await setTimecode(timecode);
+        updateBookData();
+    };
 
     useEffect(() => {
         if (data) {
@@ -295,7 +322,7 @@ const BookReader: FC = () => {
                                 width={drawerWidth ? -drawerWidth : 0}
                                 timecodes={data.timecodes}
                                 onProgressVideo={setNextPage}
-                                onSeek={changePageByTimecode}
+                                onSeek={changePageByTimecode}        
                                 timecodesByString={data.timecodesByString}
                             />
                         )}
