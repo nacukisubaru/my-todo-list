@@ -38,15 +38,31 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     const [isPlaying, setPlay] = useState(false);
     const [isSlide, setSlide] = useState(true);
     const [isInitPlayer, setInitPlayer] = useState(false);
+    const [emphasiseString, setEmphasiseString] = useState<HTMLElement>();
 
     const {setCanUpdateBookPage} = useActions();
     const {canUpdateBookPage} = useAppSelector(state => state.bookReaderReducer);
 
     const getTextByTimecode = (timecode: string) => {
         const timecodeString = timecodesByString.filter((item) => item.timecode === timecode);
+        console.log({timecodeString})
         if (timecodeString[0]) {
-            const findedText = timecodeString[0].text;
-            console.log({findedText});
+            const findedSpanIds = timecodeString[0].spanIds;
+            if (findedSpanIds) {
+                const span = document.getElementById(findedSpanIds);
+                console.log({span})
+                if (span) {
+                    resetEmphasiseString();
+                    setEmphasiseString(span);
+                    span.classList.add("highlight");
+                }
+            }
+        }
+    }
+
+    const resetEmphasiseString = () => {
+        if (emphasiseString) {
+            emphasiseString.classList.remove("highlight");
         }
     }
 
@@ -55,7 +71,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
         ref.current.seekTo(target.value);
         const timecode = convertSecoundsToTimeString(target.value);
         setCanUpdateBookPage({update: false})
-        getTextByTimecode(target.value)
+        getTextByTimecode(timecode)
         setPlay(true);
         onSeek(timecode);
     };
@@ -94,6 +110,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
             ref.current.seekTo(convertTimeStringToSeconds(timecodes[0]));
             setPlay(true);
             setSlide(false);
+            getTextByTimecode(timecodes[0])
         }
     }, [timecodes, canUpdateBookPage]);
 

@@ -16,7 +16,7 @@ interface IBookParams {
 }
 
 interface ITimecodeByString {
-    text: string,
+    spanIds: string,
     timecode: string
 }
 
