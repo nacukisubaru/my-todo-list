@@ -22,6 +22,7 @@ import StarIcon from "@mui/icons-material/Star";
 import "./css/style.css";
 import YoutubeVideoReader from "./YoutubeVideoReader";
 import { useActions } from "../../hooks/useAction";
+import { useFilterBooks } from "../../hooks/useFilterBooks";
 
 const drawerWidth = 320;
 
@@ -61,7 +62,10 @@ const BookReader: FC = () => {
     const [updRead] = bookReaderApi.useUpdateReadMutation();
 
     const [isMount, setMount] = useState(false);
+    const [isInitBookData, setInitBookData] = useState(false);
     const { setCanUpdateBookPage } = useActions();
+
+    const { filtrate } = useFilterBooks();
 
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
@@ -231,8 +235,11 @@ const BookReader: FC = () => {
             setBookMarkerOnPage(false);
             if (data) {
                 setRead(data.book.isRead);
-                changePage(data.page);
+                if (isInitBookData) {
+                    changePage(data.page);
+                }
             }
+            setInitBookData(true);
         }
     }, [data]);
 
@@ -308,7 +315,8 @@ const BookReader: FC = () => {
                     <DrawerHeader />
                     <div
                         className="mb-[15px] cursor-pointer"
-                        onClick={() => {
+                        onClick={async () => {
+                            await filtrate(1, false);
                             navigate("/englishApp/books");
                         }}
                     >
