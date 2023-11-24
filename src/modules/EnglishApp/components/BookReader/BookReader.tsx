@@ -337,7 +337,7 @@ const BookReader: FC = () => {
                         )}
                     </div>
 
-                    <div className="w-[82%] flex justify-center h-[170px] overflow-auto lg:h-[370px]">
+                    <div className={`w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
                         <Typography paragraph>
                             {data && HTMLReactParser(data.text)}
                         </Typography>
