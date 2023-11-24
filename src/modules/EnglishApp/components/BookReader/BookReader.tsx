@@ -70,7 +70,7 @@ const BookReader: FC = () => {
     const { data, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
         page: currentPage,
-        limitOnPage: searchParams.get("getVideo") ? 10 : 500,
+        limitOnPage: searchParams.get("getVideo") ? 100 : 500,
         getVideo: searchParams.get("getVideo") ? true : false,
         timecode,
     });
@@ -215,6 +215,7 @@ const BookReader: FC = () => {
         if (data) {
             const classes = document.getElementsByClassName("translateMyWord");
             for (let inc = 0; inc < classes.length; inc++) {
+                classes[inc].classList.remove("highlight");
                 function translateAndHighlight(id: string) {
                     const word = document.getElementById(id);
                     for (let inc = 0; inc < classes.length; inc++) {
