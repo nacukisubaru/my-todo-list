@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC, useRef, useState } from "react";
 
 interface ISearchInput {
     search: (text: string) => void,
@@ -8,6 +8,12 @@ interface ISearchInput {
 
 const SearchInput: FC<ISearchInput> = ({search, onChange, value}) => {
     const inputRef: any = useRef();
+    const [valueSearch, setValueSearch] = useState();
+
+    const change = () => {
+        setValueSearch(inputRef.current.value);
+        onChange && onChange(inputRef.current.value);
+    }
 
     return (
         <div className="pt-2 relative mx-auto text-gray-600">
@@ -16,8 +22,8 @@ const SearchInput: FC<ISearchInput> = ({search, onChange, value}) => {
                 type="search"
                 name="search"
                 ref={inputRef}
-                value={value ? value: ''}
-                onChange={() => {onChange && onChange(inputRef.current.value)}}
+                value={value ? value: valueSearch}
+                onChange={change}
                 placeholder="Search"
             />
             <button type="submit" className="absolute mt-[2px] -ml-[47px] w-[0px] border-none" onClick={() => {
