@@ -33,7 +33,7 @@ const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
             formData.append("langOriginal", bookLang);
             formData.append("langTranslation", translateLang);
             if (url) {
-                formData.append("url", url);
+                formData.append("videoUrl", url);
                 formData.append("isVideo", "true");
             } else {
                 formData.append("isVideo", "false");
@@ -117,6 +117,9 @@ const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
                         onChange={changeTranslationLang}
                         selectedOption={translateLang}
                     />
+                </Box>
+                <Box sx={{ marginBottom: "10px" }}>
+                    <a href="https://downsub.com/" target="_blank">Скачать субтитры</a>
                 </Box>
                 <InputFileUpload onChange={uploadFile} />
             </Modal>
