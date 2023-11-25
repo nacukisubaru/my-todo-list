@@ -182,6 +182,12 @@ interface IFilterDictionary {
     searchByTranslate?: string
 }
 
+interface ITranslateSettings {
+    id?:number,
+    lingvo: boolean
+    wordHunt: boolean
+}
+
 interface IError {
     statusCode: number,
     errorCode: string,

@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { thunkAxiosGet } from "../../../../../helpers/queryHelper";
+import { thunkAxiosGet, thunkAxiosPost } from "../../../../../helpers/queryHelper";
 import { arrayUniqueByKey } from "../../../../../helpers/arrayHelper";
 
 interface IState {
@@ -14,6 +14,7 @@ interface IState {
     lingvoExamples: ILingvoExample[],
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
+    translateApiSettings: ITranslateSettings,
     page: number,
     status: string,
     error: IError
@@ -36,6 +37,7 @@ const initialState: IState = {
         translateLang: "",
         originalLang: ""
     },
+    translateApiSettings: {lingvo: false, wordHunt: false},
     fullTranslateList: [],
     analogsWord: [],
     languages: [],
@@ -109,6 +111,20 @@ export const getExamplesForWord = createAsyncThunk(
     }
 );
 
+export const getTranslateSettings = createAsyncThunk(
+    'translate-api-get-settings/fetch',
+    async (_, { rejectWithValue }) => {
+        return thunkAxiosGet('/translate-api/get-settings/', {}, rejectWithValue);
+    }
+);
+
+export const updateTranslateSettings = createAsyncThunk(
+    'translate-api-settings-update/fetch',
+    async (params: ITranslateSettings, { rejectWithValue }) => {
+        return thunkAxiosPost('/translate-api/update-settings/', params, rejectWithValue);
+    }
+);
+
 export const dictionarySlice = createSlice({
     name: 'dictionary',
     initialState,
@@ -169,6 +185,12 @@ export const dictionarySlice = createSlice({
         },
         setFullTranslateList: (state, action: PayloadAction<IFullTranslateObject[]>) => {
             state.fullTranslateList = action.payload;
+        },
+        updateLingvoAccess: (state, action: PayloadAction<{isActive: boolean}>) => {
+            state.translateApiSettings.lingvo = action.payload.isActive;
+        },
+        updateWordHuntAccess: (state, action: PayloadAction<{isActive: boolean}>) => {
+            state.translateApiSettings.wordHunt = action.payload.isActive;
         }
     },
     extraReducers: (builder) => {
@@ -343,6 +365,22 @@ export const dictionarySlice = createSlice({
             state.lingvoExamples = action.payload;
           })
           .addCase(getExamplesForWord.rejected, (state, action) => {
+            const errorObj: any = action.payload;
+            state.status = 'rejected';
+            state.error = errorObj;
+          })
+
+
+          .addCase(getTranslateSettings.pending, (state) => {
+            state.status = 'loading';
+            state.translateApiSettings = {lingvo: false, wordHunt: false};
+            state.error = { statusCode: 0, message: "", errorCode: "" };
+          })
+          .addCase(getTranslateSettings.fulfilled, (state, action) => {
+            state.status = 'resolved';
+            state.translateApiSettings = action.payload;
+          })
+          .addCase(getTranslateSettings.rejected, (state, action) => {
             const errorObj: any = action.payload;
             state.status = 'rejected';
             state.error = errorObj;
