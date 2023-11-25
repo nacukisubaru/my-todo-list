@@ -101,7 +101,7 @@ const BookDrawer: FC<IBookDrawer> = ({
 
                                     <PlayButton
                                         onClick={() => {
-                                            speak(word, lang === 'en' ? "en-GB" : lang);
+                                            speak(word, lang === 'en' ? "en-US" : lang);
                                         }}
                                     />
                                 </div>
