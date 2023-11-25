@@ -1,11 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import { Box, TextField } from "@mui/material";
 import InputFileUpload from "../../../../ui/Upload/InputFileUpload";
 import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
 import { useForm } from "react-hook-form";
 import BasicSelect from "../../../../ui/Selects/BasicSelect";
-import { useAppSelector } from "../../hooks/useAppSelector";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
 import { useLangsSelector } from "../../hooks/useLangsSelector";
 

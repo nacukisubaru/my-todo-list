@@ -42,15 +42,6 @@ export const bookReaderSlice = createSlice({
         setBooksFilter: (state, action: PayloadAction<IBooksFilter>) => {
             state.booksFilter = action.payload;
         },
-        resetBooksFilter: (state) => {
-            state.booksFilter = {
-                searchByName: "",
-                videoOnly: false,
-                booksOnly: false,
-                readOnly: false,
-                page: 0
-            };
-        },
         resetBooks: (state) => {
             state.books = [];
         },

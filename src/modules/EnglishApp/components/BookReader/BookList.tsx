@@ -19,8 +19,7 @@ import AddBook from "./AddBook";
 import { queryBuilder } from "../../../../helpers/queryHelper";
 import { setTitle } from "../../../../helpers/domHelper";
 
-
-const BookList: FC<IBookList> = () => {
+const BookList: FC = () => {
     const { filtrate, books, pages, booksFilter, setBooksFilter, filterStorage } =
         useFilterBooks();
     const [isOpenFilter, openFilter] = useState(false);

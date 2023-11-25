@@ -1,10 +1,7 @@
 import { FC } from "react";
 import Modal from "../../../../ui/Modal/Modal";
-import DictionaryLanguages from "../DictionaryWords/DictionaryLanguages";
 import CheckBoxDefault from "../../../../ui/CheckBox/CheckBoxDefault";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
-import { useFilter } from "../../hooks/useFilter";
-import { useAppSelector } from "../../hooks/useAppSelector";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
 import { Box } from "@mui/material";
 import BasicSelect from "../../../../ui/Selects/BasicSelect";
