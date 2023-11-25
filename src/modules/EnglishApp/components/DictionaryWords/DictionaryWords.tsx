@@ -18,11 +18,13 @@ import useLocalStorageState from "use-local-storage-state";
 import { setTitle } from "../../../../helpers/domHelper";
 
 const DictionaryWords = () => {
-    const {dictionary, status} = useAppSelector(
+    const { dictionary, status } = useAppSelector(
         (state) => state.dictionaryReducer
     );
-    const {dictionaryActiveSettings, filterDictionary} = useAppSelector(state => state.dictionaryReducer);
-    const {filtrate, setDictionaryFilter} = useFilter();
+    const { dictionaryActiveSettings, filterDictionary } = useAppSelector(
+        (state) => state.dictionaryReducer
+    );
+    const { filtrate, setDictionaryFilter } = useFilter();
     const page = useAppSelector((state) => state.dictionaryReducer.page);
 
     const [isVisibleAddWord, setVisibleAddWord] = useState(false);
@@ -37,20 +39,20 @@ const DictionaryWords = () => {
         linkedWords: [],
         studyStage: "NOT_STUDIED",
         notes: "",
-        dictionaryLinkedWords: []
+        dictionaryLinkedWords: [],
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
     const dispatch = useAppDispatch();
-    const {resetDictionary} = useActions();
-    const [filterStorage] = useLocalStorageState('filter',{
-        defaultValue: [filterDictionary]
-    })
+    const { resetDictionary } = useActions();
+    const [filterStorage] = useLocalStorageState("filter", {
+        defaultValue: [filterDictionary],
+    });
 
     useEffect(() => {
         const actions = async () => {
-           await dispatch(getLanguages());
-        }
+            await dispatch(getLanguages());
+        };
         actions();
         setDictionaryFilter(filterStorage[0]);
         setTitle("Словарь");
@@ -91,41 +93,72 @@ const DictionaryWords = () => {
 
     const closeFilter = () => {
         setVisibleFilter(false);
-    }
+    };
 
     const filterBySearchString = async (text: string) => {
         await resetDictionary();
-        const res = await dispatch(getDictionaryByUser({ 
-            page: 0,
-            searchByOriginal: text,
-        }));
-        if (res.payload && res.payload.statusCode && res.payload.statusCode === 404) {
-            await resetDictionary();
-            dispatch(getDictionaryByUser({ 
+        const res = await dispatch(
+            getDictionaryByUser({
                 page: 0,
-                searchByTranslate: text
-            }));
+                searchByOriginal: text,
+                languageOriginal: filterDictionary.languageOriginal
+                    ? filterDictionary.languageOriginal.map(
+                          (lang: ILanguage) => lang.code
+                      )
+                    : [],
+                languageTranslation: filterDictionary.languageTranslation
+                    ? filterDictionary.languageTranslation.map(
+                          (lang: ILanguage) => lang.code
+                      )
+                    : [],
+            })
+        );
+        if (
+            res.payload &&
+            res.payload.statusCode &&
+            res.payload.statusCode === 404
+        ) {
+            await resetDictionary();
+            dispatch(
+                getDictionaryByUser({
+                    page: 0,
+                    searchByTranslate: text,
+                    languageOriginal: filterDictionary.languageOriginal
+                        ? filterDictionary.languageOriginal.map(
+                              (lang: ILanguage) => lang.code
+                          )
+                        : [],
+                    languageTranslation: filterDictionary.languageTranslation
+                        ? filterDictionary.languageTranslation.map(
+                              (lang: ILanguage) => lang.code
+                          )
+                        : [],
+                })
+            );
         }
-        setDictionaryFilter({
-            page: 0,
-            languageOriginal: [],
-            languageTranslation: [],
-            studyStage: [],
-            searchByOriginal: '',
-            searchByTranslate: ''
-        });
-    }
+        // setDictionaryFilter({
+        //     page: 0,
+        //     // languageOriginal: [],
+        //     // languageTranslation: [],
+        //     studyStage: [],
+        //     searchByOriginal: "",
+        //     searchByTranslate: "",
+        // });
+    };
 
     const targetRef: any = useObserverScroll(fetchData, page, true);
     return (
         <>
-        
             <div className="display flex justify-center mt-[10px]">
                 <div className="mr-[7px]">
                     <SearchInput search={filterBySearchString}></SearchInput>
                 </div>
                 <div className="mt-[13px]">
-                    <FilterButton onClick={() => {setVisibleFilter(true)}}></FilterButton>
+                    <FilterButton
+                        onClick={() => {
+                            setVisibleFilter(true);
+                        }}
+                    ></FilterButton>
                 </div>
             </div>
             <div className="display flex justify-center">
@@ -155,7 +188,11 @@ const DictionaryWords = () => {
                                 </div>
                             );
                         })}
-                    <div className="-mt-[100px]" id="reff" ref={targetRef}></div>
+                    <div
+                        className="-mt-[100px]"
+                        id="reff"
+                        ref={targetRef}
+                    ></div>
                 </div>
             </div>
 
