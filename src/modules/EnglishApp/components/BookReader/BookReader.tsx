@@ -255,7 +255,7 @@ const BookReader: FC = () => {
                 />
             )}
 
-            <Box sx={{ display: "flex" }}>
+            <Box sx={{ display: "flex", position: "sticky" }}>
                 <CssBaseline />
                 <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
                     <Toolbar>
@@ -324,7 +324,7 @@ const BookReader: FC = () => {
                         <KeyboardReturnIcon />
                     </div>
 
-                    <div className="w-[82%]">
+                    <div className="lg:w-[82%]">
                         {data && data.book.videoUrl && data.timecodes && (
                             <YoutubeVideoReader
                                 videoId={data.book.videoUrl}
@@ -337,7 +337,7 @@ const BookReader: FC = () => {
                         )}
                     </div>
 
-                    <div className={`w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
+                    <div className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
                         <Typography paragraph>
                             {data && HTMLReactParser(data.text)}
                         </Typography>

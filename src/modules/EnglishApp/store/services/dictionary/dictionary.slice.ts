@@ -29,7 +29,7 @@ const initialState: IState = {
         settingsForSelector: []
     },
     translateLanguages: [],
-    translateMethod: "lingvo",
+    translateMethod: "translateApi",
     translateResult: {
         translatedWord: "",
         originalWord: "",
@@ -84,28 +84,28 @@ export const getLanguages = createAsyncThunk(
 export const translateWord = createAsyncThunk(
     'translate/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/translate/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/translate/', params, rejectWithValue);
     }
 );
 
 export const fullTranslate = createAsyncThunk(
     'full-translate/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/full-translate/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/full-translate/', params, rejectWithValue);
     }
 );
 
 export const getAnalogs = createAsyncThunk(
     'full-translate-analogs/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/full-translate/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/full-translate/', params, rejectWithValue);
     }
 );
 
 export const getExamplesForWord = createAsyncThunk(
     'get-examples-for-word/fetch',
     async (params: IExampleParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/get-examples-for-word/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/get-examples-for-word/', params, rejectWithValue);
     }
 );
 
@@ -156,10 +156,10 @@ export const dictionarySlice = createSlice({
             }
         },
         changeTranslateMethod: (state) => {
-            if (state.translateMethod === "lingvo") {
+            if (state.translateMethod === "translateApi") {
                 state.translateMethod = "yandex";
             } else {
-                state.translateMethod = "lingvo";
+                state.translateMethod = "translateApi";
             }
         },
         resetFullTranslateList: (state) => {

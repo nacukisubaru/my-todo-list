@@ -283,7 +283,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 }}
                                 onClick={changeTranslate}
                             >
-                                {translateMethod === "lingvo" ? "L" : "Y"}
+                                {translateMethod === "translateApi" ? "T" : "Y"}
                             </Button>
                             <Button
                                 variant="text"

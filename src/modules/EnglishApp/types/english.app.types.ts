@@ -1,4 +1,4 @@
-type translateMethod = "lingvo" | "yandex";
+type translateMethod = "translateApi" | "yandex";
 interface IDictionary {
     id: string;
     originalWord: string;

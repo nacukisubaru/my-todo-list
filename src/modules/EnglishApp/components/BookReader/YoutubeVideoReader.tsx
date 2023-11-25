@@ -123,7 +123,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
                     url={videoId + '?autoplay=1'}
                     ref={ref}
                     width={width}
-                    height={"400px"}
+                    height={"500px"}
                     onPlay={onPlay}
                     onProgress={onProgress}
                     playing={isPlaying}
