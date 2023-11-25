@@ -5,15 +5,17 @@ import { store } from "../../store/store";
 import Trainer from "../TrainerWords/Trainer";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import Settings from "../Settings/Settings";
-
+import BookReader from "../BookReader/BookReader";
 interface EnglishAppProps {
     includeTrainer?: boolean,
+    includeBook?: boolean,
     openSettings: boolean,
     closeSettings: () => void
 }
 
 const EnglishApp: FC<EnglishAppProps> = ({
     includeTrainer = false,
+    includeBook = false,
     openSettings,
     closeSettings
 }) => {  
@@ -24,15 +26,19 @@ const EnglishApp: FC<EnglishAppProps> = ({
    
     return (<>
         <Provider store={store}>
-            {includeTrainer ? (
+            {includeTrainer && (
                 <Trainer></Trainer>
-            ): (
-                <DictionaryWords />
             )}
 
+            {includeBook && (
+                <BookReader />
+            )}
+
+            {!includeBook && !includeTrainer && (
+                <DictionaryWords />
+            )}
             
             <Settings close={closeSettings} isOpen={openSettings}></Settings>
-            
         </Provider>
     </>);
 }

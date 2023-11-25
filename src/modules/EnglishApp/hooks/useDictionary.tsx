@@ -32,6 +32,7 @@ export const useDictionary = () => {
     const [originalLang, setOriginalLang] = useState("");
     const [translateLang, setTranslatelLang] = useState("");
     const [voiceWordSettings, setVoiceWordSettings] = useState({voiceWord: '', voiceLang: ''});
+    const [isExecuteYandexTranslate, setYandexTranslateExecute] = useState(false);
     const { dictionaryActiveSettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
@@ -82,7 +83,7 @@ export const useDictionary = () => {
             studyStage: "BEING_STUDIED",
             id: "",
             dictionaryExamples: [],
-            transcription: translateResult.transcription,
+            transcription: translateResult.transcription ? translateResult.transcription : '',
             dictionaryLinkedWords: [],
             linkedWords: [],
             notes: ""
@@ -134,14 +135,21 @@ export const useDictionary = () => {
         }
     };
 
-    const translate = (word: string) => {
+    const translate = (word: string, getYandexTranslate: boolean = false) => {
         if (word) {
             dispatch(translateWord({ 
                 word, 
                 sourceLang: translateLanguages[0], 
                 targetLang: translateLanguages[1], 
-                translateMethod 
+                translateMethod,
+                getYandexTranslate
             }));
+
+            if (getYandexTranslate) {
+                setYandexTranslateExecute(true);
+            } else {
+                setYandexTranslateExecute(false);
+            }
         }
     };
 
@@ -208,6 +216,7 @@ export const useDictionary = () => {
         setVoiceWordSettings,
         setTransltionWord,
         changeDictionaryWord,
+        setYandexTranslateExecute,
         translationWord,
         inputOriginal,
         inputTranslation,
@@ -215,6 +224,7 @@ export const useDictionary = () => {
         voiceWordSettings,
         isAddWord,
         originalLang,
-        translateLang
+        translateLang,
+        isExecuteYandexTranslate
     };
 };

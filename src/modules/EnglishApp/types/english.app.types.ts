@@ -1,4 +1,4 @@
-type translateMethod = "lingvo" | "yandex";
+type translateMethod = "translateApi" | "yandex";
 interface IDictionary {
     id: string;
     originalWord: string;
@@ -87,7 +87,9 @@ interface ITranslateParams {
     word: string,
     sourceLang: string,
     targetLang: string,
-    translateMethod?: translateMethod
+    translateMethod?: translateMethod,
+    getTranscription?: boolean,
+    getYandexTranslate?: boolean
 }
 
 interface IExampleParams {
@@ -99,7 +101,10 @@ interface IExampleParams {
 
 interface IFullTranslateObject {
     word: string,
-    type: string
+    type: string,
+    isActive: boolean,
+    dictionaryWordId: string,
+    originalWord: string
 }
 
 interface ILingvoExample {
@@ -175,6 +180,12 @@ interface IFilterDictionary {
     studyStage?: studyStageType[],
     searchByOriginal?: string,
     searchByTranslate?: string
+}
+
+interface ITranslateSettings {
+    id?:number,
+    lingvo: boolean
+    wordHunt: boolean
 }
 
 interface IError {

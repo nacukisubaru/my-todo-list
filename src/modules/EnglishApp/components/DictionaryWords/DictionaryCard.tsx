@@ -14,12 +14,14 @@ import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
 import { fullTranslate, getAnalogs } from "../../store/services/dictionary/dictionary.slice";
-import WordsPanel from "../../ui/WordsPanel/WordsPanel";
+import WordsPanel from "../WordsTagsPanel/WordsPanel";
 import { availableLanguages } from "../../helpers/languageHelper";
-import { Button } from "@mui/material";
-import WordTag from "../../ui/WordsPanel/WordTag";
+import WordTag from "../WordsTagsPanel/WordTag";
 import DictionaryNotes from "./DictionaryNotes";
 import DictionaryLingvoExamples from "./DictionaryLingvoExamples";
+import { uniqueList } from "../../../../helpers/arrayHelper";
+import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
+import { useDictionary } from "../../hooks/useDictionary";
 
 interface IDictionaryCardProps {
     props: IDictionary;
@@ -47,11 +49,12 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         getExamples,
         examples
     } = useDictionaryExample(props);
+    
+    const {isExecuteYandexTranslate, setYandexTranslateExecute} = useDictionary();
 
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
-    const [createLinkedWords] = dictionaryApi.useCreateLinkedWordMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
-    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>(dictionaryLinkedWords ? dictionaryLinkedWords.map(item => item.word) : []);
+    const [linkedWordsList, addToLinkedWordsList] = useState<string[]>([]);
 
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
@@ -84,12 +87,19 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         setDictionary(cloneDictionary);
     };
 
-    const getWordsFromLingvo = () => {
+    const getWordsFromLingvo = (getYandexTranslate: boolean = false) => {
         dispatch(fullTranslate({
             word: translatedWord,
             sourceLang: languageTranslation,
-            targetLang: 'ru'
+            targetLang: 'ru',
+            getYandexTranslate
         }));
+
+        if (getYandexTranslate) {
+            setYandexTranslateExecute(true);
+        } else {
+            setYandexTranslateExecute(false);
+        }
     }
 
     const getAnalogsWord = () => {
@@ -100,23 +110,16 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
         }));
     }
 
-    const addLinkedWords = () => {
-        changeDictionaryWord("dictionaryLinkedWords", linkedWordsList.map(word => {return {word}}));
-        createLinkedWords({
-            dictionaryId: id,
-            words: linkedWordsList,
-        })
+    const addLinkedWords = (words: string[]) => {
+        addToLinkedWordsList(words);
+        changeDictionaryWord("dictionaryLinkedWords", words.map(word => {return {word}}));
     }
 
-    const addToLinkedWords = (word: string, isRemove: boolean) => {
-        let words: string[] = linkedWordsList;
-        if (isRemove) {
-            words = linkedWordsList.filter(linkedWord => linkedWord !== word);
-            addToLinkedWordsList(words);
-        } else {
-            addToLinkedWordsList([...words, word]);
+    useEffect(() => {
+        if (dictionaryLinkedWords.length) {
+            addToLinkedWordsList(dictionaryLinkedWords.map(item => item.word));
         }
-    }
+    }, [dictionaryLinkedWords]);
 
     return (
         <Modal
@@ -220,7 +223,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                     <>
                         <div className="font-bold mb-[5px]">Значения</div>
                         {linkedWordsList.map(word => {
-                            return  <WordTag checkTags={false}>{word}</WordTag>;
+                            return  <WordTag>{word}</WordTag>;
                         })}
                     </>
                 )}
@@ -234,25 +237,23 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                         <ArrowWithText 
                             onClick={getWordsFromLingvo} 
                             content={fullTranslateList.length ?
-                            <>
-                                <WordsPanel 
-                                    wordsList={fullTranslateList.map(translate => {
-                                        if (linkedWordsList.length && linkedWordsList.includes(translate.word)) {
-                                            return {...translate, isActive: true}
-                                        }
-                                        return {...translate, isActive: false}
-                                    })}
-                                    addWord={addToLinkedWords}
-                                /> 
-                                <div className="flex justify-end">
-                                    <Button variant="contained" size="small" onClick={addLinkedWords}>Сохранить</Button>
-                                </div>
-                            </> : false}>
+                                <WordsTagsPanel
+                                    saveTagsCallback={addLinkedWords}
+                                    saveTags={true}
+                                    yandexTranslate={() => {getWordsFromLingvo(true)}}                
+                                    setYandexData={isExecuteYandexTranslate}
+                                    selectTag={()=>{setYandexTranslateExecute(false)}}
+                                />
+                             : false}>
                             Получить значения слова {translatedWord}
                         </ArrowWithText>
                         <ArrowWithText 
                             onClick={getAnalogsWord} 
-                            content={analogsWord.length ? <WordsPanel wordsList={analogsWord} checkWords={false}/> : false}>
+                            content={analogsWord.length ?
+                            <WordsPanel 
+                                wordsList={analogsWord} 
+                                tabs={uniqueList(analogsWord.map((word) => word.type))}
+                            /> : false}>
                             Альтернативы слову {translatedWord}
                         </ArrowWithText>
                         <DictionaryLingvoExamples 

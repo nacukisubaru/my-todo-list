@@ -11,7 +11,10 @@ const Header: FC<IHeaderProps> = ({children}) => {
     const { isAuth } = useAppSelector((state) => state.authReducer);
 
     return (
-        <div className="bg-red-500 h-[40px] sticky top-0 z-10">
+        <div 
+            className="bg-teal-600 h-[40px] sticky top-0 z-10"
+           
+        >
             <div className="px-[8px] py-[8px] display flex justify-between">
                 <BurgerButton />
                 <div className="display flex">

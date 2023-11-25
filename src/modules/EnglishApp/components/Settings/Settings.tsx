@@ -8,7 +8,11 @@ import {
     getDictionaryActiveSettings,
     getDictionarySettings,
     getLanguages,
+    getTranslateSettings,
+    updateTranslateSettings,
 } from "../../store/services/dictionary/dictionary.slice";
+import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { useActions } from "../../hooks/useAction";
 
 interface ISettings {
     close: () => void;
@@ -16,7 +20,7 @@ interface ISettings {
 }
 
 const Settings: FC<ISettings> = ({ close, isOpen }) => {
-    const { dictionarySettings, dictionaryActiveSettings } = useAppSelector(
+    const { dictionarySettings, dictionaryActiveSettings, translateApiSettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
 
@@ -35,6 +39,8 @@ const Settings: FC<ISettings> = ({ close, isOpen }) => {
 
     const [isChangeLangsForStudy, setIsChangeLangsForStudy] = useState(false);
     const [isChangeStudyLangs, setIsChangeStudyLangs] = useState(false);
+    
+    const {updateLingvoAccess, updateWordHuntAccess} = useActions();
 
     const dispatch = useAppDispatch();
     const saveSettings = async () => {
@@ -59,6 +65,11 @@ const Settings: FC<ISettings> = ({ close, isOpen }) => {
                 targetLangCodes,
             });
         }
+
+        dispatch(updateTranslateSettings({
+            lingvo: translateApiSettings.lingvo,
+            wordHunt: translateApiSettings.wordHunt
+        }));
 
         if (languageSetting.sourceLanguage && languageSetting.targetLanguage) {
             await setActiveLanguageSetting(languageSetting);
@@ -100,6 +111,18 @@ const Settings: FC<ISettings> = ({ close, isOpen }) => {
             dispatch(getDictionaryActiveSettings());
         }
     }, [dictionarySettings, dictionaryActiveSettings]);
+
+    useEffect(() => {
+        dispatch(getTranslateSettings());
+    }, []);
+
+    const switchLingvoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        updateLingvoAccess({isActive: event.target.checked});
+    };
+
+    const switchWordHuntChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        updateWordHuntAccess({isActive: event.target.checked})
+    };
 
     return (
         <>
@@ -161,6 +184,12 @@ const Settings: FC<ISettings> = ({ close, isOpen }) => {
                                     defaultValue={dictionarySettings.studyLangs}
                                 />
                             </div>
+                            {translateApiSettings && (
+                                 <FormGroup>
+                                    <FormControlLabel control={<Switch checked={translateApiSettings.lingvo} onChange={switchLingvoChange} />} label="Lingvo" />
+                                    <FormControlLabel control={<Switch checked={translateApiSettings.wordHunt} onChange={switchWordHuntChange} />} label="WooordHunt" />
+                                </FormGroup>
+                            )}
                         </div>
                     </div>
                 </Modal>

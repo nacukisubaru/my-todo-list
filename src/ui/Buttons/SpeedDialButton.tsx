@@ -12,7 +12,7 @@ const SpeedDialButton:FC<ISpeedDialButtonProps> = ({onClick}) => {
                 data-dial-toggle="speed-dial-menu-default"
                 aria-controls="speed-dial-menu-default"
                 aria-expanded="false"
-                className="flex items-center justify-center text-white bg-red-500 rounded-full w-14 h-14 hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-700 focus:outline-none dark:focus:bg-red-700"
+                className="flex items-center justify-center text-white bg-teal-600 rounded-full w-14 h-14 hover:bg-teal-700 dark:bg-teal-800 dark:hover:bg-teal-800 focus:outline-none dark:focus:bg-teal-800"
                 onClick={onClick}
             >
                 <svg

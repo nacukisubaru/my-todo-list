@@ -12,7 +12,8 @@ import { Button } from "@mui/material";
 import Settings from "../Settings/Settings";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
-import WordsPanel from "../../ui/WordsPanel/WordsPanel";
+import WordsPanel from "../WordsTagsPanel/WordsPanel";
+import { uniqueList } from "../../../../helpers/arrayHelper";
 
 interface IDictionaryAddWordProps {
     isVisible: boolean;
@@ -35,12 +36,13 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setTranslatelLang,
         setVoiceWordSettings,
         setTransltionWord,
-        translationWord,
+        translate,
         inputOriginal,
         inputTranslation,
         word,
         isAddWord,
         voiceWordSettings,
+        isExecuteYandexTranslate
     } = useDictionary();
 
     const { translateResult, translateLanguages, translateMethod, error } =
@@ -97,6 +99,10 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
         setTransltionWord(word);
     };
 
+    const translateByYandex = () => {
+        translate(translateResult.originalWord, true)
+    }
+
     return (
         <>
             <SnackBar isOpen={error.message ? true : false} type={"error"}>
@@ -142,27 +148,20 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                     onClick={() => {}}
                                     content={
                                         <>
-                                            <WordsPanel
-                                                wordsList={translateResult.wordsList.map(
-                                                    (word) => {
-                                                        if (word.word === translationWord) {
-                                                            return {
-                                                                word: word.word,
-                                                                type: word.type,
-                                                                isActive: true,
-                                                            };
-                                                        }
-                                                        return {
-                                                            word: word.word,
-                                                            type: word.type,
-                                                            isActive: false,
-                                                        };
-                                                    }
-                                                )}
-                                                checkWords={false}
-                                                addWord={choiceTranslationWord}
-                                            />
-                                        </>
+                                            {translateResult.wordsList.length && (
+                                                <WordsPanel 
+                                                    wordsList={translateResult.wordsList} 
+                                                    tabs={uniqueList(
+                                                        translateResult.wordsList
+                                                            .map((word) => word.type)
+                                                            .filter((type) => type !== "transcription")
+                                                    )} 
+                                                    selectTag={choiceTranslationWord}
+                                                    yandexTranslate={translateByYandex}
+                                                    setYandexData={isExecuteYandexTranslate}
+                                                />
+                                            )}
+                                       </>
                                     }
                                 >
                                     Список значений
@@ -284,7 +283,7 @@ const DictionaryAddWord: FC<IDictionaryAddWordProps> = ({
                                 }}
                                 onClick={changeTranslate}
                             >
-                                {translateMethod === "lingvo" ? "L" : "Y"}
+                                {translateMethod === "translateApi" ? "T" : "Y"}
                             </Button>
                             <Button
                                 variant="text"

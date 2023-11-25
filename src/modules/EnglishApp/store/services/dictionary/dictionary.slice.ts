@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { thunkAxiosGet } from "../../../../../helpers/queryHelper";
+import { thunkAxiosGet, thunkAxiosPost } from "../../../../../helpers/queryHelper";
 import { arrayUniqueByKey } from "../../../../../helpers/arrayHelper";
 
 interface IState {
@@ -14,6 +14,7 @@ interface IState {
     lingvoExamples: ILingvoExample[],
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
+    translateApiSettings: ITranslateSettings,
     page: number,
     status: string,
     error: IError
@@ -29,13 +30,14 @@ const initialState: IState = {
         settingsForSelector: []
     },
     translateLanguages: [],
-    translateMethod: "lingvo",
+    translateMethod: "translateApi",
     translateResult: {
         translatedWord: "",
         originalWord: "",
         translateLang: "",
         originalLang: ""
     },
+    translateApiSettings: {lingvo: false, wordHunt: false},
     fullTranslateList: [],
     analogsWord: [],
     languages: [],
@@ -84,28 +86,42 @@ export const getLanguages = createAsyncThunk(
 export const translateWord = createAsyncThunk(
     'translate/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/translate/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/translate/', params, rejectWithValue);
     }
 );
 
 export const fullTranslate = createAsyncThunk(
     'full-translate/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/full-translate/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/full-translate/', params, rejectWithValue);
     }
 );
 
 export const getAnalogs = createAsyncThunk(
     'full-translate-analogs/fetch',
     async (params: ITranslateParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/full-translate/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/full-translate/', params, rejectWithValue);
     }
 );
 
 export const getExamplesForWord = createAsyncThunk(
     'get-examples-for-word/fetch',
     async (params: IExampleParams, { rejectWithValue }) => {
-        return thunkAxiosGet('/lingvo-api/get-examples-for-word/', params, rejectWithValue);
+        return thunkAxiosGet('/translate-api/get-examples-for-word/', params, rejectWithValue);
+    }
+);
+
+export const getTranslateSettings = createAsyncThunk(
+    'translate-api-get-settings/fetch',
+    async (_, { rejectWithValue }) => {
+        return thunkAxiosGet('/translate-api/get-settings/', {}, rejectWithValue);
+    }
+);
+
+export const updateTranslateSettings = createAsyncThunk(
+    'translate-api-settings-update/fetch',
+    async (params: ITranslateSettings, { rejectWithValue }) => {
+        return thunkAxiosPost('/translate-api/update-settings/', params, rejectWithValue);
     }
 );
 
@@ -156,16 +172,25 @@ export const dictionarySlice = createSlice({
             }
         },
         changeTranslateMethod: (state) => {
-            if (state.translateMethod === "lingvo") {
+            if (state.translateMethod === "translateApi") {
                 state.translateMethod = "yandex";
             } else {
-                state.translateMethod = "lingvo";
+                state.translateMethod = "translateApi";
             }
         },
         resetFullTranslateList: (state) => {
             state.fullTranslateList = [];
             state.analogsWord = [];
             state.lingvoExamples = [];
+        },
+        setFullTranslateList: (state, action: PayloadAction<IFullTranslateObject[]>) => {
+            state.fullTranslateList = action.payload;
+        },
+        updateLingvoAccess: (state, action: PayloadAction<{isActive: boolean}>) => {
+            state.translateApiSettings.lingvo = action.payload.isActive;
+        },
+        updateWordHuntAccess: (state, action: PayloadAction<{isActive: boolean}>) => {
+            state.translateApiSettings.wordHunt = action.payload.isActive;
         }
     },
     extraReducers: (builder) => {
@@ -304,6 +329,7 @@ export const dictionarySlice = createSlice({
 
           .addCase(fullTranslate.pending, (state) => {
             state.status = 'loading';
+            state.fullTranslateList = [];
             state.error = { statusCode: 0, message: "", errorCode: "" };
           })
           .addCase(fullTranslate.fulfilled, (state, action) => {
@@ -339,6 +365,22 @@ export const dictionarySlice = createSlice({
             state.lingvoExamples = action.payload;
           })
           .addCase(getExamplesForWord.rejected, (state, action) => {
+            const errorObj: any = action.payload;
+            state.status = 'rejected';
+            state.error = errorObj;
+          })
+
+
+          .addCase(getTranslateSettings.pending, (state) => {
+            state.status = 'loading';
+            state.translateApiSettings = {lingvo: false, wordHunt: false};
+            state.error = { statusCode: 0, message: "", errorCode: "" };
+          })
+          .addCase(getTranslateSettings.fulfilled, (state, action) => {
+            state.status = 'resolved';
+            state.translateApiSettings = action.payload;
+          })
+          .addCase(getTranslateSettings.rejected, (state, action) => {
             const errorObj: any = action.payload;
             state.status = 'rejected';
             state.error = errorObj;

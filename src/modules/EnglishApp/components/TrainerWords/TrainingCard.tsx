@@ -1,6 +1,6 @@
 import { FC } from "react";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
-import WordTag from "../../ui/WordsPanel/WordTag";
+import WordTag from "../WordsTagsPanel/WordTag";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
 
 interface ITrainingCardProps {
@@ -28,7 +28,7 @@ const TrainingCard: FC<ITrainingCardProps> = ({
                             content={
                                 <>
                                     {word.dictionaryLinkedWords.map(word => {
-                                        return  <WordTag checkTags={false}>{word.word}</WordTag>;
+                                        return <WordTag>{word.word}</WordTag>;
                                     })}
                                 </>
                             }
