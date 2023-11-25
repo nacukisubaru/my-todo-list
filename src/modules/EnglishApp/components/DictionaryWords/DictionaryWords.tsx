@@ -15,6 +15,7 @@ import { useFilter } from "../../hooks/useFilter";
 import SearchInput from "../../../../ui/Inputs/SearchInput";
 import { useActions } from "../../hooks/useAction";
 import useLocalStorageState from "use-local-storage-state";
+import { setTitle } from "../../../../helpers/domHelper";
 
 const DictionaryWords = () => {
     const {dictionary, status} = useAppSelector(
@@ -52,6 +53,7 @@ const DictionaryWords = () => {
         }
         actions();
         setDictionaryFilter(filterStorage[0]);
+        setTitle("Словарь");
     }, []);
 
     useEffect(() => {

@@ -23,6 +23,8 @@ import "./css/style.css";
 import YoutubeVideoReader from "./YoutubeVideoReader";
 import { useActions } from "../../hooks/useAction";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
+import { setTitle } from "../../../../helpers/domHelper";
+import { CircularProgress } from "@mui/material";
 
 const drawerWidth = 320;
 
@@ -67,10 +69,10 @@ const BookReader: FC = () => {
 
     const { filtrate } = useFilterBooks();
 
-    const { data, refetch } = bookReaderApi.useGetBookQuery({
+    const { data, isFetching, refetch } = bookReaderApi.useGetBookQuery({
         id: id ? +id : 0,
         page: currentPage,
-        limitOnPage: searchParams.get("getVideo") ? 100 : 500,
+        limitOnPage: searchParams.get("getVideo") ? 100 : 700,
         getVideo: searchParams.get("getVideo") ? true : false,
         timecode,
     });
@@ -213,6 +215,7 @@ const BookReader: FC = () => {
 
     useEffect(() => {
         if (data) {
+            setTitle(data.book.name);
             const classes = document.getElementsByClassName("translateMyWord");
             for (let inc = 0; inc < classes.length; inc++) {
                 classes[inc].classList.remove("highlight");
@@ -336,12 +339,19 @@ const BookReader: FC = () => {
                             />
                         )}
                     </div>
-
-                    <div className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
-                        <Typography paragraph>
-                            {data && HTMLReactParser(data.text)}
-                        </Typography>
-                    </div>
+                   
+                    {data && !isFetching ? (
+                         <div className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
+                            <Typography paragraph>
+                                {HTMLReactParser(data.text)}
+                            </Typography>
+                        </div>
+                    ) : (
+                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                            <CircularProgress />
+                        </Box>
+                    )}
+                   
                 </Main>
 
                 <BookDrawer

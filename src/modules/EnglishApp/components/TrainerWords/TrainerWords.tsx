@@ -1,7 +1,8 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import PassedTraining from "./PassedTraining";
 import TrainingCard from "./TrainingCard";
 import ArrowRight from "../../../../ui/Buttons/ArrowButton/ArrowRigth";
+import { setTitle } from "../../../../helpers/domHelper";
 
 interface ITrainerWordsProps {
     words: IDictionary[];
@@ -30,6 +31,10 @@ const TrainerWords: FC<ITrainerWordsProps> = ({
     switchWord,
     isVisible = false
 }) => {
+
+    useEffect(() => {
+        setTitle("Тренажер слов");
+    }, [])
 
     return (
         <>

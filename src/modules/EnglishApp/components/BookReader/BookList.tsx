@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import AddBook from "./AddBook";
 import { queryBuilder } from "../../../../helpers/queryHelper";
+import { setTitle } from "../../../../helpers/domHelper";
 
 
 const BookList: FC<IBookList> = () => {
@@ -28,6 +29,7 @@ const BookList: FC<IBookList> = () => {
     const [isOpenAddBook, setOpenAddBook] = useState(false);
 
     useEffect(() => {
+        setTitle('Книги список');
         setBooksFilter(filterStorage);
     }, []);
 
