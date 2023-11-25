@@ -47,7 +47,7 @@ const BooksFilter: FC<IFilterProps> = ({ isVisible, close }) => {
                                 langOriginal: value
                             });
                         }}
-                        selectedOption={"en"}
+                        selectedOption={booksFilter.langOriginal ? booksFilter.langOriginal : 'en'}
                     />
                     </Box>
                     <CheckBoxDefault
