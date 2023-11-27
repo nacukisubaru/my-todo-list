@@ -341,7 +341,7 @@ const BookReader: FC = () => {
                     </div>
                    
                     {data && !isFetching ? (
-                         <div className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
+                         <div id="scroll-box" className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
                             <Typography paragraph>
                                 {HTMLReactParser(data.text)}
                             </Typography>

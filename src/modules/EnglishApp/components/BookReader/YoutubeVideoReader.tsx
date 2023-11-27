@@ -38,32 +38,50 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     const [isPlaying, setPlay] = useState(false);
     const [isSlide, setSlide] = useState(true);
     const [isInitPlayer, setInitPlayer] = useState(false);
-    const [emphasiseString, setEmphasiseString] = useState<HTMLElement>();
+    const [prevTimecodesStrings, setPrevTimecodesStrings] = useState<ITimecodeByString[]>([]);
 
     const {setCanUpdateBookPage} = useActions();
     const {canUpdateBookPage} = useAppSelector(state => state.bookReaderReducer);
 
     const getTextByTimecode = (timecode: string) => {
-        const timecodeString = timecodesByString.filter((item) => item.timecode === timecode);
-        console.log({timecodeString})
-        if (timecodeString[0]) {
-            const findedSpanIds = timecodeString[0].spanIds;
-            if (findedSpanIds) {
-                const span = document.getElementById(findedSpanIds);
-                console.log({span})
-                if (span) {
-                    resetEmphasiseString();
-                    setEmphasiseString(span);
-                    span.scrollIntoView({ behavior: "smooth"});
-                    span.classList.add("highlight");
-                }
-            }
-        }
-    }
 
-    const resetEmphasiseString = () => {
-        if (emphasiseString) {
-            emphasiseString.classList.remove("highlight");
+        const toHighlightString = (timecodeStrings: ITimecodeByString[], action: string = "add") => {
+            timecodeStrings.map((timecode) => {
+                const findedSpanIds = timecode.spanIds;
+                if (findedSpanIds) {
+                    
+                    const span = document.getElementById(findedSpanIds);
+                    if (span) {
+                        if (action === "add") {
+                            span.classList.add("highlight");
+                        } else if (action === "remove") {
+                            span.classList.remove("highlight");
+                        }
+                    }
+                }
+            })
+        }
+
+        const timecodeStrings = timecodesByString.filter((item) => item.timecode === timecode);
+        if (timecodeStrings.length) {
+         
+            if (prevTimecodesStrings.length) {
+                toHighlightString(prevTimecodesStrings, "remove");
+            }
+
+            setPrevTimecodesStrings(timecodeStrings);
+            toHighlightString(timecodeStrings, "add");
+
+            let timecodeString = timecodeStrings[1];
+            if (!timecodeString) {
+                timecodeString = timecodeStrings[0];
+            }
+            
+            const span = document.getElementById(timecodeString.spanIds);
+            if (span) {
+                span.scrollIntoView({ behavior: "smooth", block: 'start'});
+            }
+           
         }
     }
 
