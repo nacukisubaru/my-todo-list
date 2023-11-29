@@ -274,7 +274,7 @@ const BookReader: FC = () => {
                 <CssBaseline />
                 <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
                     <Toolbar>
-                        <div className="cursor-pointer" onClick={setPrevPage}>
+                        <div className="cursor-pointer" onClick={()=>{setPrevPage()}}>
                             <ArrowBackIosNewIcon />
                         </div>
                         <Typography
@@ -286,7 +286,7 @@ const BookReader: FC = () => {
                         >
                             {currentPage}
                         </Typography>
-                        <div className="cursor-pointer" onClick={setNextPage}>
+                        <div className="cursor-pointer" onClick={()=>{setNextPage()}}>
                             <ArrowForwardIosIcon />
                         </div>
 
