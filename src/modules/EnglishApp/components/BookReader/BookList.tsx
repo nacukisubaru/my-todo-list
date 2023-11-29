@@ -132,20 +132,22 @@ const BookList: FC = () => {
                         </Toolbar>
                     </AppBar>
                     <List>
-                        {books.map((book) => {
-                            return (
-                                <ListItem>
-                                    <ListItemButton
-                                        component="a"
-                                        onClick={() => {
-                                            redirectByLink(book);
-                                        }}
-                                    >
-                                        {book.name}
-                                    </ListItemButton>
-                                </ListItem>
-                            );
-                        })}
+                        <div className="h-[85%] overflow-auto">
+                            {books.map((book) => {
+                                return (
+                                    <ListItem>
+                                        <ListItemButton
+                                            component="a"
+                                            onClick={() => {
+                                                redirectByLink(book);
+                                            }}
+                                        >
+                                            {book.name}
+                                        </ListItemButton>
+                                    </ListItem>
+                                );
+                            })}
+                        </div>
                     </List>
                 </Box>
             </div>

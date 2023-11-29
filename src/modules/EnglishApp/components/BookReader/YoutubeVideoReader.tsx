@@ -20,7 +20,7 @@ interface IYoutubeVideoReader {
     width?: number;
     timecodes: string[];
     timecodesByString: ITimecodeByString[];
-    onProgressVideo: () => void;
+    onProgressVideo: (action: string, setCanUpdate: boolean ) => void;
     onSeek: (timecode: string) => void;
 }
 
@@ -39,6 +39,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     const [isSlide, setSlide] = useState(true);
     const [isInitPlayer, setInitPlayer] = useState(false);
     const [prevTimecodesStrings, setPrevTimecodesStrings] = useState<ITimecodeByString[]>([]);
+    const [currentActiveSubtitle, setCurrentActiveSubtitle] = useState("");
 
     const {setCanUpdateBookPage} = useActions();
     const {canUpdateBookPage} = useAppSelector(state => state.bookReaderReducer);
@@ -64,7 +65,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
 
         const timecodeStrings = timecodesByString.filter((item) => item.timecode === timecode);
         if (timecodeStrings.length) {
-         
+            
             if (prevTimecodesStrings.length) {
                 toHighlightString(prevTimecodesStrings, "remove");
             }
@@ -76,12 +77,15 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
             if (!timecodeString) {
                 timecodeString = timecodeStrings[0];
             }
-            
-            const span = document.getElementById(timecodeString.spanIds);
-            if (span) {
-                span.scrollIntoView({ behavior: "smooth", block: 'start'});
+
+            if (timecodeString.spanIds !== currentActiveSubtitle) {
+                setCurrentActiveSubtitle(timecodeString.spanIds);
+                const span = document.getElementById(timecodeString.spanIds);
+                if (span) {
+                    console.log(span);
+                    span.scrollIntoView({ behavior: "smooth", block: 'start'});
+                }
             }
-           
         }
     }
 
@@ -97,14 +101,20 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
 
     const onProgress = (state: IProgress) => {
         if (timecodes.length) {
-            const lastTimeCode = timecodes[timecodes.length - 1];
+            const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
             const timecode = convertSecoundsToTimeString(state.playedSeconds);
             getTextByTimecode(timecode)
-            if (
-                convertSecoundsToTimeString(state.playedSeconds) ===
-                lastTimeCode
-            ) {
-                onProgressVideo();
+            
+            if (state.playedSeconds < convertTimeStringToSeconds(timecodes[0]) && !canUpdateBookPage && isInitPlayer) {
+                console.log('work prev')
+                onProgressVideo("prev", false);
+            }
+            if (state.playedSeconds >= lastTimeCode && !canUpdateBookPage && isInitPlayer) {
+                onProgressVideo("next", false);
+            }
+
+            if (state.playedSeconds === lastTimeCode && canUpdateBookPage) {
+                onProgressVideo("next", true);
             }
         }
         setCurrentDuration(state.playedSeconds);
@@ -129,7 +139,8 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
             ref.current.seekTo(convertTimeStringToSeconds(timecodes[0]));
             setPlay(true);
             setSlide(false);
-            getTextByTimecode(timecodes[0])
+            getTextByTimecode(timecodes[0]);
+            
         }
     }, [timecodes, canUpdateBookPage]);
 

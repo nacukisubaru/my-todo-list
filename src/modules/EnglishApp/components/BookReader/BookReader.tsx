@@ -110,16 +110,20 @@ const BookReader: FC = () => {
         }
     };
 
-    const changePage = (page: number, action: string = "default") => {
+    const changePage = (page: number, action: string = "default", setCanUpdate: boolean = true) => {
         let curPage = page;
         switch (action) {
             case "next":
                 curPage++;
-                setCanUpdateBookPage({ update: true });
+                if (setCanUpdate) {
+                    setCanUpdateBookPage({ update: true });
+                }
                 break;
             case "prev":
                 curPage--;
-                setCanUpdateBookPage({ update: true });
+                if (setCanUpdate) {
+                    setCanUpdateBookPage({ update: true });
+                }
                 break;
         }
         setTimecode("");
@@ -127,14 +131,14 @@ const BookReader: FC = () => {
         setSearchParams(searchParams);
     };
 
-    const setNextPage = () => {
+    const setNextPage = (setCanUpdate: boolean = true) => {
         removeHiglights();
-        changePage(currentPage, "next");
+        changePage(currentPage, "next", setCanUpdate);
     };
 
-    const setPrevPage = () => {
+    const setPrevPage = (setCanUpdate: boolean = true) => {
         removeHiglights();
-        changePage(currentPage, "prev");
+        changePage(currentPage, "prev", setCanUpdate);
     };
 
     const openPages = () => {
@@ -214,7 +218,7 @@ const BookReader: FC = () => {
     };
 
     useEffect(() => {
-        if (data) {
+        if (data && !isFetching) {
             setTitle(data.book.name);
             const classes = document.getElementsByClassName("translateMyWord");
             for (let inc = 0; inc < classes.length; inc++) {
@@ -245,7 +249,15 @@ const BookReader: FC = () => {
             }
             setInitBookData(true);
         }
-    }, [data]);
+    }, [data, isFetching]);
+
+    const progressVideo = (action: string, setCanUpdate: boolean = true) => {
+        if (action === "next") {
+            setNextPage(setCanUpdate);
+        } else {
+            setPrevPage(setCanUpdate);
+        }
+    }
 
     return (
         <>
@@ -333,7 +345,7 @@ const BookReader: FC = () => {
                                 videoId={data.book.videoUrl}
                                 width={drawerWidth ? -drawerWidth : 0}
                                 timecodes={data.timecodes}
-                                onProgressVideo={setNextPage}
+                                onProgressVideo={progressVideo}
                                 onSeek={changePageByTimecode}        
                                 timecodesByString={data.timecodesByString}
                             />

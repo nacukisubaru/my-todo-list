@@ -135,21 +135,22 @@ const WordsPanel: FC<IWordsPanel> = ({
                     </div>
                 </TabPanel>
             )}
-
-            {words.map((word) => {
-                if (word.word) {
-                    return (
-                        <span className="mr-[5px]">
-                            <WordTag
-                                onClick={selectTag}
-                                isActive={word.isActive}
-                            >
-                                {word.word}
-                            </WordTag>
-                        </span>
-                    );
-                }
-            })}
+            <div className="h-[200px] overflow-auto">
+                {words.map((word) => {
+                    if (word.word) {
+                        return (
+                            <span className="mr-[5px]">
+                                <WordTag
+                                    onClick={selectTag}
+                                    isActive={word.isActive}
+                                >
+                                    {word.word}
+                                </WordTag>
+                            </span>
+                        );
+                    }
+                })}
+            </div>
         </>
     );
 };
