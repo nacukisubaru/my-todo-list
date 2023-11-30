@@ -14,6 +14,7 @@ const CloseButton:FC<ICloseButtonProps> = ({onClick}) => {
             stroke="currentColor"
             className="w-6 h-6 cursor-pointer"
             onClick={onClick}
+            onTouchStart={onClick}
         >
             <path
                 stroke-linecap="round"

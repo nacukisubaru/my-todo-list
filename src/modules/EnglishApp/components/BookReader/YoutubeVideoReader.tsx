@@ -1,4 +1,4 @@
-import { Box, Slider } from "@mui/material";
+import { Box, IconButton, Slider } from "@mui/material";
 import { FC, useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import {
@@ -7,7 +7,8 @@ import {
 } from "../../../../helpers/dateTimeHelper";
 import { useActions } from "../../hooks/useAction";
 import { useAppSelector } from "../../hooks/useAppSelector";
-
+import Forward10Icon from '@mui/icons-material/Forward10';
+import Replay10Icon from '@mui/icons-material/Replay10';
 interface IProgress {
     loaded: number;
     loadedSeconds: number;
@@ -20,7 +21,7 @@ interface IYoutubeVideoReader {
     width?: number;
     timecodes: string[];
     timecodesByString: ITimecodeByString[];
-    onProgressVideo: (action: string, setCanUpdate: boolean ) => void;
+    onProgressVideo: (action: string) => void;
     onSeek: (timecode: string) => void;
 }
 
@@ -42,7 +43,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     const [currentActiveSubtitle, setCurrentActiveSubtitle] = useState("");
 
     const {setCanUpdateBookPage} = useActions();
-    const {canUpdateBookPage} = useAppSelector(state => state.bookReaderReducer);
+    const {canUpdateBookPage, switchBackBookPage} = useAppSelector(state => state.bookReaderReducer);
 
     const getTextByTimecode = (timecode: string) => {
 
@@ -82,8 +83,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
                 setCurrentActiveSubtitle(timecodeString.spanIds);
                 const span = document.getElementById(timecodeString.spanIds);
                 if (span) {
-                    console.log(span);
-                    span.scrollIntoView({ behavior: "smooth", block: 'start'});
+                   span.scrollIntoView({ behavior: "smooth", block: 'start'});
                 }
             }
         }
@@ -93,7 +93,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
         const target: any = event.target;
         ref.current.seekTo(target.value);
         const timecode = convertSecoundsToTimeString(target.value);
-        setCanUpdateBookPage({update: false})
+        setCanUpdateBookPage({update: false});
         getTextByTimecode(timecode)
         setPlay(true);
         onSeek(timecode);
@@ -104,20 +104,14 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
             const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
             const timecode = convertSecoundsToTimeString(state.playedSeconds);
             getTextByTimecode(timecode)
-            
-            if (state.playedSeconds < convertTimeStringToSeconds(timecodes[0]) && !canUpdateBookPage && isInitPlayer) {
-                console.log('work prev')
-                onProgressVideo("prev", false);
-            }
-            if (state.playedSeconds >= lastTimeCode && !canUpdateBookPage && isInitPlayer) {
-                onProgressVideo("next", false);
-            }
 
-            if (state.playedSeconds === lastTimeCode && canUpdateBookPage) {
-                onProgressVideo("next", true);
+            if (state.playedSeconds > lastTimeCode && !switchBackBookPage) {
+                onProgressVideo("next");
             }
         }
+     
         setCurrentDuration(state.playedSeconds);
+        
     };
 
     const onPlay = () => {
@@ -136,39 +130,81 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
 
     useEffect(() => {
         if (isSlide || canUpdateBookPage) {
+            console.log('sdf')
             ref.current.seekTo(convertTimeStringToSeconds(timecodes[0]));
             setPlay(true);
             setSlide(false);
+            //setCanUpdateBookPage({update: true})
             getTextByTimecode(timecodes[0]);
-            
         }
     }, [timecodes, canUpdateBookPage]);
 
 
+    const addClassForFrame = () => {
+        const elements = document.getElementsByTagName("iframe");
+        if (elements.length) {
+            elements[0].classList.add("iframe-youtube");
+        }
+    }
+
+    const rewindBack = () => {
+        const duration = currentDuration - 10;
+        if (duration < convertTimeStringToSeconds(timecodes[0]) ) {
+            onProgressVideo("prev");
+        }
+        ref.current.seekTo(duration)
+        const timecode = convertSecoundsToTimeString(duration);
+        getTextByTimecode(timecode)
+        setCurrentDuration(duration);
+    }
+
+    const rewindForward = () => {
+        const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
+        const duration = currentDuration + 10;
+        if (duration >= lastTimeCode ) {
+            onProgressVideo("next");
+        }
+        ref.current.seekTo(duration)
+        const timecode = convertSecoundsToTimeString(duration);
+        getTextByTimecode(timecode)
+        setCurrentDuration(duration); 
+    }
+
     return (
         <>
-            <Box>
+            <Box>   
                 <ReactPlayer
-                    url={videoId + '?autoplay=1'}
+                    url={videoId + '?controls=1'}
                     ref={ref}
                     width={width}
-                    height={"500px"}
+                    height={"unset"}
                     onPlay={onPlay}
                     onProgress={onProgress}
                     playing={isPlaying}
+                    onReady={addClassForFrame}
                 />
 
-                <Slider
-                    disabled={false}
-                    marks={false}
-                    max={maxDuration}
-                    min={0}
-                    value={currentDuration}
-                    valueLabelFormat={sliderTimeFormat}
-                    onChange={seek}
-                    size="medium"
-                    valueLabelDisplay="on"
-                />
+                <div className="flex">
+                    <Slider
+                        disabled={false}
+                        marks={false}
+                        max={maxDuration}
+                        min={0}
+                        value={currentDuration}
+                        valueLabelFormat={sliderTimeFormat}
+                        onChange={seek}
+                        size="medium"
+                        valueLabelDisplay="on"
+                    />
+               
+                    <IconButton size="small" onClick={rewindBack} onTouchStart={rewindBack}>
+                        <Replay10Icon />
+                    </IconButton>
+                   
+                    <IconButton size="small" onClick={rewindForward} onTouchStart={rewindForward}>
+                        <Forward10Icon />
+                    </IconButton>
+                </div>
             </Box>
         </>
     );

@@ -64,6 +64,13 @@ const theme = createTheme({
             secondary: "#757575",
         },
     },
+    components: {
+      MuiIconButton: {
+        defaultProps: {
+            style: {outline: 'none'}
+        }
+      }
+    }
 });
 
 function App() {
