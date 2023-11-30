@@ -110,20 +110,16 @@ const BookReader: FC = () => {
         }
     };
 
-    const changePage = (page: number, action: string = "default", setCanUpdate: boolean = true) => {
+    const changePage = (page: number, action: string = "default") => {
         let curPage = page;
         switch (action) {
             case "next":
                 curPage++;
-                if (setCanUpdate) {
-                    setCanUpdateBookPage({ update: true });
-                }
+                setCanUpdateBookPage({ update: true });
                 break;
             case "prev":
                 curPage--;
-                if (setCanUpdate) {
-                    setCanUpdateBookPage({ update: true });
-                }
+                setCanUpdateBookPage({ update: true });
                 break;
         }
         setTimecode("");
@@ -131,14 +127,14 @@ const BookReader: FC = () => {
         setSearchParams(searchParams);
     };
 
-    const setNextPage = (setCanUpdate: boolean = true) => {
+    const setNextPage = () => {
         removeHiglights();
-        changePage(currentPage, "next", setCanUpdate);
+        changePage(currentPage, "next");
     };
 
-    const setPrevPage = (setCanUpdate: boolean = true) => {
+    const setPrevPage = () => {
         removeHiglights();
-        changePage(currentPage, "prev", setCanUpdate);
+        changePage(currentPage, "prev");
     };
 
     const openPages = () => {
@@ -235,9 +231,12 @@ const BookReader: FC = () => {
                 }
                 if (!classes[inc].hasAttribute("onclick")) {
                     const element: any = classes[inc];
-                    element.onclick = function () {
+                    const func = function () {
                         translateAndHighlight(classes[inc].id);
                     };
+
+                    element.onclick = func;
+                    element.ontouchstart = func;
                 }
             }
             setBookMarkerOnPage(false);
@@ -251,12 +250,17 @@ const BookReader: FC = () => {
         }
     }, [data, isFetching]);
 
-    const progressVideo = (action: string, setCanUpdate: boolean = true) => {
+    const progressVideo = (action: string) => {
         if (action === "next") {
-            setNextPage(setCanUpdate);
+            setNextPage();
         } else {
-            setPrevPage(setCanUpdate);
+            setPrevPage();
         }
+    }
+
+    const nav = async () => {
+        await filtrate(1, false);
+        navigate("/englishApp/books");
     }
 
     return (
@@ -274,7 +278,7 @@ const BookReader: FC = () => {
                 <CssBaseline />
                 <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
                     <Toolbar>
-                        <div className="cursor-pointer" onClick={()=>{setPrevPage()}}>
+                        <div className="cursor-pointer" onClick={setPrevPage} onTouchStart={setPrevPage}>
                             <ArrowBackIosNewIcon />
                         </div>
                         <Typography
@@ -282,11 +286,12 @@ const BookReader: FC = () => {
                             noWrap
                             component="div"
                             onClick={openPages}
+                            onTouchStart={openPages}
                             className="cursor-pointer"
                         >
                             {currentPage}
                         </Typography>
-                        <div className="cursor-pointer" onClick={()=>{setNextPage()}}>
+                        <div className="cursor-pointer" onClick={setNextPage} onTouchStart={setNextPage}>
                             <ArrowForwardIosIcon />
                         </div>
 
@@ -301,6 +306,7 @@ const BookReader: FC = () => {
                             <div
                                 className="cursor-pointer"
                                 onClick={updateBookMarker}
+                                onTouchStart={updateBookMarker}
                             >
                                 <BookmarkBorderIcon />
                             </div>
@@ -312,6 +318,9 @@ const BookReader: FC = () => {
                                 onClick={() => {
                                     updateRead(false);
                                 }}
+                                onTouchStart={() => {
+                                    updateRead(false);
+                                }}
                             >
                                 <StarIcon />
                             </div>
@@ -319,6 +328,9 @@ const BookReader: FC = () => {
                             <div
                                 className="cursor-pointer"
                                 onClick={() => {
+                                    updateRead(true);
+                                }}
+                                onTouchStart={() => {
                                     updateRead(true);
                                 }}
                             >
@@ -331,10 +343,8 @@ const BookReader: FC = () => {
                     <DrawerHeader />
                     <div
                         className="mb-[15px] cursor-pointer"
-                        onClick={async () => {
-                            await filtrate(1, false);
-                            navigate("/englishApp/books");
-                        }}
+                        onClick={nav}
+                        onTouchStart={nav}
                     >
                         <KeyboardReturnIcon />
                     </div>
@@ -353,7 +363,7 @@ const BookReader: FC = () => {
                     </div>
                    
                     {data && !isFetching ? (
-                         <div id="scroll-box" className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[170px] overflow-auto lg:h-[370px]'}`}>
+                         <div id="scroll-box" className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[250px] overflow-auto lg:h-[370px]'}`}>
                             <Typography paragraph>
                                 {HTMLReactParser(data.text)}
                             </Typography>
