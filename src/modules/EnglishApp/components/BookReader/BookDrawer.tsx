@@ -54,6 +54,10 @@ const BookDrawer: FC<IBookDrawer> = ({
     const theme = useTheme();
     const { speak } = useSpeechSynthesis();
 
+    const closeDrawer = () => {
+        close && close();
+    }
+
     return (
         <Drawer
             sx={{
@@ -73,9 +77,8 @@ const BookDrawer: FC<IBookDrawer> = ({
                     {showChevron && (
                         <div>
                             <IconButton
-                                onClick={() => {
-                                    close && close();
-                                }}
+                                onClick={closeDrawer}
+                                onTouchStart={closeDrawer}
                             >
                                 {theme.direction === "rtl" ? (
                                     <ChevronLeftIcon />

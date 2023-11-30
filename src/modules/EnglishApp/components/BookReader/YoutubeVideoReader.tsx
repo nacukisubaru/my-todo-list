@@ -43,7 +43,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     const [currentActiveSubtitle, setCurrentActiveSubtitle] = useState("");
 
     const {setCanUpdateBookPage} = useActions();
-    const {canUpdateBookPage} = useAppSelector(state => state.bookReaderReducer);
+    const {canUpdateBookPage, switchBackBookPage} = useAppSelector(state => state.bookReaderReducer);
 
     const getTextByTimecode = (timecode: string) => {
 
@@ -80,7 +80,6 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
             }
 
             if (timecodeString.spanIds !== currentActiveSubtitle) {
-             //   setCanUpdateBookPage({update: false})
                 setCurrentActiveSubtitle(timecodeString.spanIds);
                 const span = document.getElementById(timecodeString.spanIds);
                 if (span) {
@@ -94,40 +93,25 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
         const target: any = event.target;
         ref.current.seekTo(target.value);
         const timecode = convertSecoundsToTimeString(target.value);
-        setCanUpdateBookPage({update: false})
+        setCanUpdateBookPage({update: false});
         getTextByTimecode(timecode)
         setPlay(true);
         onSeek(timecode);
     };
 
-    // const onProgress = (state: IProgress) => {
-    //     if (timecodes.length) {
-    //         const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
-    //         const timecode = convertSecoundsToTimeString(state.playedSeconds);
-    //         getTextByTimecode(timecode)
-            
-    //         if (state.playedSeconds === lastTimeCode) {
-    //             onProgressVideo("next");
-    //         }
-    //     }
-     
-    //     setCurrentDuration(state.playedSeconds);
-        
-    // };
-
     const onProgress = (state: IProgress) => {
         if (timecodes.length) {
-            const lastTimeCode = timecodes[timecodes.length - 1];
+            const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
             const timecode = convertSecoundsToTimeString(state.playedSeconds);
             getTextByTimecode(timecode)
-            if (
-                convertSecoundsToTimeString(state.playedSeconds) >
-                lastTimeCode 
-            ) {
+
+            if (state.playedSeconds > lastTimeCode && !switchBackBookPage) {
                 onProgressVideo("next");
             }
         }
+     
         setCurrentDuration(state.playedSeconds);
+        
     };
 
     const onPlay = () => {
@@ -190,7 +174,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
         <>
             <Box>   
                 <ReactPlayer
-                    url={videoId + '?autoplay=1'}
+                    url={videoId + '?controls=1'}
                     ref={ref}
                     width={width}
                     height={"unset"}
@@ -213,7 +197,7 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
                         valueLabelDisplay="on"
                     />
                
-                    <IconButton size="small" onClick={rewindBack} onTouchStart={rewindForward}>
+                    <IconButton size="small" onClick={rewindBack} onTouchStart={rewindBack}>
                         <Replay10Icon />
                     </IconButton>
                    

@@ -5,6 +5,7 @@ interface IState {
     books: IBookList[],
     booksFilter: IBooksFilter,
     canUpdateBookPage: boolean,
+    switchBackBookPage: boolean
     page: number,
     status: string,
     error: IError,
@@ -22,6 +23,7 @@ const initialState: IState = {
         langOriginal: "en"
     },
     canUpdateBookPage: false,
+    switchBackBookPage: false,
     page: 0,
     pages: 0,
     status: "",
@@ -47,6 +49,9 @@ export const bookReaderSlice = createSlice({
         },
         setCanUpdateBookPage: (state, action: PayloadAction<{update: boolean}>) => {
             state.canUpdateBookPage = action.payload.update;
+        },
+        setSwitchBackBookPage: (state, action: PayloadAction<{isBack: boolean}>) => {
+            state.switchBackBookPage = action.payload.isBack;
         }
     },
     extraReducers: (builder) => {

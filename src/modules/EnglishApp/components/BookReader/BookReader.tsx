@@ -24,7 +24,7 @@ import YoutubeVideoReader from "./YoutubeVideoReader";
 import { useActions } from "../../hooks/useAction";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
 import { setTitle } from "../../../../helpers/domHelper";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
 
 const drawerWidth = 320;
 
@@ -65,7 +65,7 @@ const BookReader: FC = () => {
 
     const [isMount, setMount] = useState(false);
     const [isInitBookData, setInitBookData] = useState(false);
-    const { setCanUpdateBookPage } = useActions();
+    const { setCanUpdateBookPage, setSwitchBackBookPage } = useActions();
 
     const { filtrate } = useFilterBooks();
 
@@ -115,6 +115,7 @@ const BookReader: FC = () => {
         switch (action) {
             case "next":
                 curPage++;
+                setSwitchBackBookPage({isBack: false});
                 setCanUpdateBookPage({ update: true });
                 break;
             case "prev":
@@ -133,6 +134,7 @@ const BookReader: FC = () => {
     };
 
     const setPrevPage = () => {
+        setSwitchBackBookPage({isBack: true});
         removeHiglights();
         changePage(currentPage, "prev");
     };
@@ -206,6 +208,7 @@ const BookReader: FC = () => {
         await setChangePageDisabled(true);
         await refetch();
         await setChangePageDisabled(false);
+        setSwitchBackBookPage({isBack: false});
     }
 
     const changePageByTimecode = async (timecode: string) => {
@@ -278,9 +281,9 @@ const BookReader: FC = () => {
                 <CssBaseline />
                 <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
                     <Toolbar>
-                        <div className="cursor-pointer" onClick={setPrevPage} onTouchStart={setPrevPage}>
+                        <IconButton onClick={setPrevPage} onTouchStart={setPrevPage} sx={{color: 'white'}}>
                             <ArrowBackIosNewIcon />
-                        </div>
+                        </IconButton>
                         <Typography
                             variant="h6"
                             noWrap
@@ -291,9 +294,9 @@ const BookReader: FC = () => {
                         >
                             {currentPage}
                         </Typography>
-                        <div className="cursor-pointer" onClick={setNextPage} onTouchStart={setNextPage}>
+                        <IconButton onClick={setNextPage} onTouchStart={setNextPage} sx={{color: 'white'}}>
                             <ArrowForwardIosIcon />
-                        </div>
+                        </IconButton>
 
                         {(data &&
                             data.book.bookmarker &&
@@ -303,6 +306,7 @@ const BookReader: FC = () => {
                                 <BookmarkIcon />
                             </div>
                         ) : (
+                            
                             <div
                                 className="cursor-pointer"
                                 onClick={updateBookMarker}
@@ -341,13 +345,16 @@ const BookReader: FC = () => {
                 </AppBar>
                 <Main open={open}>
                     <DrawerHeader />
-                    <div
-                        className="mb-[15px] cursor-pointer"
-                        onClick={nav}
-                        onTouchStart={nav}
-                    >
-                        <KeyboardReturnIcon />
-                    </div>
+                        <IconButton 
+                            onClick={nav}
+                            onTouchStart={nav}
+                            sx={{
+                                marginBottom: "15px"
+                            }}
+                        >
+                            <KeyboardReturnIcon />
+                        </IconButton>
+           
 
                     <div className="lg:w-[82%]">
                         {data && data.book.videoUrl && data.timecodes && (
@@ -363,10 +370,12 @@ const BookReader: FC = () => {
                     </div>
                    
                     {data && !isFetching ? (
-                         <div id="scroll-box" className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[250px] overflow-auto lg:h-[370px]'}`}>
-                            <Typography paragraph>
-                                {HTMLReactParser(data.text)}
-                            </Typography>
+                         <div id="scroll-box" className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[220px] overflow-auto lg:h-[265px]'}`}>
+                            <div className="lg:w-[500px] flex justify-start lg:justify-center w-[250px]">
+                                <Typography paragraph>
+                                    {HTMLReactParser(data.text)}
+                                </Typography>
+                            </div>
                         </div>
                     ) : (
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
