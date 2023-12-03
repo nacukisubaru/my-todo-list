@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
 import {
+    AppBar,
     Box,
     Grid,
     List,
@@ -8,7 +9,6 @@ import {
     ListItemButton,
     Toolbar,
 } from "@mui/material";
-import { AppBar } from "../../../../ui/AppBar/AppBar";
 import PaginationButtons from "../../../../ui/Pagination/PaginationButtons";
 import BooksFilter from "../Filter/BooksFilter";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
@@ -83,7 +83,6 @@ const BookList: FC = () => {
                     <AppBar
                         className="py-[10px]"
                         position="static"
-                        drawerWidth={0}
                     >
                         <Toolbar>
                             <Grid container spacing={2}>

@@ -1,139 +1,74 @@
-import Drawer from "@mui/material/Drawer";
 import { FC } from "react";
-import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { IconButton, Typography } from "@mui/material";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { styled, useTheme } from "@mui/material/styles";
-import PlayButton from "../../../../ui/Buttons/PlayButton";
-import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-start",
-}));
-
-const WordsWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(2, 2, 2, 2),
-}));
+import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
+import BookWordsPanel from "./BookWordsPanel";
 
 interface IBookDrawer {
     word: string;
     isOpen: boolean;
     headerBody?: any;
     className?: string;
-    width: number;
     lang: string;
     showChevron?: boolean;
     close?: () => void;
     yandexTranslate?: () => void;
     setYandexData?: boolean;
-    selectTag:() => void 
+    selectTag: () => void;
 }
+
+const Puller = styled(Box)(({ theme }) => ({
+    width: 30,
+    height: 6,
+    backgroundColor: theme.palette.mode === "light" ? grey[300] : grey[900],
+    borderRadius: 3,
+    position: "absolute",
+    bottom: 8,
+    left: "calc(50% - 15px)",
+    cursor: 'pointer'
+}));
 
 const BookDrawer: FC<IBookDrawer> = ({
     word,
-    isOpen,
-    className = "",
-    width = 320,
     lang,
-    showChevron = false,
     close,
     yandexTranslate = () => {},
     selectTag,
-    setYandexData = false
+    isOpen,
+    setYandexData = false,
 }) => {
-    const { fullTranslateList } = useAppSelector(
-        (state) => state.dictionaryReducer
-    );
-
-    const theme = useTheme();
-    const { speak } = useSpeechSynthesis();
-
-    const closeDrawer = () => {
-        close && close();
-    }
 
     return (
-        <Drawer
-            sx={{
-                width: width,
-                flexShrink: 0,
-                "& .MuiDrawer-paper": {
-                    width: width,
-                },
-            }}
-            variant="persistent"
-            anchor="right"
-            open={isOpen}
-            className={className}
-        >
-            <DrawerHeader>
-                <div>
-                    {showChevron && (
-                        <div>
-                            <IconButton
-                                onClick={closeDrawer}
-                                onTouchStart={closeDrawer}
-                            >
-                                {theme.direction === "rtl" ? (
-                                    <ChevronLeftIcon />
-                                ) : (
-                                    <ChevronRightIcon />
-                                )}
-                            </IconButton>
-                        </div>
-                    )}
-                    {fullTranslateList.length > 0 && (
-                        <WordsWrapper>
-                            <div className="flex justify-start">
-                                <div className="flex">
-                                    <Typography
-                                        variant="h5"
-                                        style={{
-                                            fontWeight: "bold",
-                                            marginRight: "11px",
-                                        }}
-                                    >
-                                        {word && word}
-                                    </Typography>
-
-                                    <PlayButton
-                                        onClick={() => {
-                                            speak(word, lang === 'en' ? "en-US" : lang);
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex justify-start">
-                                <Typography>
-                                    {
-                                        fullTranslateList.find(
-                                            (item) =>
-                                                item.type === "transcription"
-                                        )?.word
-                                    }
-                                </Typography>
-                            </div>
-                        </WordsWrapper>
-                    )}
+        <>
+            <div className="hidden lg:block shadow-md h-[900px]">
+                <div className="px-[15px] py-[15px] w-[500px]">
+                    <BookWordsPanel
+                        lang={lang}
+                        yandexTranslate={yandexTranslate}
+                        setYandexData={setYandexData}
+                        selectTag={selectTag}
+                        word={word}
+                    />
                 </div>
-            </DrawerHeader>
-            <WordsWrapper>
-                <WordsTagsPanel 
-                    saveTags={true} 
-                    forBook={true} 
+            </div>
+
+            <div
+                className={`block lg:hidden px-[15px] z-[1] h-[330px] w-[100%] md:w-[500px] fixed bg-white ${
+                    isOpen ? "translate-y-[0px]" : "-translate-y-[1000px]"
+                } ease-in-out duration-300 ...`}
+            >
+                <BookWordsPanel
                     lang={lang}
                     yandexTranslate={yandexTranslate}
                     setYandexData={setYandexData}
                     selectTag={selectTag}
+                    word={word}
                 />
-            </WordsWrapper>
-        </Drawer>
+                <div className="w-[100%] h-[16px]" onTouchStart={close}>
+                    <Puller />
+                </div>
+            </div>
+        </>
     );
 };
 

@@ -1,8 +1,6 @@
 import { FC, useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import BookDrawer from "./BookDrawer";
 import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
@@ -13,7 +11,6 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import BookPages from "./BookPages";
-import { AppBar } from "../../../../ui/AppBar/AppBar";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -25,25 +22,9 @@ import { useActions } from "../../hooks/useAction";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
 import { setTitle } from "../../../../helpers/domHelper";
 import { CircularProgress, IconButton } from "@mui/material";
+import { AppBar } from "@mui/material";
 
 const drawerWidth = 320;
-
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
-    open?: boolean;
-}>(({ theme }) => ({
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    marginRight: -drawerWidth,
-    position: "relative",
-}));
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-start",
-}));
 
 const BookReader: FC = () => {
     const [open, setOpen] = useState(false);
@@ -115,7 +96,7 @@ const BookReader: FC = () => {
         switch (action) {
             case "next":
                 curPage++;
-                setSwitchBackBookPage({isBack: false});
+                setSwitchBackBookPage({ isBack: false });
                 setCanUpdateBookPage({ update: true });
                 break;
             case "prev":
@@ -134,7 +115,7 @@ const BookReader: FC = () => {
     };
 
     const setPrevPage = () => {
-        setSwitchBackBookPage({isBack: true});
+        setSwitchBackBookPage({ isBack: true });
         removeHiglights();
         changePage(currentPage, "prev");
     };
@@ -208,7 +189,7 @@ const BookReader: FC = () => {
         await setChangePageDisabled(true);
         await refetch();
         await setChangePageDisabled(false);
-        setSwitchBackBookPage({isBack: false});
+        setSwitchBackBookPage({ isBack: false });
     }
 
     const changePageByTimecode = async (timecode: string) => {
@@ -277,84 +258,89 @@ const BookReader: FC = () => {
                 />
             )}
 
-            <Box sx={{ display: "flex", position: "sticky" }}>
-                <CssBaseline />
-                <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
-                    <Toolbar>
-                        <IconButton onClick={setPrevPage} onTouchStart={setPrevPage} sx={{color: 'white'}}>
-                            <ArrowBackIosNewIcon />
-                        </IconButton>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            onClick={openPages}
-                            onTouchStart={openPages}
+            <AppBar position="fixed">
+                <Toolbar>
+                    <IconButton
+                        onClick={setPrevPage}
+                        onTouchStart={setPrevPage}
+                        sx={{ color: "white" }}
+                    >
+                        <ArrowBackIosNewIcon />
+                    </IconButton>
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="div"
+                        onClick={openPages}
+                        onTouchStart={openPages}
+                        className="cursor-pointer"
+                    >
+                        {currentPage}
+                    </Typography>
+                    <IconButton
+                        onClick={setNextPage}
+                        onTouchStart={setNextPage}
+                        sx={{ color: "white" }}
+                    >
+                        <ArrowForwardIosIcon />
+                    </IconButton>
+
+                    {(data &&
+                        data.book.bookmarker &&
+                        data.book.bookmarker == currentPage) ||
+                    isSetBookMarkerOnPage ? (
+                        <div className="cursor-pointer">
+                            <BookmarkIcon />
+                        </div>
+                    ) : (
+                        <div
                             className="cursor-pointer"
+                            onClick={updateBookMarker}
+                            onTouchStart={updateBookMarker}
                         >
-                            {currentPage}
-                        </Typography>
-                        <IconButton onClick={setNextPage} onTouchStart={setNextPage} sx={{color: 'white'}}>
-                            <ArrowForwardIosIcon />
-                        </IconButton>
+                            <BookmarkBorderIcon />
+                        </div>
+                    )}
 
-                        {(data &&
-                            data.book.bookmarker &&
-                            data.book.bookmarker == currentPage) ||
-                        isSetBookMarkerOnPage ? (
-                            <div className="cursor-pointer">
-                                <BookmarkIcon />
-                            </div>
-                        ) : (
-                            
-                            <div
-                                className="cursor-pointer"
-                                onClick={updateBookMarker}
-                                onTouchStart={updateBookMarker}
-                            >
-                                <BookmarkBorderIcon />
-                            </div>
-                        )}
-
-                        {isRead ? (
-                            <div
-                                className="cursor-pointer"
-                                onClick={() => {
-                                    updateRead(false);
-                                }}
-                                onTouchStart={() => {
-                                    updateRead(false);
-                                }}
-                            >
-                                <StarIcon />
-                            </div>
-                        ) : (
-                            <div
-                                className="cursor-pointer"
-                                onClick={() => {
-                                    updateRead(true);
-                                }}
-                                onTouchStart={() => {
-                                    updateRead(true);
-                                }}
-                            >
-                                <StarBorderIcon />
-                            </div>
-                        )}
-                    </Toolbar>
-                </AppBar>
-                <Main open={open}>
-                    <DrawerHeader />
-                        <IconButton 
-                            onClick={nav}
-                            onTouchStart={nav}
-                            sx={{
-                                marginBottom: "15px"
+                    {isRead ? (
+                        <div
+                            className="cursor-pointer"
+                            onClick={() => {
+                                updateRead(false);
+                            }}
+                            onTouchStart={() => {
+                                updateRead(false);
                             }}
                         >
-                            <KeyboardReturnIcon />
-                        </IconButton>
-           
+                            <StarIcon />
+                        </div>
+                    ) : (
+                        <div
+                            className="cursor-pointer"
+                            onClick={() => {
+                                updateRead(true);
+                            }}
+                            onTouchStart={() => {
+                                updateRead(true);
+                            }}
+                        >
+                            <StarBorderIcon />
+                        </div>
+                    )}
+                </Toolbar>
+                
+            </AppBar>
+            <div className="flex justify-center pt-[75px]">
+                <Box sx={{ width: "100%", paddingLeft: "50px", paddingRight: "50px" }}>
+                    <IconButton
+                        onClick={nav}
+                        onTouchStart={nav}
+                        sx={{
+                            marginBottom: "15px",
+                        }}
+                    >
+                        <KeyboardReturnIcon />
+                    </IconButton>
 
                     <div className="lg:w-[82%]">
                         {data && data.book.videoUrl && data.timecodes && (
@@ -363,54 +349,37 @@ const BookReader: FC = () => {
                                 width={drawerWidth ? -drawerWidth : 0}
                                 timecodes={data.timecodes}
                                 onProgressVideo={progressVideo}
-                                onSeek={changePageByTimecode}        
+                                onSeek={changePageByTimecode}
                                 timecodesByString={data.timecodesByString}
                             />
                         )}
                     </div>
-                   
+
                     {data && !isFetching ? (
-                         <div id="scroll-box" className={`lg:w-[82%] flex justify-center ${data?.book.isVideo && 'h-[220px] overflow-auto lg:h-[265px]'}`}>
-                            <div className="lg:w-[500px] flex justify-start lg:justify-center w-[250px]">
-                                <Typography paragraph>
-                                    {HTMLReactParser(data.text)}
-                                </Typography>
-                            </div>
+                        <div
+                            id="scroll-box"
+                            className={`lg:w-[82%] flex justify-center 
+                                ${
+                                    data?.book.isVideo &&
+                                    "h-[220px] overflow-auto lg:h-[265px]"
+                                }`}
+                        >
+                            <Typography paragraph>
+                                {HTMLReactParser(data.text)}
+                            </Typography>
                         </div>
                     ) : (
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
                             <CircularProgress />
                         </Box>
                     )}
-                   
-                </Main>
-
-                <BookDrawer
-                    isOpen={true}
-                    className="ml-[200px] hidden lg:block"
-                    word={currentWord}
-                    width={450}
-                    lang={
-                        data && data.book.langOriginal
-                            ? data.book.langOriginal
-                            : "en"
-                    }
-                    yandexTranslate={() => {
-                        translateWord(currentWord, true);
-                    }}
-                    setYandexData={isExecuteYandexTranslate}
-                    selectTag={() => {
-                        setYandexTranslateExecute(false);
-                    }}
-                />
+                </Box>
 
                 <BookDrawer
                     isOpen={open}
-                    className="block lg:hidden"
                     word={currentWord}
                     showChevron={true}
                     close={handleDrawerClose}
-                    width={drawerWidth}
                     lang={
                         data && data.book.langOriginal
                             ? data.book.langOriginal
@@ -423,8 +392,8 @@ const BookReader: FC = () => {
                     selectTag={() => {
                         setYandexTranslateExecute(false);
                     }}
-                />
-            </Box>
+                />       
+            </div>
         </>
     );
 };

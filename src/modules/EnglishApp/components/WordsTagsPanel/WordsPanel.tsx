@@ -53,6 +53,7 @@ const WordsPanel: FC<IWordsPanel> = ({
     const [words, setWords] = useState<IWordTag[]>([]);
     const [yandexTabValue, setYandexTabValue] = useState(0);
     const [isShowBtnTranslate, setShowBtnTranslate] = useState(false);
+    const [showWords, setShowWords] = useState(false);
 
     const filterWords = (tab: string) => {
         const words = wordsList
@@ -92,10 +93,21 @@ const WordsPanel: FC<IWordsPanel> = ({
     }, [tabs]);
 
     useEffect(() => {
-       if (setYandexData) {
+        if (setYandexData) {
             setShowBtnTranslate(setYandexData);
         }
     }, [setYandexData]);
+
+    useEffect(() => {
+        if (
+            setYandexData ||
+            (wordsList.length > 1 && value !== yandexTabValue)
+        ) {
+            setShowWords(true);
+        } else {
+            setShowWords(false);
+        }
+    }, [wordsList, setYandexData, value, yandexTabValue]);
 
     return (
         <>
@@ -123,34 +135,35 @@ const WordsPanel: FC<IWordsPanel> = ({
             {!isShowBtnTranslate && (
                 <TabPanel value={value} index={yandexTabValue}>
                     <div className="flex justify-center">
-                       
-                            <Button
-                                variant="contained"
-                                size="small"
-                                onClick={yandexTranslate}
-                            >
-                                Перевести
-                            </Button>
-                       
+                        <Button
+                            variant="contained"
+                            size="small"
+                            onClick={yandexTranslate}
+                        >
+                            Перевести
+                        </Button>
                     </div>
                 </TabPanel>
             )}
-            <div className="h-[200px] overflow-auto">
-                {words.map((word) => {
-                    if (word.word) {
-                        return (
-                            <span className="mr-[5px]">
-                                <WordTag
-                                    onClick={selectTag}
-                                    isActive={word.isActive}
-                                >
-                                    {word.word}
-                                </WordTag>
-                            </span>
-                        );
-                    }
-                })}
-            </div>
+
+            {showWords && (
+                <div className="h-[100px] overflow-auto">
+                    {words.map((word) => {
+                        if (word.word) {
+                            return (
+                                <span className="mr-[5px]">
+                                    <WordTag
+                                        onClick={selectTag}
+                                        isActive={word.isActive}
+                                    >
+                                        {word.word}
+                                    </WordTag>
+                                </span>
+                            );
+                        }
+                    })}
+                </div>
+            )}
         </>
     );
 };
