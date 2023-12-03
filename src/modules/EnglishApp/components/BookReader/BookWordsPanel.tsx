@@ -1,7 +1,7 @@
 import { FC } from "react";
 import WordsTagsPanel from "../WordsTagsPanel/WordsTagsPanel";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { Box, Typography, styled } from "@mui/material";
+import { Typography, styled } from "@mui/material";
 
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";

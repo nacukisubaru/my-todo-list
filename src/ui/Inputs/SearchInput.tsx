@@ -25,6 +25,7 @@ const SearchInput: FC<ISearchInput> = ({search, onChange, value}) => {
                 value={value ? value: valueSearch}
                 onChange={change}
                 placeholder="Search"
+                style={{width: '220px'}}
             />
             <button type="submit" className="absolute mt-[2px] -ml-[47px] w-[0px] border-none" onClick={() => {
                 search(inputRef.current.value);
