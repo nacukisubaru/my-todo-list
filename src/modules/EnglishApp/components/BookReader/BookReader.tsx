@@ -97,13 +97,12 @@ const BookReader: FC = () => {
             case "next":
                 curPage++;
                 setSwitchBackBookPage({ isBack: false });
-                setCanUpdateBookPage({ update: true });
                 break;
             case "prev":
                 curPage--;
-                setCanUpdateBookPage({ update: true });
                 break;
         }
+        setCanUpdateBookPage({ update: true });
         setTimecode("");
         searchParams.set("page", new String(curPage).toString());
         setSearchParams(searchParams);
@@ -130,6 +129,7 @@ const BookReader: FC = () => {
 
     const switchPage = async (page: number) => {
         if (!isChangePageDisabled) {
+            setSwitchBackBookPage({ isBack: false });
             changePage(page);
             removeHiglights();
             updateBookData();
@@ -251,6 +251,7 @@ const BookReader: FC = () => {
         <>
             {data && (
                 <BookPages
+                    currentPage={currentPage}
                     countPages={data.countPages}
                     isOpen={isOpenPages}
                     close={closePages}
@@ -260,13 +261,24 @@ const BookReader: FC = () => {
 
             <AppBar position="fixed">
                 <Toolbar>
-                    <IconButton
-                        onClick={setPrevPage}
-                        onTouchStart={setPrevPage}
-                        sx={{ color: "white" }}
-                    >
-                        <ArrowBackIosNewIcon />
-                    </IconButton>
+                    <div className="lg:block hidden">
+                        <IconButton
+                            onClick={setPrevPage}
+                            sx={{ color: "white" }}
+                        >
+                            <ArrowBackIosNewIcon />
+                        </IconButton>
+                    </div>
+
+                    <div className="lg:hidden block">
+                        <IconButton
+                            onTouchStart={setPrevPage}
+                            sx={{ color: "white" }}
+                        >
+                            <ArrowBackIosNewIcon />
+                        </IconButton>
+                    </div>
+
                     <Typography
                         variant="h6"
                         noWrap
@@ -277,13 +289,23 @@ const BookReader: FC = () => {
                     >
                         {currentPage}
                     </Typography>
-                    <IconButton
-                        onClick={setNextPage}
-                        onTouchStart={setNextPage}
-                        sx={{ color: "white" }}
-                    >
-                        <ArrowForwardIosIcon />
-                    </IconButton>
+                    <div className="lg:block hidden"> 
+                        <IconButton
+                            onClick={setNextPage}
+                            sx={{ color: "white" }}
+                        >
+                            <ArrowForwardIosIcon />
+                        </IconButton>
+                    </div>
+
+                    <div className="lg:hidden block"> 
+                        <IconButton
+                            onTouchStart={setNextPage}
+                            sx={{ color: "white" }}
+                        >
+                            <ArrowForwardIosIcon />
+                        </IconButton>
+                    </div>
 
                     {(data &&
                         data.book.bookmarker &&

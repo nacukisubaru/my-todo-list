@@ -100,18 +100,19 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     };
 
     const onProgress = (state: IProgress) => {
-        if (timecodes.length) {
-            const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
-            const timecode = convertSecoundsToTimeString(state.playedSeconds);
-            getTextByTimecode(timecode)
-
-            if (state.playedSeconds > lastTimeCode && !switchBackBookPage) {
-                onProgressVideo("next");
+        if (isInitPlayer) {
+            if (timecodes.length) {
+                const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
+                const timecode = convertSecoundsToTimeString(state.playedSeconds);
+                getTextByTimecode(timecode)
+                
+                if (state.playedSeconds > lastTimeCode && !switchBackBookPage) {
+                    onProgressVideo("next");
+                }
             }
-        }
-     
-        setCurrentDuration(state.playedSeconds);
         
+            setCurrentDuration(state.playedSeconds);
+        } 
     };
 
     const onPlay = () => {
@@ -130,15 +131,12 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
 
     useEffect(() => {
         if (isSlide || canUpdateBookPage) {
-            console.log('sdf')
             ref.current.seekTo(convertTimeStringToSeconds(timecodes[0]));
             setPlay(true);
             setSlide(false);
-            //setCanUpdateBookPage({update: true})
             getTextByTimecode(timecodes[0]);
         }
     }, [timecodes, canUpdateBookPage]);
-
 
     const addClassForFrame = () => {
         const elements = document.getElementsByTagName("iframe");

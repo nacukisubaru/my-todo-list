@@ -4,12 +4,13 @@ import { Button } from "@mui/material";
 
 interface IBookPages {
     countPages: number;
+    currentPage: number;
     isOpen: boolean;
     close: () => void;
     onClick: (page: number) => void;
 }
 
-const BookPages: FC<IBookPages> = ({ countPages = 0, isOpen, close, onClick }) => {
+const BookPages: FC<IBookPages> = ({ countPages = 0, currentPage, isOpen, close, onClick }) => {
     const [pagesList, setPagesList] = useState<number[]>([]);
 
     useEffect(() => {
@@ -35,7 +36,15 @@ const BookPages: FC<IBookPages> = ({ countPages = 0, isOpen, close, onClick }) =
         >
             <div className="flex justify-around flex-wrap">
             {pagesList.length > 0 && pagesList.map((page) => {
-                return <Button variant="contained" size="small" onClick={()=>{onClick(page)}} onTouchStart={()=>{onClick(page)}}>{page}</Button>;
+                return <Button 
+                            variant="contained" 
+                            size="small" 
+                            onClick={()=>{onClick(page)}} 
+                            onTouchStart={()=>{onClick(page)}}
+                            disabled={currentPage === page}
+                        >
+                            {page}
+                        </Button>;
             })}
             </div>
         </Modal>
