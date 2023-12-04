@@ -53,7 +53,6 @@ const WordsPanel: FC<IWordsPanel> = ({
     const [words, setWords] = useState<IWordTag[]>([]);
     const [yandexTabValue, setYandexTabValue] = useState(0);
     const [isShowBtnTranslate, setShowBtnTranslate] = useState(false);
-    const [showWords, setShowWords] = useState(false);
 
     const filterWords = (tab: string) => {
         const words = wordsList
@@ -62,7 +61,7 @@ const WordsPanel: FC<IWordsPanel> = ({
         return words;
     };
 
-    const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+    const handleChange = (newValue: number) => {
         setValue(newValue);
         const words = filterWords(tabs[newValue]);
         setWords(words);
@@ -98,17 +97,6 @@ const WordsPanel: FC<IWordsPanel> = ({
         }
     }, [setYandexData]);
 
-    useEffect(() => {
-        if (
-            setYandexData ||
-            (wordsList.length > 1 && value !== yandexTabValue)
-        ) {
-            setShowWords(true);
-        } else {
-            setShowWords(false);
-        }
-    }, [wordsList, setYandexData, value, yandexTabValue]);
-
     return (
         <>
             <div className="mb-[15px]">
@@ -116,9 +104,8 @@ const WordsPanel: FC<IWordsPanel> = ({
                     value={value}
                     variant="scrollable"
                     scrollButtons="auto"
-                    onChange={handleChange}
                 >
-                    {tabs.map((typeWord) => {
+                    {tabs.map((typeWord, key) => {
                         return (
                             <Tab
                                 label={typeWord}
@@ -126,6 +113,8 @@ const WordsPanel: FC<IWordsPanel> = ({
                                     textTransform: "lowercase",
                                     outline: "none",
                                 }}
+                                onTouchStart={()=> {handleChange(key)}}
+                                onClick={()=> {handleChange(key)}}
                             />
                         );
                     })}
@@ -146,24 +135,22 @@ const WordsPanel: FC<IWordsPanel> = ({
                 </TabPanel>
             )}
 
-            {showWords && (
-                <div className="h-[100px] overflow-auto">
-                    {words.map((word) => {
-                        if (word.word) {
-                            return (
-                                <span className="mr-[5px]">
-                                    <WordTag
-                                        onClick={selectTag}
-                                        isActive={word.isActive}
-                                    >
-                                        {word.word}
-                                    </WordTag>
-                                </span>
-                            );
-                        }
-                    })}
-                </div>
-            )}
+            <div className="lg:h-[600px] max-h-[100px] overflow-auto">
+                {words.map((word) => {
+                    if (word.word) {
+                        return (
+                            <span className="mr-[5px]">
+                                <WordTag
+                                    onClick={selectTag}
+                                    isActive={word.isActive}
+                                >
+                                    {word.word}
+                                </WordTag>
+                            </span>
+                        );
+                    }
+                })}
+            </div>
         </>
     );
 };

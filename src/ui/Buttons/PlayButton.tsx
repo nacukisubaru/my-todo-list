@@ -6,7 +6,7 @@ interface IPlayButton {
 
 const PlayButton:FC<IPlayButton> = ({onClick}) => {
     return (
-        <button className={`p-0  'bg-white' hover:bg-gray-200 h-[28px] active:outline-0 focus:outline-0`} onClick={onClick}>
+        <button className={`p-0  'bg-white' hover:bg-gray-200 h-[28px] active:outline-0 focus:outline-0`} onClick={onClick} onTouchStart={onClick}>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

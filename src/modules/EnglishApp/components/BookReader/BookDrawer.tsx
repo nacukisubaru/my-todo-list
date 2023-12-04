@@ -6,11 +6,11 @@ import BookWordsPanel from "./BookWordsPanel";
 
 interface IBookDrawer {
     word: string;
+    height?: number;
     isOpen: boolean;
     headerBody?: any;
     className?: string;
     lang: string;
-    showChevron?: boolean;
     close?: () => void;
     yandexTranslate?: () => void;
     setYandexData?: boolean;
@@ -30,6 +30,7 @@ const Puller = styled(Box)(({ theme }) => ({
 
 const BookDrawer: FC<IBookDrawer> = ({
     word,
+    height = 900,
     lang,
     close,
     yandexTranslate = () => {},
@@ -40,7 +41,7 @@ const BookDrawer: FC<IBookDrawer> = ({
 
     return (
         <>
-            <div className="hidden lg:block shadow-md h-[900px]">
+            <div className={`hidden lg:block shadow-md h-[${height}px]`}>
                 <div className="px-[15px] py-[15px] w-[500px]">
                     <BookWordsPanel
                         lang={lang}
@@ -53,9 +54,10 @@ const BookDrawer: FC<IBookDrawer> = ({
             </div>
 
             <div
-                className={`block lg:hidden px-[15px] z-[1] h-[330px] w-[100%] md:w-[500px] fixed bg-white ${
+                className={`block lg:hidden px-[15px] z-[1] h-[330px] w-[100%] md:w-[500px]  fixed bg-white ${
                     isOpen ? "translate-y-[0px]" : "-translate-y-[1000px]"
                 } ease-in-out duration-300 ...`}
+                style={{marginTop: "-20px"}}
             >
                 <BookWordsPanel
                     lang={lang}

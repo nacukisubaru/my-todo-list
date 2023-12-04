@@ -130,8 +130,7 @@ const BookList: FC = () => {
                             </Grid>
                         </Toolbar>
                     </AppBar>
-                    <List>
-                        <div className="h-[85%] overflow-auto">
+                    <List className="h-[85%] overflow-auto">
                             {books.map((book) => {
                                 return (
                                     <ListItem>
@@ -146,7 +145,7 @@ const BookList: FC = () => {
                                     </ListItem>
                                 );
                             })}
-                        </div>
+                        
                     </List>
                 </Box>
             </div>

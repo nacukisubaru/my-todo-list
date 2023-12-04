@@ -378,7 +378,7 @@ const BookReader: FC = () => {
                 <BookDrawer
                     isOpen={open}
                     word={currentWord}
-                    showChevron={true}
+                    height={data?.book.isVideo ? 900 : 1500}
                     close={handleDrawerClose}
                     lang={
                         data && data.book.langOriginal

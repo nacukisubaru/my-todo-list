@@ -17,6 +17,7 @@ const WordTag: FC<IWordTag> = ({children, isActive = false, onClick}) => {
             variant={isActive ? "contained" : "outlined"}
             style={{borderRadius:'27px', textTransform: 'lowercase', cursor: 'pointer'}}
             onClick={() => {onClick && onClick(children, isActive)}}
+            onTouchStart={() => {onClick && onClick(children, isActive)}}
         >
             {children}
         </Button>
