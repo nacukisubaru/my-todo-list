@@ -41,7 +41,7 @@ const BookDrawer: FC<IBookDrawer> = ({
 
     return (
         <>
-            <div className={`hidden lg:block shadow-md h-[${height}px]`}>
+            <div className={`hidden lg:block shadow-md `} style={{height: height + 'px'}}>
                 <div className="px-[15px] py-[15px] w-[500px]">
                     <BookWordsPanel
                         lang={lang}

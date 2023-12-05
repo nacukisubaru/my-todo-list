@@ -135,7 +135,7 @@ const WordsPanel: FC<IWordsPanel> = ({
                 </TabPanel>
             )}
 
-            <div className="lg:h-[600px] max-h-[100px] overflow-auto">
+            <div className="lg:h-[600px] lg:max-h-[600px] max-h-[100px] overflow-auto">
                 {words.map((word) => {
                     if (word.word) {
                         return (
