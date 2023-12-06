@@ -153,7 +153,7 @@ const DictionaryWords = () => {
     const navigate = useNavigate();
     useEffect(() => {
         const beginTraining = async () => {
-            let countTrainingWords = 10;
+            let countTrainingWords = 5;
             if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length) || trainingWords.length === countTrainingWords) {
                 await setDictionary(shuffle(trainingWords));
                 setTrainingDictionaryWords({isTraining: true});
