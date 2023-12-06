@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";;
 import Typography from "@mui/material/Typography";
 import BookDrawer from "./BookDrawer";
 import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
@@ -8,14 +7,8 @@ import HTMLReactParser from "html-react-parser";
 import { fullTranslate } from "../../store/services/dictionary/dictionary.slice";
 import { useAppDispatch } from "../../hooks/useAppSelector";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import BookPages from "./BookPages";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import StarIcon from "@mui/icons-material/Star";
 import "./css/style.css";
 import YoutubeVideoReader from "./YoutubeVideoReader";
 import { useActions } from "../../hooks/useAction";
@@ -23,30 +16,32 @@ import { useFilterBooks } from "../../hooks/useFilterBooks";
 import { setTitle } from "../../../../helpers/domHelper";
 import { CircularProgress, IconButton } from "@mui/material";
 import { AppBar } from "@mui/material";
+import BookToolBar from "./BookToolBar";
 
 const drawerWidth = 320;
 
 const BookReader: FC = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [open, setOpen] = useState(false);
     const { id } = useParams();
-    const [currentPage, setPage] = useState(1);
+    const [currentPage, setPage] = useState<any>(searchParams.get("page") ? searchParams.get("page") : 1);
+    const [currentBookmarker, setCurrentBookmarker] = useState(0);
     const [currentWord, setCurrentWord] = useState("");
     const [isOpenPages, setOpenPages] = useState(false);
-    const [searchParams, setSearchParams] = useSearchParams();
+   
     const [isExecuteYandexTranslate, setYandexTranslateExecute] =
         useState(false);
     const navigate = useNavigate();
-    const [isSetBookMarkerOnPage, setBookMarkerOnPage] = useState(false);
     const [isRead, setRead] = useState(false);
     const [timecode, setTimecode] = useState("");
-    const [isChangePageDisabled, setChangePageDisabled] = useState(false);
 
     const [updBookmarker] = bookReaderApi.useUpdateBookmarkerMutation();
     const [updRead] = bookReaderApi.useUpdateReadMutation();
 
     const [isMount, setMount] = useState(false);
-    const [isInitBookData, setInitBookData] = useState(false);
-    const { setCanUpdateBookPage, setSwitchBackBookPage } = useActions();
+    const { setSwitchBackBookPage } = useActions();
+    const [isSkip, setSkip] = useState(false);
+    const [canSeekVideoByTimecodes, setCanSeekVideoByTimecodes] = useState(false);
 
     const { filtrate } = useFilterBooks();
 
@@ -56,25 +51,7 @@ const BookReader: FC = () => {
         limitOnPage: searchParams.get("getVideo") ? 100 : 700,
         getVideo: searchParams.get("getVideo") ? true : false,
         timecode,
-    });
-
-    useEffect(() => {
-        let page: number | string | null = searchParams.get("page");
-        if (page) {
-            page = parseInt(page);
-            if (
-                (data && data.countPages && page <= data.countPages) ||
-                !isMount
-            ) {
-                if (page > 0) {
-                    setPage(page);
-                }
-            } else {
-                setPage(1);
-            }
-        }
-        setMount(true);
-    }, [searchParams]);
+    }, {skip: isSkip});
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -96,13 +73,12 @@ const BookReader: FC = () => {
         switch (action) {
             case "next":
                 curPage++;
-                setSwitchBackBookPage({ isBack: false });
-                break;
+            break;
             case "prev":
                 curPage--;
-                break;
+            break;
         }
-        setCanUpdateBookPage({ update: true });
+      
         setTimecode("");
         searchParams.set("page", new String(curPage).toString());
         setSearchParams(searchParams);
@@ -111,12 +87,14 @@ const BookReader: FC = () => {
     const setNextPage = () => {
         removeHiglights();
         changePage(currentPage, "next");
+        setCanSeekVideoByTimecodes(true);
     };
 
     const setPrevPage = () => {
         setSwitchBackBookPage({ isBack: true });
         removeHiglights();
         changePage(currentPage, "prev");
+        setCanSeekVideoByTimecodes(true);
     };
 
     const openPages = () => {
@@ -128,18 +106,15 @@ const BookReader: FC = () => {
     };
 
     const switchPage = async (page: number) => {
-        if (!isChangePageDisabled) {
-            setSwitchBackBookPage({ isBack: false });
-            changePage(page);
-            removeHiglights();
-            updateBookData();
-        }
+        changePage(page);
+        removeHiglights();
+        setCanSeekVideoByTimecodes(true);
     };
 
     const updateBookMarker = () => {
         if (id) {
             updBookmarker({ id: +id, bookmarker: currentPage });
-            setBookMarkerOnPage(true);
+            setCurrentBookmarker(currentPage);
         }
     };
 
@@ -150,10 +125,6 @@ const BookReader: FC = () => {
             setRead(isRead);
         }
     };
-
-    useEffect(() => {
-        updateBookData();
-    }, [currentPage]);
 
     const dispatch = useAppDispatch();
 
@@ -185,17 +156,47 @@ const BookReader: FC = () => {
         }
     };
 
-    const updateBookData = async () => {
-        await setChangePageDisabled(true);
-        await refetch();
-        await setChangePageDisabled(false);
-        setSwitchBackBookPage({ isBack: false });
+    const changePageByTimecode = async (timecode: string) => {
+        await setSkip(true);
+        await setTimecode(timecode);
+        await setSkip(false);
+        const fetchedData = await refetch();
+        if (fetchedData.data) {
+            changePage(fetchedData.data.page);
+        }
+        setCanSeekVideoByTimecodes(false);
+    };
+
+    const progressVideo = (action: string) => {
+        if (action === "next") {
+            setNextPage();
+        } else {
+            setPrevPage();
+        }
     }
 
-    const changePageByTimecode = async (timecode: string) => {
-        await setTimecode(timecode);
-        updateBookData();
-    };
+    const nav = async () => {
+        await filtrate(1, false);
+        navigate("/englishApp/books");
+    }
+
+    useEffect(() => {
+        let page: number | string | null = searchParams.get("page");
+        if (page) {
+            page = parseInt(page);
+            if (
+                (data && data.countPages && page <= data.countPages) ||
+                !isMount
+            ) {
+                if (page > 0) {
+                    setPage(page);
+                }
+            } else {
+                setPage(1);
+            }
+        }
+        setMount(true);
+    }, [searchParams]);
 
     useEffect(() => {
         if (data && !isFetching) {
@@ -223,29 +224,14 @@ const BookReader: FC = () => {
                     element.ontouchstart = func;
                 }
             }
-            setBookMarkerOnPage(false);
+            if (!currentBookmarker) {
+                setCurrentBookmarker(data.book.bookmarker);
+            }
             if (data) {
                 setRead(data.book.isRead);
-                if (isInitBookData) {
-                    changePage(data.page);
-                }
             }
-            setInitBookData(true);
         }
     }, [data, isFetching]);
-
-    const progressVideo = (action: string) => {
-        if (action === "next") {
-            setNextPage();
-        } else {
-            setPrevPage();
-        }
-    }
-
-    const nav = async () => {
-        await filtrate(1, false);
-        navigate("/englishApp/books");
-    }
 
     return (
         <>
@@ -260,96 +246,16 @@ const BookReader: FC = () => {
             )}
 
             <AppBar position="fixed">
-                <Toolbar>
-                    <div className="lg:block hidden">
-                        <IconButton
-                            onClick={setPrevPage}
-                            sx={{ color: "white" }}
-                        >
-                            <ArrowBackIosNewIcon />
-                        </IconButton>
-                    </div>
-
-                    <div className="lg:hidden block">
-                        <IconButton
-                            onTouchStart={setPrevPage}
-                            sx={{ color: "white" }}
-                        >
-                            <ArrowBackIosNewIcon />
-                        </IconButton>
-                    </div>
-
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        onClick={openPages}
-                        onTouchStart={openPages}
-                        className="cursor-pointer"
-                    >
-                        {currentPage}
-                    </Typography>
-                    <div className="lg:block hidden"> 
-                        <IconButton
-                            onClick={setNextPage}
-                            sx={{ color: "white" }}
-                        >
-                            <ArrowForwardIosIcon />
-                        </IconButton>
-                    </div>
-
-                    <div className="lg:hidden block"> 
-                        <IconButton
-                            onTouchStart={setNextPage}
-                            sx={{ color: "white" }}
-                        >
-                            <ArrowForwardIosIcon />
-                        </IconButton>
-                    </div>
-
-                    {(data &&
-                        data.book.bookmarker &&
-                        data.book.bookmarker == currentPage) ||
-                    isSetBookMarkerOnPage ? (
-                        <div className="cursor-pointer">
-                            <BookmarkIcon />
-                        </div>
-                    ) : (
-                        <div
-                            className="cursor-pointer"
-                            onClick={updateBookMarker}
-                            onTouchStart={updateBookMarker}
-                        >
-                            <BookmarkBorderIcon />
-                        </div>
-                    )}
-
-                    {isRead ? (
-                        <div
-                            className="cursor-pointer"
-                            onClick={() => {
-                                updateRead(false);
-                            }}
-                            onTouchStart={() => {
-                                updateRead(false);
-                            }}
-                        >
-                            <StarIcon />
-                        </div>
-                    ) : (
-                        <div
-                            className="cursor-pointer"
-                            onClick={() => {
-                                updateRead(true);
-                            }}
-                            onTouchStart={() => {
-                                updateRead(true);
-                            }}
-                        >
-                            <StarBorderIcon />
-                        </div>
-                    )}
-                </Toolbar>
+                <BookToolBar 
+                    setPrevPage={setPrevPage} 
+                    openPages={openPages}
+                    setNextPage={setNextPage} 
+                    updateRead={updateRead} 
+                    updateBookMarker={updateBookMarker} 
+                    currentPage={currentPage} 
+                    isRead={isRead}
+                    bookmarker={currentBookmarker}
+                />
                 
             </AppBar>
             <div className="flex justify-center pt-[75px]">
@@ -373,6 +279,7 @@ const BookReader: FC = () => {
                                 onProgressVideo={progressVideo}
                                 onSeek={changePageByTimecode}
                                 timecodesByString={data.timecodesByString}
+                                canSeekVideoByTimecodes={canSeekVideoByTimecodes}
                             />
                         )}
                     </div>

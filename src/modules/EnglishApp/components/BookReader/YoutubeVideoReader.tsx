@@ -21,6 +21,7 @@ interface IYoutubeVideoReader {
     width?: number;
     timecodes: string[];
     timecodesByString: ITimecodeByString[];
+    canSeekVideoByTimecodes: boolean;
     onProgressVideo: (action: string) => void;
     onSeek: (timecode: string) => void;
 }
@@ -30,8 +31,9 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     width = 600,
     timecodes = [],
     timecodesByString,
+    canSeekVideoByTimecodes = false,
     onProgressVideo,
-    onSeek,
+    onSeek
 }) => {
     const ref: any = useRef(0);
     const [maxDuration, setMaxDuration] = useState(0);
@@ -40,10 +42,9 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     const [isSlide, setSlide] = useState(true);
     const [isInitPlayer, setInitPlayer] = useState(false);
     const [prevTimecodesStrings, setPrevTimecodesStrings] = useState<ITimecodeByString[]>([]);
-    const [currentActiveSubtitle, setCurrentActiveSubtitle] = useState("");
 
-    const {setCanUpdateBookPage} = useActions();
-    const {canUpdateBookPage, switchBackBookPage} = useAppSelector(state => state.bookReaderReducer);
+    const { setSwitchBackBookPage } = useActions();
+    const { switchBackBookPage } = useAppSelector(state => state.bookReaderReducer);
 
     const getTextByTimecode = (timecode: string) => {
 
@@ -78,13 +79,10 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
             if (!timecodeString) {
                 timecodeString = timecodeStrings[0];
             }
-
-            if (timecodeString.spanIds !== currentActiveSubtitle) {
-                setCurrentActiveSubtitle(timecodeString.spanIds);
-                const span = document.getElementById(timecodeString.spanIds);
-                if (span) {
-                   span.scrollIntoView({ behavior: "smooth", block: 'start'});
-                }
+       
+            const span = document.getElementById(timecodeString.spanIds);
+            if (span) {
+                span.scrollIntoView({ behavior: "smooth", block: 'start'});
             }
         }
     }
@@ -93,7 +91,6 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
         const target: any = event.target;
         ref.current.seekTo(target.value);
         const timecode = convertSecoundsToTimeString(target.value);
-        setCanUpdateBookPage({update: false});
         getTextByTimecode(timecode)
         setPlay(true);
         onSeek(timecode);
@@ -105,9 +102,10 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
                 const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
                 const timecode = convertSecoundsToTimeString(state.playedSeconds);
                 getTextByTimecode(timecode)
-                
-                if (state.playedSeconds > lastTimeCode && !switchBackBookPage) {
+                if (state.playedSeconds > lastTimeCode && !switchBackBookPage) {                   
                     onProgressVideo("next");
+                } else {
+                    setSwitchBackBookPage({ isBack: false });
                 }
             }
         
@@ -130,13 +128,13 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
     };
 
     useEffect(() => {
-        if (isSlide || canUpdateBookPage) {
+        if (isSlide || canSeekVideoByTimecodes) {
             ref.current.seekTo(convertTimeStringToSeconds(timecodes[0]));
             setPlay(true);
             setSlide(false);
             getTextByTimecode(timecodes[0]);
         }
-    }, [timecodes, canUpdateBookPage]);
+    }, [timecodes, canSeekVideoByTimecodes]);
 
     const addClassForFrame = () => {
         const elements = document.getElementsByTagName("iframe");
@@ -145,27 +143,27 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
         }
     }
 
-    const rewindBack = () => {
+    const rewindBack = async () => {
         const duration = currentDuration - 10;
-        if (duration < convertTimeStringToSeconds(timecodes[0]) ) {
-            onProgressVideo("prev");
-        }
-        ref.current.seekTo(duration)
         const timecode = convertSecoundsToTimeString(duration);
+        ref.current.seekTo(duration)
         getTextByTimecode(timecode)
         setCurrentDuration(duration);
+        if (duration < convertTimeStringToSeconds(timecodes[0]) ) {
+            onSeek(timecode);
+        }
     }
 
-    const rewindForward = () => {
-        const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
+    const rewindForward = async() => {
+        const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);       
         const duration = currentDuration + 10;
-        if (duration >= lastTimeCode ) {
-            onProgressVideo("next");
-        }
-        ref.current.seekTo(duration)
         const timecode = convertSecoundsToTimeString(duration);
+        ref.current.seekTo(duration)
         getTextByTimecode(timecode)
-        setCurrentDuration(duration); 
+        setCurrentDuration(duration);
+        if (duration >= lastTimeCode ) {
+            onSeek(timecode);
+        }
     }
 
     return (

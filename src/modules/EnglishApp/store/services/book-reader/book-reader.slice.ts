@@ -4,7 +4,6 @@ import { thunkAxiosGet } from "../../../../../helpers/queryHelper";
 interface IState {
     books: IBookList[],
     booksFilter: IBooksFilter,
-    canUpdateBookPage: boolean,
     switchBackBookPage: boolean
     page: number,
     status: string,
@@ -22,7 +21,6 @@ const initialState: IState = {
         page: 0,
         langOriginal: "en"
     },
-    canUpdateBookPage: false,
     switchBackBookPage: false,
     page: 0,
     pages: 0,
@@ -46,9 +44,6 @@ export const bookReaderSlice = createSlice({
         },
         resetBooks: (state) => {
             state.books = [];
-        },
-        setCanUpdateBookPage: (state, action: PayloadAction<{update: boolean}>) => {
-            state.canUpdateBookPage = action.payload.update;
         },
         setSwitchBackBookPage: (state, action: PayloadAction<{isBack: boolean}>) => {
             state.switchBackBookPage = action.payload.isBack;
