@@ -88,40 +88,42 @@ const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
                     secondaryBtnClick: closeForm,
                 }}
             >
-                <Box sx={{ marginBottom: "10px" }}>
-                    <TextField
-                        label="Название книги"
-                        {...register("name")}
-                        fullWidth
-                    />
-                </Box>
-                <Box sx={{ marginBottom: "10px" }}>
-                    <TextField
-                        label="Ссылка на видео"
-                        {...register("url")}
-                        fullWidth
-                    />
-                </Box>
-                <Box sx={{ marginBottom: "10px" }}>
-                    <BasicSelect
-                        options={studyLangsSelector}
-                        label="Выбрать язык книги"
-                        onChange={changeBookLang}
-                        selectedOption={bookLang}
-                    />
-                </Box>
-                <Box sx={{ marginBottom: "10px" }}>
-                    <BasicSelect
-                        options={langsForStudySelector}
-                        label="Выбрать язык перевода"
-                        onChange={changeTranslationLang}
-                        selectedOption={translateLang}
-                    />
-                </Box>
-                <Box sx={{ marginBottom: "10px" }}>
-                    <a href="https://downsub.com/" target="_blank">Скачать субтитры</a>
-                </Box>
-                <InputFileUpload onChange={uploadFile} />
+                <div className="text-left">
+                    <Box sx={{ marginBottom: "10px" }}>
+                        <TextField
+                            label="Название книги"
+                            {...register("name")}
+                            fullWidth
+                        />
+                    </Box>
+                    <Box sx={{ marginBottom: "10px" }}>
+                        <TextField
+                            label="Ссылка на видео"
+                            {...register("url")}
+                            fullWidth
+                        />
+                    </Box>
+                    <Box sx={{ marginBottom: "10px" }}>
+                        <BasicSelect
+                            options={studyLangsSelector}
+                            label="Выбрать язык книги"
+                            onChange={changeBookLang}
+                            selectedOption={bookLang}
+                        />
+                    </Box>
+                    <Box sx={{ marginBottom: "10px" }}>
+                        <BasicSelect
+                            options={langsForStudySelector}
+                            label="Выбрать язык перевода"
+                            onChange={changeTranslationLang}
+                            selectedOption={translateLang}
+                        />
+                    </Box>
+                    <Box sx={{ marginBottom: "10px" }}>
+                        <a href="https://downsub.com/" target="_blank">Скачать субтитры</a>
+                    </Box>
+                    <InputFileUpload onChange={uploadFile} />
+                </div>
             </Modal>
         </>
     );
