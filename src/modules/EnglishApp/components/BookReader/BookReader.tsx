@@ -108,7 +108,6 @@ const BookReader: FC = () => {
     const switchPage = async (page: number) => {
         changePage(page);
         removeHiglights();
-        setCanSeekVideoByTimecodes(true);
     };
 
     const updateBookMarker = () => {
@@ -237,7 +236,7 @@ const BookReader: FC = () => {
 
     return (
         <>
-            {data && (
+            {data && !data.book.isVideo && (
                 <BookPages
                     currentPage={currentPage}
                     countPages={data.countPages}
