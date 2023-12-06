@@ -4,6 +4,7 @@ import {
     AppBar,
     Box,
     Grid,
+    IconButton,
     List,
     ListItem,
     ListItemButton,
@@ -18,6 +19,8 @@ import AddIcon from '@mui/icons-material/Add';
 import AddBook from "./AddBook";
 import { queryBuilder } from "../../../../helpers/queryHelper";
 import { setTitle } from "../../../../helpers/domHelper";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
 
 const BookList: FC = () => {
     const { filtrate, books, pages, booksFilter, setBooksFilter, filterStorage } =
@@ -26,6 +29,8 @@ const BookList: FC = () => {
     const navigate = useNavigate();
     const [isInitFilter, setInitFilter] = useState(false);
     const [isOpenAddBook, setOpenAddBook] = useState(false);
+    const [remove] = bookReaderApi.useRemoveBookMutation();
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         setTitle('Книги список');
@@ -42,6 +47,7 @@ const BookList: FC = () => {
 
     const changePage = (page: number) => {
         filtrate(page, false);
+        setCurrentPage(page);
     };
 
     const closeFilter = () => {
@@ -65,6 +71,11 @@ const BookList: FC = () => {
         }
 
         return navigate(queryBuilder(link, arrayParams, true));    
+    }
+
+    const removeBook = async (bookId: number) => {
+        await remove({id: bookId});
+        filtrate(currentPage, false);
     }
 
     return (
@@ -143,6 +154,9 @@ const BookList: FC = () => {
                                         >
                                             {book.name}
                                         </ListItemButton>
+                                        <IconButton onClick={() => {removeBook(book.id)}}>
+                                            <DeleteIcon />
+                                        </IconButton>
                                     </ListItem>
                                 );
                             })}

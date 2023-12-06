@@ -32,5 +32,12 @@ export const bookReaderApi = createApi({
                 body
             }),
         }),
+        removeBook: build.mutation({
+            query: (body: {id: number}) => ({
+                url: '/book-reader/remove',
+                method: 'DELETE',
+                body
+            }),
+        }),
     })
 });
