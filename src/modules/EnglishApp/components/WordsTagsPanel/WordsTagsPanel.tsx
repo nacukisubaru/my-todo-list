@@ -152,6 +152,7 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
                             )}
                             yandexTranslate={yandexTranslate}
                             setYandexData={setYandexData}
+                            forBook={forBook}
                         />
                     </div>
                     {saveTags && (

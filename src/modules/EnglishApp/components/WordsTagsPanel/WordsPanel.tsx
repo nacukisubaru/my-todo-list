@@ -14,6 +14,7 @@ interface IWordsPanel {
     selectTag?: (word: string, isRemove: boolean) => void;
     yandexTranslate?: () => void;
     setYandexData?: boolean;
+    forBook?: boolean;
 }
 
 interface TabPanelProps {
@@ -46,6 +47,7 @@ const WordsPanel: FC<IWordsPanel> = ({
     wordsList,
     tabs,
     setYandexData = false,
+    forBook = false,
     selectTag,
     yandexTranslate = () => {},
 }) => {
@@ -135,7 +137,7 @@ const WordsPanel: FC<IWordsPanel> = ({
                 </TabPanel>
             )}
 
-            <div className="lg:h-[600px] lg:max-h-[600px] max-h-[100px] overflow-auto">
+            <div className={`lg:h-[600px] ${forBook && 'lg:max-h-[600px]'} max-h-[100px] overflow-auto`}>
                 {words.map((word) => {
                     if (word.word) {
                         return (

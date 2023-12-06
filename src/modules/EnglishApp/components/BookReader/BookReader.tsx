@@ -39,7 +39,7 @@ const BookReader: FC = () => {
     const [updRead] = bookReaderApi.useUpdateReadMutation();
 
     const [isMount, setMount] = useState(false);
-    const { setSwitchBackBookPage } = useActions();
+    const { setSwitchBackBookPage, resetFullTranslateList } = useActions();
     const [isSkip, setSkip] = useState(false);
     const [canSeekVideoByTimecodes, setCanSeekVideoByTimecodes] = useState(false);
 
@@ -177,6 +177,8 @@ const BookReader: FC = () => {
 
     const nav = async () => {
         await filtrate(1, false);
+        resetFullTranslateList();
+        setOpen(false);
         navigate("/englishApp/books");
     }
 
