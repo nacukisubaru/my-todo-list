@@ -58,6 +58,7 @@ const BookList: FC = () => {
         const arrayParams: any = {};
         if (book.bookmarker) {
             arrayParams.page = book.bookmarker;
+            arrayParams.bookmarker = book.bookmarker;
         }
         if (book.isVideo) {
             arrayParams.getVideo = true;

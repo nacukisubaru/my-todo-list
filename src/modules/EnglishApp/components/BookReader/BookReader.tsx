@@ -25,7 +25,7 @@ const BookReader: FC = () => {
     const [open, setOpen] = useState(false);
     const { id } = useParams();
     const [currentPage, setPage] = useState<any>(searchParams.get("page") ? searchParams.get("page") : 1);
-    const [currentBookmarker, setCurrentBookmarker] = useState(0);
+    const [currentBookmarker, setCurrentBookmarker] = useState(searchParams.get("bookmarker") ? searchParams.get("bookmarker") : 0);
     const [currentWord, setCurrentWord] = useState("");
     const [isOpenPages, setOpenPages] = useState(false);
    
