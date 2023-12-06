@@ -16,6 +16,7 @@ import SearchInput from "../../../../ui/Inputs/SearchInput";
 import { useActions } from "../../hooks/useAction";
 import useLocalStorageState from "use-local-storage-state";
 import { setTitle } from "../../../../helpers/domHelper";
+import { useNavigate } from "react-router-dom";
 
 const DictionaryWords = () => {
     const { dictionary, status } = useAppSelector(
@@ -43,8 +44,10 @@ const DictionaryWords = () => {
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
+    const [trainingWords, setTrainingWord] = useState<IDictionary[]>([]);
+
     const dispatch = useAppDispatch();
-    const { resetDictionary } = useActions();
+    const { resetDictionary, setDictionary, setTrainingDictionaryWords } = useActions();
     const [filterStorage] = useLocalStorageState("filter", {
         defaultValue: [filterDictionary],
     });
@@ -145,6 +148,19 @@ const DictionaryWords = () => {
         //     searchByTranslate: "",
         // });
     };
+    
+    const navigate = useNavigate();
+    useEffect(() => {
+        const beginTraining = async () => {
+            if (trainingWords.length === 5) {
+                await setDictionary(trainingWords);
+                setTrainingDictionaryWords({isTraining: true});
+                navigate('/englishApp/trainer');  
+            }
+        }
+
+        beginTraining();
+    }, [trainingWords]);
 
     const targetRef: any = useObserverScroll(fetchData, page, true);
     return (
@@ -169,6 +185,7 @@ const DictionaryWords = () => {
                                 <div
                                     className="my-[12px]"
                                     onClick={() => {
+                                        setTrainingWord([...trainingWords, word]);
                                         showDictionaryCard(word.id);
                                     }}
                                 >

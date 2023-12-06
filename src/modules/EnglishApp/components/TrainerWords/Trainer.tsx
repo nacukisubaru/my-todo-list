@@ -8,11 +8,12 @@ import Card from "../../../../ui/Cards/Card";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import TrainerWords from "./TrainerWords";
+import { useNavigate } from "react-router-dom";
 
 const Trainer = () => {
     const dispatch = useAppDispatch();
     const { resetDictionary } = useActions();
-    const { dictionary, error, dictionaryActiveSettings } = useAppSelector(
+    const { dictionary, error, dictionaryActiveSettings, trainingDictionaryWords } = useAppSelector(
         (state) => state.dictionaryReducer
     );
     const [pagination, setPagination] = useState<{
@@ -28,6 +29,7 @@ const Trainer = () => {
     const [trainingIsPassed, setPassTraining] = useState(false);
     const [inputWord, setInputWord] = useState<any>("");
     const [score, setScore] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(getLanguages());
@@ -48,14 +50,18 @@ const Trainer = () => {
     useEffect(() => {
         if (pagination.start > 0 && pagination.limit > 1) {
             if (!dictionary.slice(pagination.start, pagination.limit).length) {
-                setPage(page + 1);
-                const params: IGetDictionaryListParams = {
-                    page: page + 1,
-                    languageOriginal: dictionaryActiveSettings.sourceLanguage,
-                    languageTranslation: dictionaryActiveSettings.targetLanguage,
-                    studyStage: ['BEING_STUDIED']
-                };
-                dispatch(getDictionaryByUser(params));
+                if (!trainingDictionaryWords) {
+                    setPage(page + 1);
+                    const params: IGetDictionaryListParams = {
+                        page: page + 1,
+                        languageOriginal: dictionaryActiveSettings.sourceLanguage,
+                        languageTranslation: dictionaryActiveSettings.targetLanguage,
+                        studyStage: ['BEING_STUDIED']
+                    };
+                    dispatch(getDictionaryByUser(params));
+                } else {
+                    setTrainingEnd(true);
+                }
             }
         }
     }, [pagination]);
@@ -67,6 +73,9 @@ const Trainer = () => {
     }, [error]);
 
     const trainingAgain = async () => {
+        if (trainingDictionaryWords) {
+            navigate('/englishApp');
+        }
         const params: IGetDictionaryListParams = {
             page: 0,
             languageOriginal: dictionaryActiveSettings.sourceLanguage,
@@ -125,16 +134,19 @@ const Trainer = () => {
 
     const startTraining = async () => {
         setTrainingStart(true);
-        const params: IGetDictionaryListParams = {
-            page,
-            languageOriginal: dictionaryActiveSettings.sourceLanguage,
-            languageTranslation: dictionaryActiveSettings.targetLanguage,
-            studyStage: ['BEING_STUDIED']
-        };
-        await resetDictionary();
-        dispatch(getDictionaryByUser(params));
+        if (!trainingDictionaryWords) {
+            const params: IGetDictionaryListParams = {
+                page,
+                languageOriginal: dictionaryActiveSettings.sourceLanguage,
+                languageTranslation: dictionaryActiveSettings.targetLanguage,
+                studyStage: ['BEING_STUDIED']
+            };
+            await resetDictionary();
+            dispatch(getDictionaryByUser(params));
+        }
     };
 
+    
     return (
         <div className="display flex justify-center">
             <div className="mt-[90px]">
@@ -163,7 +175,7 @@ const Trainer = () => {
                                 </div>
                                 <div className="display flex justify-center">
                                     <BasicButton
-                                        name="Начать заново"
+                                        name={!trainingDictionaryWords ?  "Начать заново" : "Вернутся в словарь"}
                                         color="primary"
                                         onClick={trainingAgain}
                                     />
