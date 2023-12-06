@@ -17,6 +17,7 @@ import { useActions } from "../../hooks/useAction";
 import useLocalStorageState from "use-local-storage-state";
 import { setTitle } from "../../../../helpers/domHelper";
 import { useNavigate } from "react-router-dom";
+import { shuffle } from "../../../../helpers/arrayHelper";
 
 const DictionaryWords = () => {
     const { dictionary, status } = useAppSelector(
@@ -152,8 +153,9 @@ const DictionaryWords = () => {
     const navigate = useNavigate();
     useEffect(() => {
         const beginTraining = async () => {
-            if (trainingWords.length === 5) {
-                await setDictionary(trainingWords);
+            let countTrainingWords = 10;
+            if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length) || trainingWords.length === countTrainingWords) {
+                await setDictionary(shuffle(trainingWords));
                 setTrainingDictionaryWords({isTraining: true});
                 navigate('/englishApp/trainer');  
             }
@@ -185,7 +187,9 @@ const DictionaryWords = () => {
                                 <div
                                     className="my-[12px]"
                                     onClick={() => {
-                                        setTrainingWord([...trainingWords, word]);
+                                        if (!trainingWords.includes(word)) {
+                                            setTrainingWord([...trainingWords, word]);
+                                        }
                                         showDictionaryCard(word.id);
                                     }}
                                 >

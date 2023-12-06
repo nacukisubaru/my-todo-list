@@ -9,11 +9,12 @@ import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import TrainerWords from "./TrainerWords";
 import { useNavigate } from "react-router-dom";
+import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 
 const Trainer = () => {
     const dispatch = useAppDispatch();
     const { resetDictionary } = useActions();
-    const { dictionary, error, dictionaryActiveSettings, trainingDictionaryWords } = useAppSelector(
+    const { dictionary, dictionaryActiveSettings, trainingDictionaryWords } = useAppSelector(
         (state) => state.dictionaryReducer
     );
     const [pagination, setPagination] = useState<{
@@ -29,6 +30,12 @@ const Trainer = () => {
     const [trainingIsPassed, setPassTraining] = useState(false);
     const [inputWord, setInputWord] = useState<any>("");
     const [score, setScore] = useState(0);
+    const [incorrectWords, setIncorrectWord] = useState<IDictionary[]>([]);
+    const [countWords, setCountWords] = useState(0);
+    const [currentWord, setCurrentWord] = useState<IDictionary | null>(null);
+    const [initTrainer, setInitTrainer] = useState(false);
+    const [isExistWrongWord, setExistWrongWord] = useState(false);
+    const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,15 +44,50 @@ const Trainer = () => {
     }, []);
 
     const switchWord = () => {
-        setPagination({
-            start: pagination.start + 1,
-            limit: pagination.limit + 1,
-        });
+        const changeCurrentWord = () => {
+            setCountWords(countWords + 1);
+            const start = pagination.start + 1;
+            const limit = pagination.limit + 1;
+
+            setPagination({
+                start,
+                limit
+            });
+
+            const words = dictionary.slice(start, limit);
+            if (words.length) {
+                setCurrentWord(words[0]);
+            } else {
+                if (incorrectWords.length) {
+                    setCurrentWord(incorrectWords.reverse()[0]);
+                } else {
+                    setTrainingEnd(true);
+                }
+            }
+        }
+
+        if (!isExistWrongWord || (isExistWrongWord && countWords < 2)) {
+            changeCurrentWord();
+        } else {
+            if (incorrectWords.length) {
+                setCurrentWord(incorrectWords.reverse()[0]);
+            } else {
+                changeCurrentWord();
+            }
+        }
+
         setPassTraining(false);
         setCorrectWord("");
         setWrongWord("");
         setInputWord("");
     };
+
+    useEffect(() => {
+        if (!incorrectWords.length) {
+            setCountWords(0);
+            setExistWrongWord(false);
+        }
+    }, [incorrectWords]);
 
     useEffect(() => {
         if (pagination.start > 0 && pagination.limit > 1) {
@@ -59,18 +101,10 @@ const Trainer = () => {
                         studyStage: ['BEING_STUDIED']
                     };
                     dispatch(getDictionaryByUser(params));
-                } else {
-                    setTrainingEnd(true);
                 }
             }
         }
     }, [pagination]);
-
-    useEffect(() => {
-        if (error && error.statusCode === 404) {
-            setTrainingEnd(true);
-        }
-    }, [error]);
 
     const trainingAgain = async () => {
         if (trainingDictionaryWords) {
@@ -91,8 +125,9 @@ const Trainer = () => {
         setTrainingStart(true);
     };
 
-    const checkWord = (word: string) => {
-        let checkWord: any = word.toLowerCase();
+    const checkWord = (word: IDictionary) => {
+        const translatedWord:any = word.translatedWord;
+        let checkWord: any = translatedWord.toLowerCase();
         let worngWord = "";
         let correctWord = "";
         if (inputWord) {
@@ -118,15 +153,24 @@ const Trainer = () => {
 
             if (checkWord !== inputWord) {
                 if (inputWord.length < checkWord.length) {
+                    setExistWrongWord(true);
                     setWrongWord(
                         `<span style="color:red;">${worngWord}</span>`
                     );
+                    if (incorrectWords.includes(word)) {
+                        setIncorrectWord(incorrectWords.filter((incorrectWord) => incorrectWord.id !== word.id));
+                    } else {
+                        setIncorrectWord([...incorrectWords, word]);
+                    }
                 } else {
                     setWrongWord(worngWord);
                 }
             } else {
+                updStudyStage({id: word.id, studyStage: 'STUDIED'});
+                setIncorrectWord(incorrectWords.filter((incorrectWord) => incorrectWord.id !== word.id));
                 setScore(score + 1);
             }
+            
             setPassTraining(true);
             setInputWord("");
         }
@@ -146,6 +190,15 @@ const Trainer = () => {
         }
     };
 
+    useEffect(() => {
+        if (!initTrainer) {
+            let words = dictionary.slice(pagination.start, pagination.limit);
+            if (words.length) {
+                setCurrentWord(words[0]);
+            }
+            setInitTrainer(true);
+        }
+    }, [dictionary]);
     
     return (
         <div className="display flex justify-center">
@@ -166,6 +219,7 @@ const Trainer = () => {
                             </div>
                         </>
                     )}
+                    
                     {isTrainingEnd ? (
                         <div className="display flex justify-center">
                             <div>
@@ -185,9 +239,7 @@ const Trainer = () => {
                     ) : (
                         <>
                             <TrainerWords
-                                words={dictionary}
-                                start={pagination.start}
-                                limit={pagination.limit}
+                                word={currentWord}
                                 trainingIsPassed={trainingIsPassed}
                                 wrongWord={wrongWord}
                                 correctWord={correctWord}

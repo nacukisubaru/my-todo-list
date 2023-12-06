@@ -5,7 +5,7 @@ import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
 
 interface ITrainingCardProps {
     word: IDictionary;
-    checkWord: (word: string) => void;
+    checkWord: (word: IDictionary) => void;
     setInput: (value: string) => void;
     isVisible: boolean;
     disableButton?: boolean
@@ -61,7 +61,7 @@ const TrainingCard: FC<ITrainingCardProps> = ({
                             name="Проверить"
                             color="primary"
                             onClick={() => {
-                                checkWord(word.translatedWord);
+                                checkWord(word);
                             }}
                             isDisabled={disableButton}
                         />
