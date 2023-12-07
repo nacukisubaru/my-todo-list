@@ -1,7 +1,8 @@
 import { FC, useState } from "react";
 import { IMenuItem, IModalSettings } from "../../types/ui.types";
-import CloseButton from "../Buttons/CloseButton/CloseButton";
 import ToolTaskPanel from "../Tools/ToolTaskPanel/ToolTaskPanel";
+import { IconButton } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
 interface IButtonsCallbacks {
     primaryBtnClick: () => void;
@@ -20,6 +21,7 @@ interface IModalProps {
     children: any;
     icon?: any;
     maxWidth?: string;
+    fullWidth?: boolean;
 }
 
 const Modal: FC<IModalProps> = ({
@@ -29,6 +31,7 @@ const Modal: FC<IModalProps> = ({
     children,
     icon,
     maxWidth,
+    fullWidth = true
 }) => {
     const {
         title,
@@ -66,7 +69,7 @@ const Modal: FC<IModalProps> = ({
                     <div className="fixed inset-0 z-10 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                             <div
-                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full ${
+                                className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 ${fullWidth && 'sm:w-full'}  ${
                                     maxWidth ? maxWidth : "max-w-[50rem]"
                                 } overflow-auto min-w-[326px] ${
                                     heightBody && heightBody
@@ -101,11 +104,10 @@ const Modal: FC<IModalProps> = ({
                                                     />
                                                 </span>
                                             )}
-                                            <span className="z-50">
-                                                <CloseButton
-                                                    onClick={secondaryBtnClick}
-                                                />
-                                            </span>
+                                           
+                                            <IconButton onClick={secondaryBtnClick}>
+                                                <CloseIcon />
+                                            </IconButton>
                                         </div>
                                         <div
                                             className="w-[91%] h-[41px] absolute -mt-[41px]"

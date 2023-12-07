@@ -1,8 +1,11 @@
 import { FC, useEffect } from "react";
 import PassedTraining from "./PassedTraining";
 import TrainingCard from "./TrainingCard";
-import ArrowRight from "../../../../ui/Buttons/ArrowButton/ArrowRigth";
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import MoodIcon from '@mui/icons-material/Mood';
 import { setTitle } from "../../../../helpers/domHelper";
+import { IconButton } from "@mui/material";
+import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 
 interface ITrainerWordsProps {
     word: IDictionary | null,
@@ -27,9 +30,18 @@ const TrainerWords: FC<ITrainerWordsProps> = ({
     switchWord,
     isVisible = false,
 }) => {
+    const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
+    
     useEffect(() => {
         setTitle("Тренажер слов");
     }, []);
+
+    const nextWord = (isGoodAnswer: boolean = false) => {
+        if (word && isGoodAnswer) {
+            updStudyStage({id: word.id, studyStage: 'STUDIED'});
+        }
+        switchWord();
+    }
 
     return (
         <>
@@ -51,7 +63,17 @@ const TrainerWords: FC<ITrainerWordsProps> = ({
                         disableButton={!inputWord ? true : false}
                     />
                     {trainingIsPassed && (
-                        <ArrowRight onClick={switchWord}></ArrowRight>
+                        <div className="flex justify-center">
+                            <IconButton onClick={() => {nextWord(false)}}>
+                                <SentimentVeryDissatisfiedIcon />
+                            </IconButton>
+                            
+                            {!wrongWord && (
+                                <IconButton onClick={() => {nextWord(true)}}>
+                                    <MoodIcon />
+                                </IconButton>     
+                            )} 
+                        </div>
                     )}
                 </>
             )}

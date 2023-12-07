@@ -44,6 +44,12 @@ const Trainer = () => {
         setTrainingEnd(false);
     }, []);
 
+    useEffect(() => {
+        if (trainingDictionaryWords) {
+            startTraining();
+        }
+    }, [trainingDictionaryWords])
+
     const switchWord = () => {
         const changeCurrentWord = () => {
             setCountWords(countWords + 1);
@@ -210,7 +216,7 @@ const Trainer = () => {
                     maxWidth="max-w-[52vh]"
                     height="h-auto"
                 >
-                    {!isTrainingStart && (
+                    {!isTrainingStart && !trainingDictionaryWords && (
                         <>
                             <div className="display flex justify-center">
                                 <BasicButton

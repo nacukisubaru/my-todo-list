@@ -18,6 +18,7 @@ import useLocalStorageState from "use-local-storage-state";
 import { setTitle } from "../../../../helpers/domHelper";
 import { useNavigate } from "react-router-dom";
 import { shuffle } from "../../../../helpers/arrayHelper";
+import LimitTimeModal from "../../../../ui/Modal/LimitTimeModal";
 
 const DictionaryWords = () => {
     const { dictionary, status } = useAppSelector(
@@ -44,10 +45,11 @@ const DictionaryWords = () => {
         dictionaryLinkedWords: [],
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
-
     const [trainingWords, setTrainingWord] = useState<IDictionary[]>([]);
-
+    const [isOpenTrainingSuggestion, setOpenTrainingSuggestion] = useState(false);
+    
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { resetDictionary, setDictionary, setTrainingDictionaryWords } = useActions();
     const [filterStorage] = useLocalStorageState("filter", {
         defaultValue: [filterDictionary],
@@ -141,24 +143,54 @@ const DictionaryWords = () => {
             );
         }
     };
-    
-    const navigate = useNavigate();
+
+    const navigateToTraining = async () => {
+        await setDictionary(shuffle(trainingWords));
+        setOpenTrainingSuggestion(false);
+        setTrainingDictionaryWords({isTraining: true});
+        navigate('/englishApp/trainer'); 
+    }
+
+    const cancelTrainingWord = (wordId: string, studyStage: studyStageType) => {
+        let words = trainingWords;
+        if (studyStage === "STUDIED") { 
+            words = trainingWords.filter(word => word.id !== wordId);
+        } else {
+            const dictionaryWords = dictionary.filter(word => word.id === wordId);
+            if (dictionaryWords.length) {
+                words = [...trainingWords, dictionaryWords[0]];
+            }
+        }
+        
+        if (filterDictionary.studyStage?.includes("BEING_STUDIED")) {
+            setTrainingWord(words);
+        }
+    }
+
     useEffect(() => {
         const beginTraining = async () => {
             let countTrainingWords = 5;
-            if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length && dictionary.length > 0) || trainingWords.length === countTrainingWords) {
-                await setDictionary(shuffle(trainingWords));
-                setTrainingDictionaryWords({isTraining: true});
-                navigate('/englishApp/trainer');  
+            if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length && dictionary.length > 0 && !isVisibleCard) 
+            || trainingWords.length === countTrainingWords && !isVisibleCard) {
+                setOpenTrainingSuggestion(true); 
             }
         }
 
         beginTraining();
-    }, [trainingWords]);
+    }, [trainingWords, isVisibleCard]);
 
     const targetRef: any = useObserverScroll(fetchData, page, true);
     return (
         <>
+            <LimitTimeModal 
+                text="Начать тренировку?" 
+                isVisible={isOpenTrainingSuggestion}
+                primaryBtnClick={navigateToTraining}
+                secondaryBtnClick={() => {
+                    setTrainingWord([]);
+                    setOpenTrainingSuggestion(false);
+                }}
+            />
             <div className="display flex justify-center mt-[10px]">
                 <div className="mr-[7px]">
                     <SearchInput search={filterBySearchString}></SearchInput>
@@ -179,7 +211,7 @@ const DictionaryWords = () => {
                                 <div
                                     className="my-[12px]"
                                     onClick={() => {
-                                        if (!trainingWords.includes(word)) {
+                                        if (filterDictionary.studyStage?.includes("BEING_STUDIED")) {
                                             setTrainingWord([...trainingWords, word]);
                                         }
                                         showDictionaryCard(word.id);
@@ -220,6 +252,7 @@ const DictionaryWords = () => {
                     closeCard={() => {
                         setVisibleCard(false);
                     }}
+                    onChangeStudyStage={cancelTrainingWord}
                 />
             )}
 

@@ -25,9 +25,10 @@ import { useDictionary } from "../../hooks/useDictionary";
 interface IDictionaryCardProps {
     props: IDictionary;
     closeCard: () => void;
+    onChangeStudyStage: (wordId: string, studyStage: studyStageType) => void;
 }
 
-const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
+const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeStudyStage }) => {
     const {
         id,
         originalWord,
@@ -311,6 +312,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 {studyStageState === "BEING_STUDIED" && (
                     <BookButton
                         onClick={() => {
+                            onChangeStudyStage(id, "STUDIED");
                             changeStudyStage("STUDIED");
                         }}
                     ></BookButton>
@@ -318,6 +320,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
                 {studyStageState === "STUDIED" && (
                     <RetryButton
                         onClick={() => {
+                            onChangeStudyStage(id, "BEING_STUDIED");
                             changeStudyStage("BEING_STUDIED");
                         }}
                     ></RetryButton>
