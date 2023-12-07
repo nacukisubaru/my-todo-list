@@ -104,6 +104,7 @@ interface IFullTranslateObject {
     type: string,
     isActive: boolean,
     dictionaryWordId: string,
+    studyStage: studyStageType,
     originalWord: string
 }
 

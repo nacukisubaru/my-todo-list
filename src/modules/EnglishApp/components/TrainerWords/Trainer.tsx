@@ -10,6 +10,7 @@ import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import TrainerWords from "./TrainerWords";
 import { useNavigate } from "react-router-dom";
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
+import { shuffle } from "../../../../helpers/arrayHelper";
 
 const Trainer = () => {
     const dispatch = useAppDispatch();
@@ -59,7 +60,7 @@ const Trainer = () => {
                 setCurrentWord(words[0]);
             } else {
                 if (incorrectWords.length) {
-                    setCurrentWord(incorrectWords.reverse()[0]);
+                    setCurrentWord(incorrectWords[0]);
                 } else {
                     setTrainingEnd(true);
                 }
@@ -70,7 +71,7 @@ const Trainer = () => {
             changeCurrentWord();
         } else {
             if (incorrectWords.length) {
-                setCurrentWord(incorrectWords.reverse()[0]);
+                setCurrentWord(incorrectWords[0]);
             } else {
                 changeCurrentWord();
             }
@@ -154,13 +155,14 @@ const Trainer = () => {
             if (checkWord !== inputWord) {
                 if (inputWord.length < checkWord.length) {
                     setExistWrongWord(true);
+                    setCountWords(0);
                     setWrongWord(
                         `<span style="color:red;">${worngWord}</span>`
                     );
                     if (incorrectWords.includes(word)) {
-                        setIncorrectWord(incorrectWords.filter((incorrectWord) => incorrectWord.id !== word.id));
+                        setIncorrectWord(shuffle(incorrectWords.filter((incorrectWord) => incorrectWord.id !== word.id)));
                     } else {
-                        setIncorrectWord([...incorrectWords, word]);
+                        setIncorrectWord(shuffle([...incorrectWords, word]));
                     }
                 } else {
                     setWrongWord(worngWord);

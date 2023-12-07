@@ -140,21 +140,13 @@ const DictionaryWords = () => {
                 })
             );
         }
-        // setDictionaryFilter({
-        //     page: 0,
-        //     // languageOriginal: [],
-        //     // languageTranslation: [],
-        //     studyStage: [],
-        //     searchByOriginal: "",
-        //     searchByTranslate: "",
-        // });
     };
     
     const navigate = useNavigate();
     useEffect(() => {
         const beginTraining = async () => {
             let countTrainingWords = 5;
-            if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length) || trainingWords.length === countTrainingWords) {
+            if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length && dictionary.length > 0) || trainingWords.length === countTrainingWords) {
                 await setDictionary(shuffle(trainingWords));
                 setTrainingDictionaryWords({isTraining: true});
                 navigate('/englishApp/trainer');  

@@ -107,13 +107,6 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
                         </div>
                     </div>
                     <CheckBoxDefault
-                        label="Не изучается"
-                        onChange={checkNotStudied}
-                        checked={filterDictionary.studyStage?.includes(
-                            "NOT_STUDIED"
-                        )}
-                    />
-                    <CheckBoxDefault
                         label="На изучении"
                         onChange={checkBeingStudied}
                         checked={filterDictionary.studyStage?.includes(
