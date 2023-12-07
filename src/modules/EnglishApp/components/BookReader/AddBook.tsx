@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import Modal from "../../../../ui/Modal/Modal";
 import { Box, TextField } from "@mui/material";
 import InputFileUpload from "../../../../ui/Upload/InputFileUpload";

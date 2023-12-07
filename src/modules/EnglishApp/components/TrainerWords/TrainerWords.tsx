@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import PassedTraining from "./PassedTraining";
 import TrainingCard from "./TrainingCard";
 import ArrowRight from "../../../../ui/Buttons/ArrowButton/ArrowRigth";

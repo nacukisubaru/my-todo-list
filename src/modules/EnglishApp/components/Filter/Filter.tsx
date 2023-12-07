@@ -24,11 +24,6 @@ const Filter: FC<IFilterProps> = ({ isVisible, close }) => {
         (state) => state.dictionaryReducer
     );
 
-    const checkNotStudied = (isChecked: boolean) => {
-        let studyStage: studyStageType = "NOT_STUDIED";
-        changeStudyStage(studyStage, isChecked);
-    };
-
     const checkBeingStudied = (isChecked: boolean) => {
         let studyStage: studyStageType = "BEING_STUDIED";
         changeStudyStage(studyStage, isChecked);
