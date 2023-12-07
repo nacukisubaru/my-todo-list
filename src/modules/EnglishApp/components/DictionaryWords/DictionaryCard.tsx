@@ -10,7 +10,6 @@ import BookButton from "../../ui/Buttons/BookButton";
 import RetryButton from "../../ui/Buttons/RetryButton";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { useActions } from "../../hooks/useAction";
-import StudyButton from "../../ui/Buttons/StudyButton";
 import { useFilter } from "../../hooks/useFilter";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
 import { fullTranslate, getAnalogs } from "../../store/services/dictionary/dictionary.slice";
@@ -310,23 +309,16 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard }) => {
             </div>
             <div className="display flex justify-end">
                 {studyStageState === "BEING_STUDIED" && (
-                    <StudyButton
-                        onClick={() => {
-                            changeStudyStage("STUDIED");
-                        }}
-                    ></StudyButton>
-                )}
-                {studyStageState === "NOT_STUDIED" && (
                     <BookButton
                         onClick={() => {
-                            changeStudyStage("BEING_STUDIED");
+                            changeStudyStage("STUDIED");
                         }}
                     ></BookButton>
                 )}
                 {studyStageState === "STUDIED" && (
                     <RetryButton
                         onClick={() => {
-                            changeStudyStage("NOT_STUDIED");
+                            changeStudyStage("BEING_STUDIED");
                         }}
                     ></RetryButton>
                 )}

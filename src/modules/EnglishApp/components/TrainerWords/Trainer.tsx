@@ -8,11 +8,14 @@ import Card from "../../../../ui/Cards/Card";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import TrainerWords from "./TrainerWords";
+import { useNavigate } from "react-router-dom";
+import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
+import { shuffle } from "../../../../helpers/arrayHelper";
 
 const Trainer = () => {
     const dispatch = useAppDispatch();
     const { resetDictionary } = useActions();
-    const { dictionary, error, dictionaryActiveSettings } = useAppSelector(
+    const { dictionary, dictionaryActiveSettings, trainingDictionaryWords } = useAppSelector(
         (state) => state.dictionaryReducer
     );
     const [pagination, setPagination] = useState<{
@@ -28,6 +31,13 @@ const Trainer = () => {
     const [trainingIsPassed, setPassTraining] = useState(false);
     const [inputWord, setInputWord] = useState<any>("");
     const [score, setScore] = useState(0);
+    const [incorrectWords, setIncorrectWord] = useState<IDictionary[]>([]);
+    const [countWords, setCountWords] = useState(0);
+    const [currentWord, setCurrentWord] = useState<IDictionary | null>(null);
+    const [initTrainer, setInitTrainer] = useState(false);
+    const [isExistWrongWord, setExistWrongWord] = useState(false);
+    const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(getLanguages());
@@ -35,10 +45,38 @@ const Trainer = () => {
     }, []);
 
     const switchWord = () => {
-        setPagination({
-            start: pagination.start + 1,
-            limit: pagination.limit + 1,
-        });
+        const changeCurrentWord = () => {
+            setCountWords(countWords + 1);
+            const start = pagination.start + 1;
+            const limit = pagination.limit + 1;
+
+            setPagination({
+                start,
+                limit
+            });
+
+            const words = dictionary.slice(start, limit);
+            if (words.length) {
+                setCurrentWord(words[0]);
+            } else {
+                if (incorrectWords.length) {
+                    setCurrentWord(incorrectWords[0]);
+                } else {
+                    setTrainingEnd(true);
+                }
+            }
+        }
+
+        if (!isExistWrongWord || (isExistWrongWord && countWords < 2)) {
+            changeCurrentWord();
+        } else {
+            if (incorrectWords.length) {
+                setCurrentWord(incorrectWords[0]);
+            } else {
+                changeCurrentWord();
+            }
+        }
+
         setPassTraining(false);
         setCorrectWord("");
         setWrongWord("");
@@ -46,27 +84,33 @@ const Trainer = () => {
     };
 
     useEffect(() => {
+        if (!incorrectWords.length) {
+            setCountWords(0);
+            setExistWrongWord(false);
+        }
+    }, [incorrectWords]);
+
+    useEffect(() => {
         if (pagination.start > 0 && pagination.limit > 1) {
             if (!dictionary.slice(pagination.start, pagination.limit).length) {
-                setPage(page + 1);
-                const params: IGetDictionaryListParams = {
-                    page: page + 1,
-                    languageOriginal: dictionaryActiveSettings.sourceLanguage,
-                    languageTranslation: dictionaryActiveSettings.targetLanguage,
-                    studyStage: ['BEING_STUDIED']
-                };
-                dispatch(getDictionaryByUser(params));
+                if (!trainingDictionaryWords) {
+                    setPage(page + 1);
+                    const params: IGetDictionaryListParams = {
+                        page: page + 1,
+                        languageOriginal: dictionaryActiveSettings.sourceLanguage,
+                        languageTranslation: dictionaryActiveSettings.targetLanguage,
+                        studyStage: ['BEING_STUDIED']
+                    };
+                    dispatch(getDictionaryByUser(params));
+                }
             }
         }
     }, [pagination]);
 
-    useEffect(() => {
-        if (error && error.statusCode === 404) {
-            setTrainingEnd(true);
-        }
-    }, [error]);
-
     const trainingAgain = async () => {
+        if (trainingDictionaryWords) {
+            navigate('/englishApp');
+        }
         const params: IGetDictionaryListParams = {
             page: 0,
             languageOriginal: dictionaryActiveSettings.sourceLanguage,
@@ -82,8 +126,9 @@ const Trainer = () => {
         setTrainingStart(true);
     };
 
-    const checkWord = (word: string) => {
-        let checkWord: any = word.toLowerCase();
+    const checkWord = (word: IDictionary) => {
+        const translatedWord:any = word.translatedWord;
+        let checkWord: any = translatedWord.toLowerCase();
         let worngWord = "";
         let correctWord = "";
         if (inputWord) {
@@ -109,15 +154,25 @@ const Trainer = () => {
 
             if (checkWord !== inputWord) {
                 if (inputWord.length < checkWord.length) {
+                    setExistWrongWord(true);
+                    setCountWords(0);
                     setWrongWord(
                         `<span style="color:red;">${worngWord}</span>`
                     );
+                    if (incorrectWords.includes(word)) {
+                        setIncorrectWord(shuffle(incorrectWords.filter((incorrectWord) => incorrectWord.id !== word.id)));
+                    } else {
+                        setIncorrectWord(shuffle([...incorrectWords, word]));
+                    }
                 } else {
                     setWrongWord(worngWord);
                 }
             } else {
+                updStudyStage({id: word.id, studyStage: 'STUDIED'});
+                setIncorrectWord(incorrectWords.filter((incorrectWord) => incorrectWord.id !== word.id));
                 setScore(score + 1);
             }
+            
             setPassTraining(true);
             setInputWord("");
         }
@@ -125,16 +180,28 @@ const Trainer = () => {
 
     const startTraining = async () => {
         setTrainingStart(true);
-        const params: IGetDictionaryListParams = {
-            page,
-            languageOriginal: dictionaryActiveSettings.sourceLanguage,
-            languageTranslation: dictionaryActiveSettings.targetLanguage,
-            studyStage: ['BEING_STUDIED']
-        };
-        await resetDictionary();
-        dispatch(getDictionaryByUser(params));
+        if (!trainingDictionaryWords) {
+            const params: IGetDictionaryListParams = {
+                page,
+                languageOriginal: dictionaryActiveSettings.sourceLanguage,
+                languageTranslation: dictionaryActiveSettings.targetLanguage,
+                studyStage: ['BEING_STUDIED']
+            };
+            await resetDictionary();
+            dispatch(getDictionaryByUser(params));
+        }
     };
 
+    useEffect(() => {
+        if (!initTrainer) {
+            let words = dictionary.slice(pagination.start, pagination.limit);
+            if (words.length) {
+                setCurrentWord(words[0]);
+            }
+            setInitTrainer(true);
+        }
+    }, [dictionary]);
+    
     return (
         <div className="display flex justify-center">
             <div className="mt-[90px]">
@@ -154,6 +221,7 @@ const Trainer = () => {
                             </div>
                         </>
                     )}
+                    
                     {isTrainingEnd ? (
                         <div className="display flex justify-center">
                             <div>
@@ -163,7 +231,7 @@ const Trainer = () => {
                                 </div>
                                 <div className="display flex justify-center">
                                     <BasicButton
-                                        name="Начать заново"
+                                        name={!trainingDictionaryWords ?  "Начать заново" : "Вернутся в словарь"}
                                         color="primary"
                                         onClick={trainingAgain}
                                     />
@@ -173,9 +241,7 @@ const Trainer = () => {
                     ) : (
                         <>
                             <TrainerWords
-                                words={dictionary}
-                                start={pagination.start}
-                                limit={pagination.limit}
+                                word={currentWord}
                                 trainingIsPassed={trainingIsPassed}
                                 wrongWord={wrongWord}
                                 correctWord={correctWord}

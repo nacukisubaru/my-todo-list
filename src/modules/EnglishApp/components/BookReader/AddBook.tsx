@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import BasicSelect from "../../../../ui/Selects/BasicSelect";
 import { useFilterBooks } from "../../hooks/useFilterBooks";
 import { useLangsSelector } from "../../hooks/useLangsSelector";
+import CustomSnackBar from "../../../../ui/CustomSnackBar/CustomSnackBar";
 
 interface IAddBook {
     isOpen: boolean;
@@ -14,40 +15,42 @@ interface IAddBook {
 }
 
 const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
-    const [addBook] = bookReaderApi.useCreateBookMutation();
+    const [addBook, {error}] = bookReaderApi.useCreateBookMutation<any>();
     const [currentFile, setFile] = useState("");
-    const { register, getValues, reset } = useForm();
+    const { register, getValues, setValue } = useForm();
     const {langsForStudySelector, studyLangsSelector} = useLangsSelector();
     const [bookLang, setBookLang] = useState("en");
     const [translateLang, setTranslateLang] = useState("ru");
     const {filtrate} = useFilterBooks();
 
     const createBook = async () => {
-        if (currentFile) {
-            const name = getValues("name");
-            const url = getValues("url");
+        const name = getValues("name");
+        const url = getValues("url");
 
-            const formData: any = new FormData();
-            formData.append("file", currentFile);
-            formData.append("name", name);
-            formData.append("langOriginal", bookLang);
-            formData.append("langTranslation", translateLang);
-            if (url) {
-                formData.append("videoUrl", url);
-                formData.append("isVideo", "true");
-            } else {
-                formData.append("isVideo", "false");
-            }
+        const formData: any = new FormData();
+        formData.append("file", currentFile);
+        formData.append("name", name);
+        formData.append("langOriginal", bookLang);
+        formData.append("langTranslation", translateLang);
+        if (url) {
+            formData.append("videoUrl", url);
+            formData.append("isVideo", "true");
+        } else {
+            formData.append("isVideo", "false");
+        }
 
-            await addBook(formData);
+        const response: any = await addBook(formData);
+       
+        if (!response.error) {
             filtrate(1, false);
-            resetData();
+            closeForm();
         }
     };
 
     const resetData = () => {
+        setValue("name", undefined);
+        setValue("url", undefined);
         setFile("");
-        reset();
         setBookLang("en");
         setTranslateLang("ru");
     }
@@ -75,6 +78,10 @@ const AddBook: FC<IAddBook> = ({ isOpen, close }) => {
 
     return (
         <>
+            {error && error.data && (
+                <CustomSnackBar severity={"error"} message={error.data.message} />
+            )}
+         
             <Modal
                 modalSettings={{
                     title: "Добавить книгу",

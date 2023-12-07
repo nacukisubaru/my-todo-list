@@ -2,7 +2,6 @@ import useLocalStorageState from "use-local-storage-state";
 import { useActions } from "./useAction";
 import { useAppDispatch, useAppSelector } from "./useAppSelector";
 import { getBooksList } from "../store/services/book-reader/book-reader.slice";
-import { useEffect } from "react";
 
 export const useFilterBooks = () => {
     const {booksFilter, books, pages} = useAppSelector(state => state.bookReaderReducer);
@@ -26,11 +25,6 @@ export const useFilterBooks = () => {
             limitPage: 12
         }));
     }
-
-    useEffect(() => {
-        console.log({filterStorage})
-    }, []);
-
 
     return { filtrate, setFilterToStorage, setBooksFilter, booksFilter, books, pages, filterStorage };
 }

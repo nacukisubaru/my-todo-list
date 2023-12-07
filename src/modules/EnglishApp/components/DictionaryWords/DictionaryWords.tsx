@@ -16,6 +16,8 @@ import SearchInput from "../../../../ui/Inputs/SearchInput";
 import { useActions } from "../../hooks/useAction";
 import useLocalStorageState from "use-local-storage-state";
 import { setTitle } from "../../../../helpers/domHelper";
+import { useNavigate } from "react-router-dom";
+import { shuffle } from "../../../../helpers/arrayHelper";
 
 const DictionaryWords = () => {
     const { dictionary, status } = useAppSelector(
@@ -43,8 +45,10 @@ const DictionaryWords = () => {
     });
     const [isVisibleCard, setVisibleCard] = useState(false);
 
+    const [trainingWords, setTrainingWord] = useState<IDictionary[]>([]);
+
     const dispatch = useAppDispatch();
-    const { resetDictionary } = useActions();
+    const { resetDictionary, setDictionary, setTrainingDictionaryWords } = useActions();
     const [filterStorage] = useLocalStorageState("filter", {
         defaultValue: [filterDictionary],
     });
@@ -136,15 +140,21 @@ const DictionaryWords = () => {
                 })
             );
         }
-        // setDictionaryFilter({
-        //     page: 0,
-        //     // languageOriginal: [],
-        //     // languageTranslation: [],
-        //     studyStage: [],
-        //     searchByOriginal: "",
-        //     searchByTranslate: "",
-        // });
     };
+    
+    const navigate = useNavigate();
+    useEffect(() => {
+        const beginTraining = async () => {
+            let countTrainingWords = 5;
+            if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length && dictionary.length > 0) || trainingWords.length === countTrainingWords) {
+                await setDictionary(shuffle(trainingWords));
+                setTrainingDictionaryWords({isTraining: true});
+                navigate('/englishApp/trainer');  
+            }
+        }
+
+        beginTraining();
+    }, [trainingWords]);
 
     const targetRef: any = useObserverScroll(fetchData, page, true);
     return (
@@ -169,6 +179,9 @@ const DictionaryWords = () => {
                                 <div
                                     className="my-[12px]"
                                     onClick={() => {
+                                        if (!trainingWords.includes(word)) {
+                                            setTrainingWord([...trainingWords, word]);
+                                        }
                                         showDictionaryCard(word.id);
                                     }}
                                 >

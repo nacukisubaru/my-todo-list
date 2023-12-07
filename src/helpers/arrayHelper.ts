@@ -14,3 +14,22 @@ export const uniqueList = (array: any[]) => {
 
     return array.filter(onlyUnique);
 }
+
+export const shuffle = (array: any[]) => {
+    if (!array.length) {
+        return [];
+    }
+
+    let currentIndex = array.length,  randomIndex = array.length * 100;
+  
+    while (currentIndex > 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  
+    return array;
+}
+  

@@ -5,6 +5,7 @@ import { Typography, styled } from "@mui/material";
 
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
+import BookWordStage from "./BookWordStage";
 
 const WordsWrapper = styled("div")(({ theme }) => ({
     padding: theme.spacing(2, 2, 2, 2),
@@ -30,7 +31,7 @@ const BookWordsPanel: FC<IBookWordsPanelProps> = ({
     );
 
     const { speak } = useSpeechSynthesis();
-
+    
     return (
         <>
             <div>
@@ -47,7 +48,6 @@ const BookWordsPanel: FC<IBookWordsPanelProps> = ({
                                 >
                                     {word && word}
                                 </Typography>
-
                                 <PlayButton
                                     onClick={() => {
                                         speak(
@@ -56,6 +56,11 @@ const BookWordsPanel: FC<IBookWordsPanelProps> = ({
                                         );
                                     }}
                                 />
+                                {fullTranslateList[0].studyStage && (
+                                    <div className="mt-[-5px]">
+                                        <BookWordStage studyStage={fullTranslateList[0].studyStage} wordId={fullTranslateList[0].dictionaryWordId} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="flex justify-start">

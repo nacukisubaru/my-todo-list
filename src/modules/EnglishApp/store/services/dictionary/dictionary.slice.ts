@@ -15,6 +15,7 @@ interface IState {
     languages: ILanguage[],
     filterDictionary: IFilterDictionary,
     translateApiSettings: ITranslateSettings,
+    trainingDictionaryWords: boolean,
     page: number,
     status: string,
     error: IError
@@ -42,6 +43,7 @@ const initialState: IState = {
     analogsWord: [],
     languages: [],
     lingvoExamples: [],
+    trainingDictionaryWords: false,
     filterDictionary: {
         page: 0,
         languageOriginal: [],
@@ -191,6 +193,9 @@ export const dictionarySlice = createSlice({
         },
         updateWordHuntAccess: (state, action: PayloadAction<{isActive: boolean}>) => {
             state.translateApiSettings.wordHunt = action.payload.isActive;
+        },
+        setTrainingDictionaryWords: (state, action: PayloadAction<{isTraining: boolean}>) => {
+            state.trainingDictionaryWords = action.payload.isTraining;
         }
     },
     extraReducers: (builder) => {
