@@ -21,6 +21,7 @@ import { queryBuilder } from "../../../../helpers/queryHelper";
 import { setTitle } from "../../../../helpers/domHelper";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { bookReaderApi } from "../../store/services/book-reader/book-reader.api";
+import ConfirmModal from "../../../../ui/Modal/ConfirmModal";
 
 const BookList: FC = () => {
     const { filtrate, books, pages, booksFilter, setBooksFilter, filterStorage } =
@@ -31,6 +32,8 @@ const BookList: FC = () => {
     const [isOpenAddBook, setOpenAddBook] = useState(false);
     const [remove] = bookReaderApi.useRemoveBookMutation();
     const [currentPage, setCurrentPage] = useState(1);
+    const [bookToRemove, setToRemove] = useState(0);
+    const [isOpenConfirm, setOpenConfirm] = useState(false);
 
     useEffect(() => {
         setTitle('Книги список');
@@ -73,14 +76,26 @@ const BookList: FC = () => {
         return navigate(queryBuilder(link, arrayParams, true));    
     }
 
-    const removeBook = async (bookId: number) => {
-        await remove({id: bookId});
-        filtrate(currentPage, false);
+    const removeBook = async () => {
+        if (bookToRemove) {
+            await remove({id: bookToRemove});
+            filtrate(currentPage, false);
+            setOpenConfirm(false);
+        }
+    }
+
+    const setBookToRemove = (bookId: number) => {
+        setToRemove(bookId)
+    }
+
+    const closeConfirm = () => {
+        setOpenConfirm(false);
     }
 
     return (
         <>
             <div className="flex justify-center mt-[25px]">
+                <ConfirmModal text={"Удалить книгу?"} primaryBtnClick={removeBook} secondaryBtnClick={closeConfirm} isVisible={isOpenConfirm} />
                 <BooksFilter isVisible={isOpenFilter} close={closeFilter} />
                 <AddBook isOpen={isOpenAddBook} close={closeAddBook}/>
                 <Box
@@ -154,7 +169,10 @@ const BookList: FC = () => {
                                         >
                                             {book.name}
                                         </ListItemButton>
-                                        <IconButton onClick={() => {removeBook(book.id)}}>
+                                        <IconButton onClick={() => {
+                                            setBookToRemove(book.id);
+                                            setOpenConfirm(true);
+                                        }}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </ListItem>

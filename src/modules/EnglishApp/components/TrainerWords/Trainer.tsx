@@ -174,7 +174,6 @@ const Trainer = () => {
                     setWrongWord(worngWord);
                 }
             } else {
-                updStudyStage({id: word.id, studyStage: 'STUDIED'});
                 setIncorrectWord(incorrectWords.filter((incorrectWord) => incorrectWord.id !== word.id));
                 setScore(score + 1);
             }

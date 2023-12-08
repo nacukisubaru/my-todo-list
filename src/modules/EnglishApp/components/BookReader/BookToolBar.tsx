@@ -63,7 +63,6 @@ const BookToolBar: FC<IBookToolBar> = ({setNextPage, setPrevPage, openPages, upd
                 <div
                     className="cursor-pointer"
                     onClick={updateBookMarker}
-                    onTouchStart={updateBookMarker}
                 >
                     <BookmarkBorderIcon />
                 </div>
@@ -75,9 +74,6 @@ const BookToolBar: FC<IBookToolBar> = ({setNextPage, setPrevPage, openPages, upd
                     onClick={() => {
                         updateRead(false);
                     }}
-                    onTouchStart={() => {
-                        updateRead(false);
-                    }}
                 >
                     <StarIcon />
                 </div>
@@ -85,9 +81,6 @@ const BookToolBar: FC<IBookToolBar> = ({setNextPage, setPrevPage, openPages, upd
                 <div
                     className="cursor-pointer"
                     onClick={() => {
-                        updateRead(true);
-                    }}
-                    onTouchStart={() => {
                         updateRead(true);
                     }}
                 >

@@ -10,7 +10,13 @@ interface IBookPages {
     onClick: (page: number) => void;
 }
 
-const BookPages: FC<IBookPages> = ({ countPages = 0, currentPage, isOpen, close, onClick }) => {
+const BookPages: FC<IBookPages> = ({
+    countPages = 0,
+    currentPage,
+    isOpen,
+    close,
+    onClick,
+}) => {
     const [pagesList, setPagesList] = useState<number[]>([]);
 
     useEffect(() => {
@@ -28,24 +34,37 @@ const BookPages: FC<IBookPages> = ({ countPages = 0, currentPage, isOpen, close,
 
     return (
         <Modal
-            modalSettings={{ title: 'Выбрать страницу', oppositeTitle: '', isVisible: isOpen, showButtons: false, showUpperButtons: true }}
+            modalSettings={{
+                title: "Выбрать страницу",
+                oppositeTitle: "",
+                isVisible: isOpen,
+                showButtons: false,
+                showUpperButtons: true,
+            }}
             callbacks={{
                 primaryBtnClick: () => {},
                 secondaryBtnClick: close,
             }}
         >
             <div className="flex justify-around flex-wrap">
-            {pagesList.length > 0 && pagesList.map((page) => {
-                return <Button 
-                            variant="contained" 
-                            size="small" 
-                            onClick={()=>{onClick(page)}} 
-                            onTouchStart={()=>{onClick(page)}}
-                            disabled={currentPage === page}
-                        >
-                            {page}
-                        </Button>;
-            })}
+                {pagesList.length > 0 &&
+                    pagesList.map((page) => {
+                        return (
+                            <Button
+                                variant="contained"
+                                size="small"
+                                onClick={() => {
+                                    onClick(page);
+                                }}
+                                onTouchStart={() => {
+                                    onClick(page);
+                                }}
+                                disabled={currentPage === page}
+                            >
+                                {page}
+                            </Button>
+                        );
+                    })}
             </div>
         </Modal>
     );

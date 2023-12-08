@@ -48,6 +48,7 @@ const TrainingCard: FC<ITrainingCardProps> = ({
                         id="trainerInput"
                         name="trainerInput"
                         type="text"
+                        autoComplete="off"
                         onChange={(e) => {
                             setInput(e.target.value)
                         }}
