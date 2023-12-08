@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import BasicButton from "../../../../ui/Buttons/BasicButton/BasicButton";
 import TrainerWords from "./TrainerWords";
 import { useNavigate } from "react-router-dom";
-import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 import { shuffle } from "../../../../helpers/arrayHelper";
 
 const Trainer = () => {
@@ -36,6 +35,7 @@ const Trainer = () => {
     const [currentWord, setCurrentWord] = useState<IDictionary | null>(null);
     const [initTrainer, setInitTrainer] = useState(false);
     const [isExistWrongWord, setExistWrongWord] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
