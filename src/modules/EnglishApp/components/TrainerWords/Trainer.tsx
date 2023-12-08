@@ -36,7 +36,6 @@ const Trainer = () => {
     const [currentWord, setCurrentWord] = useState<IDictionary | null>(null);
     const [initTrainer, setInitTrainer] = useState(false);
     const [isExistWrongWord, setExistWrongWord] = useState(false);
-    const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const navigate = useNavigate();
 
     useEffect(() => {
