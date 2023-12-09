@@ -1,4 +1,3 @@
-import { IconButton } from "@mui/material";
 import BookIcon from '@mui/icons-material/Book';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
