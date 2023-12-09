@@ -161,6 +161,7 @@ const WordsTagsPanel: FC<IWordsTagsPanel> = ({
                                 variant="contained"
                                 size="small"
                                 onClick={save}
+                                onTouchStart={save}
                                 disabled={!isVisibleSaveBtn}
                             >
                                 {!forBook

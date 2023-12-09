@@ -3,6 +3,7 @@ import BookIcon from '@mui/icons-material/Book';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { dictionaryApi } from "../../store/services/dictionary/dictionary.api";
 import { FC, useState } from "react";
+import StudyStageButton from "../../ui/Buttons/StudyStageButton";
 
 interface IBookWordStage {
     wordId: string
@@ -24,16 +25,16 @@ const BookWordStage: FC<IBookWordStage> = ({wordId, studyStage}) => {
 
     return (
         <>
-            {studyStageState === "BEING_STUDIED" && (            
-                <IconButton onClick={() => {updateStudy("STUDIED")}}>
+            {studyStageState === "BEING_STUDIED" && (
+                <StudyStageButton updateStudy={() => {updateStudy("STUDIED")}}>
                     <BookIcon />
-                </IconButton>
+                </StudyStageButton>
             )}
 
-            {studyStageState === "STUDIED" && (   
-                <IconButton onClick={() => {updateStudy("BEING_STUDIED")}}>
-                    <ReplayIcon />
-                </IconButton>
+            {studyStageState === "STUDIED" && (
+                 <StudyStageButton updateStudy={() => {updateStudy("BEING_STUDIED")}}>
+                   <ReplayIcon />
+                </StudyStageButton>
              )}
         </>
     );
