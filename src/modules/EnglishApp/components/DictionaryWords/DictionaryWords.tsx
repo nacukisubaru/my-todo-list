@@ -211,7 +211,7 @@ const DictionaryWords = () => {
                                 <div
                                     className="my-[12px]"
                                     onClick={() => {
-                                        if (filterDictionary.studyStage?.includes("BEING_STUDIED")) {
+                                        if (filterDictionary.studyStage?.includes("BEING_STUDIED") && !trainingWords.includes(word)) {
                                             setTrainingWord([...trainingWords, word]);
                                         }
                                         showDictionaryCard(word.id);

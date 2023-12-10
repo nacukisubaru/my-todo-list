@@ -126,13 +126,26 @@ const WordsPanel: FC<IWordsPanel> = ({
             {!isShowBtnTranslate && (
                 <TabPanel value={value} index={yandexTabValue}>
                     <div className="flex justify-center">
-                        <Button
-                            variant="contained"
-                            size="small"
-                            onClick={yandexTranslate}
-                        >
-                            Перевести
-                        </Button>
+                        <div className="lg:block hidden">
+                            <Button
+                                variant="contained"
+                                size="small"
+                                onClick={yandexTranslate}
+                                onTouchStart={yandexTranslate}
+                            >
+                                Перевести
+                            </Button>
+                        </div>
+                        <div className="lg:hidden block">
+                            <Button
+                                variant="contained"
+                                size="small"
+                                onClick={yandexTranslate}
+                                onTouchStart={yandexTranslate}
+                            >
+                                Перевести
+                            </Button>
+                        </div>
                     </div>
                 </TabPanel>
             )}

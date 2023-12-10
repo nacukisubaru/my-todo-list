@@ -55,12 +55,15 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
     const [updStudyStage] = dictionaryApi.useUpdateSudyStageMutation();
     const [studyStageState, setStudyStage] = useState(studyStage);
     const [linkedWordsList, addToLinkedWordsList] = useState<string[]>([]);
+    const [origWord, setOriginalWord] = useState('');
 
     const { setDictionary, resetFullTranslateList } = useActions();
     const { filtrate } = useFilter();
+    const [updateWord] = dictionaryApi.useUpdateWordMutation();
     
     useEffect(() => {
         getExamples();
+        setOriginalWord(originalWord);
     }, []);
 
     const dispatch = useAppDispatch();
@@ -104,7 +107,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
 
     const getAnalogsWord = () => {
         dispatch(getAnalogs({
-            word: originalWord,
+            word: origWord,
             sourceLang: 'ru',
             targetLang: languageTranslation
         }));
@@ -113,6 +116,12 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
     const addLinkedWords = (words: string[]) => {
         addToLinkedWordsList(words);
         changeDictionaryWord("dictionaryLinkedWords", words.map(word => {return {word}}));
+    }
+
+    const changeWordValue = (word: string) => {
+        changeDictionaryWord('originalWord', word);
+        updateWord({id, originalWord: word});
+        setOriginalWord(word);
     }
 
     useEffect(() => {
@@ -124,7 +133,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
     return (
         <Modal
             modalSettings={{
-                title: originalWord,
+                title: origWord,
                 oppositeTitle: (
                     <>
                         {languageOriginal === "en" ? (
@@ -134,7 +143,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
                                         <div className="font-bold">uk</div>
                                         <PlayButton
                                             onClick={() => {
-                                                speak(originalWord, "en-GB");
+                                                speak(origWord, "en-GB");
                                             }}
                                         />
                                     </div>
@@ -142,7 +151,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
                                         <span className="font-bold">us</span>
                                         <PlayButton
                                             onClick={() => {
-                                                speak(originalWord, "en-US");
+                                                speak(origWord, "en-US");
                                             }}
                                         />
                                     </div>
@@ -151,7 +160,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
                         ) : (
                             <PlayButton
                                 onClick={() => {
-                                    speak(originalWord, languageOriginal);
+                                    speak(origWord, languageOriginal);
                                 }}
                             />
                         )}
@@ -223,7 +232,7 @@ const DictionaryCard: FC<IDictionaryCardProps> = ({ props, closeCard, onChangeSt
                     <>
                         <div className="font-bold mb-[5px]">Значения</div>
                         {linkedWordsList.map(word => {
-                            return  <WordTag>{word}</WordTag>;
+                            return <WordTag onClick={changeWordValue}>{word}</WordTag>;
                         })}
                     </>
                 )}

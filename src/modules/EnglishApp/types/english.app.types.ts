@@ -133,6 +133,11 @@ interface IUpdateNotes {
     notes: string
 }
 
+interface IUpdateWord {
+    id: string,
+    originalWord: string
+}
+
 interface ILanguage {
     code: string,
     name: string,

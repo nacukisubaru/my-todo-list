@@ -40,6 +40,13 @@ export const dictionaryApi = createApi({
                 body
             }),
         }),
+        updateWord: build.mutation({
+            query: (body: IUpdateWord) => ({
+                url: '/dictionary/update-word',
+                method: 'POST',
+                body
+            }),
+        }),
         remove: build.mutation({
             query:(body) => ({
                 url: '/dictionary/remove',
