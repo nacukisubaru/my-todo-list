@@ -36,7 +36,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/englishApp",
-        element: <EnglishAppSpace headerBtn="Тренажер" />,
+        element: <EnglishAppSpace />,
     },
     {
         path: "/englishApp/trainer",

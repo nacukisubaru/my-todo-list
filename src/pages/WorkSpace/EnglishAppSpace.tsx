@@ -19,17 +19,13 @@ const EnglishAppSpace: FC<EnglishAppSpaceProps> = ({
     includeTrainer = false,
     includeBook = false,
     includeBooksList,
-    headerBtn = "Словарь"
+    headerBtn
 }) => {
     const navigate = useNavigate();
     useStartApp();
 
     const navigateByEnglishApp = () => {
-        if (includeTrainer || includeBook || includeBooksList) {
-            navigate("/englishApp");
-        } else {
-            navigate("/englishApp/trainer");
-        }
+        navigate("/englishApp");
     };
 
     const [openModalSettings, setOpenModalSettings] = useState(false);
@@ -47,11 +43,13 @@ const EnglishAppSpace: FC<EnglishAppSpaceProps> = ({
             {!includeBook && (
                 <Header>
                     <div className="-mt-[4px] mr-[17px] flex">
-                        <BasicButton
-                            name={headerBtn}
-                            color="secondary"
-                            onClick={navigateByEnglishApp}
-                        />
+                        {headerBtn && (
+                            <BasicButton
+                              name={headerBtn}
+                              color="secondary"
+                              onClick={navigateByEnglishApp}
+                            />
+                        )}
                         <Button
                             variant="text"
                             size="small"

@@ -169,7 +169,7 @@ const DictionaryWords = () => {
 
     useEffect(() => {
         const beginTraining = async () => {
-            let countTrainingWords = 5;
+            let countTrainingWords = 10;
             if ((dictionary.length < countTrainingWords && dictionary.length === trainingWords.length && dictionary.length > 0 && !isVisibleCard) 
             || trainingWords.length === countTrainingWords && !isVisibleCard) {
                 setOpenTrainingSuggestion(true); 
