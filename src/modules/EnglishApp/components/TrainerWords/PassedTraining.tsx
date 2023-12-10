@@ -7,6 +7,7 @@ import { useSpeechSynthesis } from "../../hooks/useSpeechSynthesis";
 import PlayButton from "../../../../ui/Buttons/PlayButton";
 import DictionaryLingvoExamples from "../DictionaryWords/DictionaryLingvoExamples";
 import ArrowWithText from "../../../../ui/Buttons/ArrowButton/ArrowWithText";
+import WordTag from "../WordsTagsPanel/WordTag";
 
 interface IPassedTrainingProps {
     isPassed: boolean;
@@ -66,6 +67,26 @@ const PassedTraining: FC<IPassedTrainingProps> = ({
                     </div>
                     
                     <Divider />
+                    {word.dictionaryLinkedWords && word.dictionaryLinkedWords.length > 0 && (
+                        <ArrowWithText 
+                            content={
+                                <>
+                                    {word.dictionaryLinkedWords.map(word => {
+                                        return <WordTag>{word.word}</WordTag>;
+                                    })}
+                                </>
+                            }
+                        >
+                            Теги
+                        </ArrowWithText>
+                    )}
+                    {word.notes && (
+                        <ArrowWithText 
+                            content={word.notes}
+                        >
+                            Заметки
+                        </ArrowWithText>
+                    )}
                     <DictionaryLingvoExamples 
                         translatedWord={word.translatedWord} 
                         languageOriginal={word.languageOriginal} 
