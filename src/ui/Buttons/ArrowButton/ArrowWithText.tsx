@@ -5,10 +5,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 interface IArrowWithTextProps {
     onClick?: (isArrowUp: boolean) => void,
     children: any,
-    content: any
+    content: any,
+    alwaysChangeContent?: boolean
 }
 
-const ArrowWithText: FC<IArrowWithTextProps> = ({onClick, children, content}) => {
+const ArrowWithText: FC<IArrowWithTextProps> = ({onClick, alwaysChangeContent = false, children, content}) => {
     const [isArrowUp, setArrowUp] = useState(false);
 
     const switchArrow = () => {
@@ -18,7 +19,11 @@ const ArrowWithText: FC<IArrowWithTextProps> = ({onClick, children, content}) =>
             setArrowUp(true);
         }
 
-        if (!content) {
+        if (alwaysChangeContent) {
+            onClick && onClick(isArrowUp);
+        }
+
+        if (!content && !alwaysChangeContent) {
            onClick && onClick(isArrowUp);
         }
     }

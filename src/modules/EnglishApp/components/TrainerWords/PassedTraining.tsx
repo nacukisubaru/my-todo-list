@@ -70,18 +70,19 @@ const PassedTraining: FC<IPassedTrainingProps> = ({
                         translatedWord={word.translatedWord} 
                         languageOriginal={word.languageOriginal} 
                         languageTranslation={word.languageTranslation}
+                        alwaysChangeExamples={true}
                     />
                     <ArrowWithText
                         content={
-                        <DictionaryExamples
-                            examplesList={examples}
-                            languageOriginal={word.languageOriginal}
-                            languageTranslation={word.languageTranslation}
-                            showTranslate={showTranslte}
-                            translate={translate}
-                        />
-                        
-                    }>
+                            <DictionaryExamples
+                                examplesList={examples}
+                                languageOriginal={word.languageOriginal}
+                                languageTranslation={word.languageTranslation}
+                                showTranslate={showTranslte}
+                                translate={translate}
+                            />
+                        }
+                    >
                         Другие примеры
                     </ArrowWithText>
                 </>

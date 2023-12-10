@@ -7,13 +7,15 @@ import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 interface IDictionaryLingvoExamplesProps {
     translatedWord: string,
     languageTranslation: string,
-    languageOriginal: string
+    languageOriginal: string,
+    alwaysChangeExamples?: boolean
 }
 
 const DictionaryLingvoExamples: FC<IDictionaryLingvoExamplesProps> = ({
     translatedWord,
     languageTranslation,
-    languageOriginal
+    languageOriginal,
+    alwaysChangeExamples = false
 }) => {
     const { lingvoExamples } = useAppSelector((state) => state.dictionaryReducer);
     const [lingvoExamplesList, setLingvoExample] = useState<ILingvoExample[]>([]);
@@ -47,6 +49,7 @@ const DictionaryLingvoExamples: FC<IDictionaryLingvoExamplesProps> = ({
     return (
         <ArrowWithText
             onClick={getExamplesFromLingvo}
+            alwaysChangeContent={alwaysChangeExamples}
             content={
                 lingvoExamples.length ? (
                     <DictionaryExamples
