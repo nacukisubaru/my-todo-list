@@ -102,7 +102,8 @@ const YoutubeVideoReader: FC<IYoutubeVideoReader> = ({
                 const lastTimeCode = convertTimeStringToSeconds(timecodes[timecodes.length - 1]);
                 const timecode = convertSecoundsToTimeString(state.playedSeconds);
                 getTextByTimecode(timecode)
-                if (state.playedSeconds > lastTimeCode && !switchBackBookPage) {                   
+                console.log({sec: Math.round(state.playedSeconds), lastTimeCode})
+                if (Math.round(state.playedSeconds) === lastTimeCode && !switchBackBookPage) {                   
                     onProgressVideo("next");
                 } else {
                     setSwitchBackBookPage({ isBack: false });
