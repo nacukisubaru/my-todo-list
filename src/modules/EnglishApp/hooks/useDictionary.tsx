@@ -18,7 +18,8 @@ export const useDictionary = () => {
         addWord,
         resetDictionaryFilter,
         resetDictionary,
-        setDictionary
+        setDictionary,
+        changeTranslateMethod
     } = useActions();
     
     const dispatch = useAppDispatch();
@@ -36,6 +37,7 @@ export const useDictionary = () => {
     const { dictionaryActiveSettings } = useAppSelector(
         (state) => state.dictionaryReducer
     );
+    
 
     const [translationWord, setTransltionWord] = useState("");
 
@@ -131,25 +133,31 @@ export const useDictionary = () => {
         if (translateResult.translatedWord) {
             addNewWord();
         } else {
-            translate(word);
+            const data = await translate(word);
+            if (data?.payload) {
+                if (data.payload.wordsList.length === 1 && data.payload.wordsList[0].type === 'яндекс') {
+                    await changeTranslateMethod();
+                    translate(word, false, 'yandex');
+                }
+            }
         }
     };
 
-    const translate = (word: string, getYandexTranslate: boolean = false) => {
+    const translate = (word: string, getYandexTranslate: boolean = false, method: any = translateMethod) => {
         if (word) {
-            dispatch(translateWord({ 
-                word, 
-                sourceLang: translateLanguages[0], 
-                targetLang: translateLanguages[1], 
-                translateMethod,
-                getYandexTranslate
-            }));
-
             if (getYandexTranslate) {
                 setYandexTranslateExecute(true);
             } else {
                 setYandexTranslateExecute(false);
             }
+
+            return dispatch(translateWord({ 
+                word, 
+                sourceLang: translateLanguages[0], 
+                targetLang: translateLanguages[1], 
+                translateMethod: method,
+                getYandexTranslate
+            }));
         }
     };
 

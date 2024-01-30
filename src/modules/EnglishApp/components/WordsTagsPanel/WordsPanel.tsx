@@ -68,28 +68,30 @@ const WordsPanel: FC<IWordsPanel> = ({
         const words = filterWords(tabs[newValue]);
         setWords(words);
     };
-
+    
     useEffect(() => {
         const words = filterWords(tabs[value]);
         setWords(words);
     }, [wordsList]);
 
     useEffect(() => {
-        let keyYandex = 0;
-        tabs.map((tab, key) => {
-            if (tab === "яндекс") {
-                keyYandex = key;
+        if (!yandexTabValue) {
+            let keyYandex = 0;
+            tabs.map((tab, key) => {
+                if (tab === "яндекс") {
+                    keyYandex = key;
+                }
+            });
+
+            if (keyYandex) {
+                setYandexTabValue(keyYandex);
             }
-        });
 
-        if (keyYandex) {
-            setYandexTabValue(keyYandex);
-        }
-
-        if (setYandexData) {
-            setValue(keyYandex);
-            const words = filterWords(tabs[keyYandex]);
-            setWords(words);
+            if (setYandexData) {
+                setValue(keyYandex);
+                const words = filterWords(tabs[keyYandex]);
+                setWords(words);
+            }
         }
     }, [tabs]);
 
